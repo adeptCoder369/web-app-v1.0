@@ -10,7 +10,7 @@ const OverviewLayout = ({ entity }) => {
     name: "Rajesh Kumar",
     role: "Vendor",
     contact: "+91 9876543210",
-    email: "rajesh@apnidesidukaan.com",
+    email: "rajesh@infoeight.com",
     location: "Patna, Bihar",
     zone: "North-East Zone 3",
     status: "Active",

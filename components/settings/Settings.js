@@ -5,7 +5,7 @@ const Settings = ({ entity }) => {
   const data = entity || {
     profile: {
       name: "Rajesh Kumar",
-      email: "rajesh@apnidesidukaan.com",
+      email: "rajesh@infoeight.com",
       role: "Vendor",
     },
     notifications: {

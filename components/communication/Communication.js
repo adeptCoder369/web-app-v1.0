@@ -4,8 +4,8 @@ import { FaEnvelope, FaCommentAlt, FaWhatsapp, FaTelegram } from "react-icons/fa
 const Communication = ({ entity }) => {
   const data = entity || {
     emails: [
-      { subject: "Order Confirmation", from: "support@apnidesidukaan.com", date: new Date(), unread: true },
-      { subject: "Invoice #234", from: "billing@apnidesidukaan.com", date: new Date(), unread: false },
+      { subject: "Order Confirmation", from: "support@infoeight.com", date: new Date(), unread: true },
+      { subject: "Invoice #234", from: "billing@infoeight.com", date: new Date(), unread: false },
     ],
     activeChats: [
       { name: "Customer Support", lastMessage: "How can I help you?", unread: true },

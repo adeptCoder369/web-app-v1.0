@@ -670,7 +670,7 @@ const DashboardMenus = ({
                   <div className="h-64 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center">
                     <div className="text-center">
                       <BarChart3 className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Chart component would go here</p>
+                      <p className="text-gray-600">Weekly Charts </p>
                       <p className="text-sm text-gray-500 mt-2">Weekly attendance trends and analytics</p>
                     </div>
                   </div>

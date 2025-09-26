@@ -38,8 +38,8 @@ const StudentProfile = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const [newStoreName, setNewStoreName] = useState(studentData?.name || "Apni Dukaan");
-  const storeName = studentData?.name || "Apni Dukaan";
+  const [newStoreName, setNewStoreName] = useState(studentData?.name || "name");
+  const storeName = studentData?.name || "name";
 
 
   const handleCancelEdit = () => {
