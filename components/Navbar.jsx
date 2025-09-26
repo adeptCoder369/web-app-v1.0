@@ -25,6 +25,14 @@ const UserProfile = ({ profile, router, loading }) => {
     Cookies.remove('user_name');
     Cookies.remove('name');
     Cookies.remove('guid');
+    // Remove from sessionStorage as well
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('id');
+    sessionStorage.removeItem('user_name');
+    sessionStorage.removeItem('name');
+    sessionStorage.removeItem('guid');
+    sessionStorage.removeItem('dashboardContext');
+    sessionStorage.removeItem('dashboardConfig');
 
     // Optionally clear all localStorage (uncomment if needed)
     // localStorage.clear();
@@ -119,7 +127,7 @@ const Navbar = ({
 
   const router = useRouter();
   const [selectedYear, setSelectedYear] = useState(
-    schoolSessions?.find(session => session?.is_active)?.name || currentSession?.session||'Select Year'
+    schoolSessions?.find(session => session?.is_active)?.name || currentSession?.session || 'Select Year'
   );
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

@@ -1,28 +1,27 @@
 'use client'
 
 import Navbar from '../components/Navbar';
-import ContentArea from '../components/ContentArea';
-import Footer from '../components/Footer';
 import ConfirmationDialogueBox from '../components/ui/status/Confirmation';
 import IdleTimeContainer from '../autoLogout';
 import Sidebar from '../components/Sidebar';
 import { useEffect, useState } from 'react';
 import { getSessionCache } from '../utils/sessionCache';
+// ==============================================================================
 
 
-
-export default function Layout({ children, setSelectedSession ,dashboardData}) {
-
+export default function Layout({ children, setSelectedSession, dashboardData }) {
+  // ==============================================================================
   const config = getSessionCache("dashboardConfig");
 
   const schoolSessions = config?.school?.sessions
   const currentSession = config?.year
 
-  // console.log(' ------------------ schoolSessions -------------------', config);
-
-
   const [userProfile, setUserProfile] = useState(config?.profile || null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showIdleDialogue, setShowIdleDialogue] = useState(false);
+
+  
 
   const loadProfile = async () => {
     // if profile already in cache, no need to fetch again
@@ -61,17 +60,7 @@ export default function Layout({ children, setSelectedSession ,dashboardData}) {
   }, []);
 
 
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-
-
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  const [showIdleDialogue, setShowIdleDialogue] = useState(false);
-
-  // console.log('sidebarOpen', sidebarOpen);
-
+  // ==============================================================================
   return (
     <div className="flex w-full h-screen overflow-hidden">
       <IdleTimeContainer
@@ -136,3 +125,4 @@ export default function Layout({ children, setSelectedSession ,dashboardData}) {
     </div>
   );
 }
+// ==============================================================================

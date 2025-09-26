@@ -106,7 +106,7 @@ export default function ProfileSelection() {
 
 
     // router.push(`/dashboard/${profile?.id}/${session?.clientId}/${school?.id}`);
-    router.push(`/dashboard_`);
+    router.push(`/dashboard`);
 
 
   };
