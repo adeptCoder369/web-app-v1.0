@@ -6,7 +6,7 @@ import FeeManagementDashboard from '../../../components/FeeSummary/dashboard';
 // ========================================================================================
 const breadcrumbs = [
   { label: "Home", href: "/" },
-  { label: "Dashboard", href: "/dashboard_" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Fee Summary" },
 ];
 // ========================================================================================

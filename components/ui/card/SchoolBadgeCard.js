@@ -1,5 +1,7 @@
 import React from 'react';
 import { CreditCard } from 'lucide-react';
+import TooltipInfo from '../tooltip/TooltipInfo';
+import { useRouter } from 'next/navigation';
 
 const SchoolBadgeCard = ({
   schoolImage,
@@ -27,31 +29,40 @@ const SchoolBadgeCard = ({
     return (isNegative ? '-' : '') + otherDigits + ',' + lastThreeDigits + decimalPart;
   };
 
+  const router = useRouter()
+
   const formattedSmsBalance = smsBalance !== '' ? formatIndianNumber(smsBalance) : 0;
 
   return (
     <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-xl shadow-lg border border-white/10 hover:shadow-xl transition-all duration-300">
-      
+
       {/* Left Section: Logo + Name/Branch */}
       <div className="flex flex-col items-center gap-2 flex-shrink-0 w-28">
         {/* Logo */}
-        <div className="w-12 h-12 rounded-full bg-blue-600/20 backdrop-blur-sm border border-blue-400/30 flex items-center justify-center overflow-hidden">
-          {schoolImage ? (
-            <img
-              src={schoolImage}
-              alt={`${schoolName} logo`}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "https://placehold.co/48x48/2563EB/FFFFFF?text=S";
-              }}
-            />
-          ) : (
-            <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          )}
-        </div>
+
+        <TooltipInfo
+          text="Change School">
+
+          <div
+            onClick={() => router.push('/profile-selection')}
+            className="w-12 h-12 rounded-full bg-blue-600/20 backdrop-blur-sm border border-blue-400/30 flex items-center justify-center overflow-hidden">
+            {schoolImage ? (
+              <img
+                src={schoolImage}
+                alt={`${schoolName} logo`}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "https://placehold.co/48x48/2563EB/FFFFFF?text=S";
+                }}
+              />
+            ) : (
+              <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            )}
+          </div>
+        </TooltipInfo>
 
         {/* School Details stacked below */}
         <div className="text-center w-full">

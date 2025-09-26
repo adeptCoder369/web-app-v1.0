@@ -73,7 +73,7 @@ const UserProfile = ({ profile, router, loading }) => {
             <div className="py-2">
               <button
                 className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors"
-                onClick={() => router.push('/dashboard_/profile')}
+                onClick={() => router.push('/dashboard/profile')}
               >
 
                 <User className="w-4 h-4" />
@@ -81,7 +81,7 @@ const UserProfile = ({ profile, router, loading }) => {
               </button>
               <button
                 className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors"
-                onClick={() => router.push('/dashboard_/erp-management')}
+                onClick={() => router.push('/dashboard/erp-management')}
 
               >
                 <Settings className="w-4 h-4" />
@@ -155,7 +155,7 @@ const Navbar = ({
               </button>
             )}
 
-            <div className="cursor-pointer group" onClick={() => router.push('/dashboard_')}>
+            <div className="cursor-pointer group" onClick={() => router.push('/dashboard')}>
               <h1 className="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-blue-400 to-blue-400 bg-clip-text text-transparent hover:from-blue-300 hover:to-purple-300 transition-all duration-500">
                 info<span className="text-white">EIGHT</span>
               </h1>
@@ -256,7 +256,7 @@ const Navbar = ({
               <UserProfile
 
                 profile={userProfile}
-                // router={router}
+                router={router}
                 loading={loading}
               />
             ) : (

@@ -7,7 +7,7 @@ import Layout from '../../../layouts/Layout';
 // =============================================================
 const breadcrumbs = [
   { label: "Home", href: "/" },
-  { label: "Dashboard", href: "/dashboard_" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Manage Staff" },
 ];
 // ===================================================================

@@ -375,7 +375,7 @@ const DashboardMenus = ({
         />
       ),
       color: "bg-yellow-100",
-      url: "/dashboard_/standard-management",
+      url: "/dashboard/standard-management",
       features: ["Add Staff", "View Departments"]
     },
     {
@@ -390,7 +390,7 @@ const DashboardMenus = ({
         />
       ),
       color: "bg-yellow-100",
-      url: "/dashboard_/student-management",
+      url: "/dashboard/student-management",
       features: ["Add Student", "View All Students"]
     },
     {
@@ -405,7 +405,7 @@ const DashboardMenus = ({
         />
       ),
       color: "bg-yellow-100",
-      url: "/dashboard_/attendance-management",
+      url: "/dashboard/attendance-management",
       features: ["Mark Attendance", "Attendance Reports"]
     },
     {
@@ -420,7 +420,7 @@ const DashboardMenus = ({
         />
       ),
       color: "bg-yellow-100",
-      url: "/dashboard_/staff-management",
+      url: "/dashboard/staff-management",
       features: ["Add Staff", "View All Staff"]
     },
     {
@@ -435,7 +435,7 @@ const DashboardMenus = ({
         />
       ),
       color: "bg-yellow-100",
-      url: "/dashboard_/report-cards",
+      url: "/dashboard/report-cards",
       features: ["Design Reports", "View Reports"]
     },
     {
@@ -450,7 +450,7 @@ const DashboardMenus = ({
         />
       ),
       color: "bg-yellow-100",
-      url: "/dashboard_/fee-summary",
+      url: "/dashboard/fee-summary",
       features: ["Collect Fee", "View Summary"]
     }
   ];

@@ -23,7 +23,7 @@ const SuperAdminLogin = () => {
             console.log('Context _________________________________', Context !== null,Context, guid)
 
       if (Context !== null) {
-        router.replace('/dashboard_');
+        router.replace('/dashboard');
       }
     }
   }, [router]);
