@@ -1,0 +1,34 @@
+IOS Bugs Identified:
+====================================================================
+
+1. Attendance:
+- Attendance data from previous session is not being displayed.
+====================================================================
+
+2. Notice Module:
+- Unable to attach certain PDF files in notices. While some PDFs are uploading successfully, others are not.
+
+3. Parents Fee Module:🚧
+====================================================================
+- In UPI payments, the redirect to the UPI app is not functioning.
+- If a transaction fails or is canceled, no error message is displayed—only "Payment under process" is shown.
+- The "Break-up" button on the Payment Due page is not working, though it works correctly on the Paid page.
+
+====================================================================
+4. Birthday & Gallery Modules:✅
+- Both modules are showing Error 500 – Internal Server Error. 
+
+====================================================================sdsdsds
+5. Ticket Module:
+- The Add button to raise a new ticket is missing.
+- No previous tickets are being displayed in the ticket list.
+
+====================================================================
+6. Cloud Storage:
+- If Image size is large then the Image is no opening, compress large size image before uploading.
+- Some time "+" is not coming in cloud storage.
+
+====================================================================
+7. Online Exam:
+- Error: please pass a future time, attaching Image.
+====================================================================
