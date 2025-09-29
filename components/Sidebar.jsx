@@ -55,7 +55,7 @@ const menuItems = [
       height={20}
       className="w-8 h-8"
     />,
-    url: "/dashboard_",
+    url: "/dashboard",
     active: true
   },
   {
@@ -70,7 +70,7 @@ const menuItems = [
     subMenu: [
       {
         name: "Setup",
-        url: "/dashboard_/erp-management",
+        url: "/dashboard/erp-management",
         quickLink: true
       },
       { name: "Images", url: "/client/images" },
@@ -90,7 +90,7 @@ const menuItems = [
     subMenu: [
       {
         name: "All Standards",
-        url: "/dashboard_/standard-management",
+        url: "/dashboard/standard-management",
 
       },
       { name: "All Classes", url: "/classes" },
@@ -109,7 +109,7 @@ const menuItems = [
     />, subMenu: [
       {
         name: "All Students",
-        url: "/dashboard_/student-management",
+        url: "/dashboard/student-management",
 
       },
 
@@ -132,7 +132,7 @@ const menuItems = [
     />, subMenu: [
       {
         name: "All Staff",
-        url: "/dashboard_/staff-management",
+        url: "/dashboard/staff-management",
       },
       { name: "Add Staff", url: "/add-staff", quickLink: true },
       { name: "Departments", url: "/departments", quickLink: true },
@@ -151,7 +151,7 @@ const menuItems = [
     />, subMenu: [
       {
         name: "Subjects",
-        url: "/dashboard_/report-cards",
+        url: "/dashboard/report-cards",
         quickLink: true
       },
       { name: "Grades", url: "/grades", quickLink: true },
@@ -183,7 +183,7 @@ const menuItems = [
     />, subMenu: [
       {
         name: "Take Attendance",
-        url: "/dashboard_/attendance-management",
+        url: "/dashboard/attendance-management",
         quickLink: true
       },
       { name: "Daily Report", url: "/attendance-report", quickLink: true },
@@ -229,7 +229,7 @@ const menuItems = [
     />, subMenu: [
       {
         name: "View Fees",
-        url: "/dashboard_/fee-summary",
+        url: "/dashboard/fee-summary",
         quickLink: true,
 
       },
@@ -278,7 +278,7 @@ const menuItems = [
     />, subMenu: [
       {
         name: "View Libraries",
-        url: "/dashboard_/online-library",
+        url: "/dashboard/online-library",
 
       },
       { name: "View Books", url: "/books" },

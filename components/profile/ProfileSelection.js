@@ -91,7 +91,7 @@ export default function ProfileSelection() {
   const handleSessionSelect = (session, profile, school) => {
     setSelectedSession(session);
     
-    // console.log('----------- aaya ---------', school);
+    console.log('----------- aaya ---------', session);
 
 
     setLoading(true); // Show loader

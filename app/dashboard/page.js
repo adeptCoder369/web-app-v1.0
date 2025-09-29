@@ -10,7 +10,7 @@ export default async function Dashboard() {
 
   // 🔒 if cookies missing → force login
   if (!cookyGuid || !cookyId) {
-    redirect('/login'); 
+    redirect('/login');
   }
 
   return (

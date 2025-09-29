@@ -27,7 +27,7 @@ import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 
 const breadcrumbs = [
   { label: "Home", href: "/" },
-  { label: "Dashboard", href: "/dashboard_" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Manage Students" },
 ];
 

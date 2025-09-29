@@ -27,6 +27,8 @@ import Layout from '../../layouts/Layout';
 import { getSessionCache } from '../../utils/sessionCache';
 import StudentsModal from '../../components/ui/tables/modernTable/component/StudentsModal';
 import { FaDownload, FaFileCsv, FaFileExcel } from 'react-icons/fa';
+import { addClass, editClass } from '../../api/classes';
+import TooltipInfo from '../ui/tooltip/TooltipInfo';
 
 
 // ==================================================================
@@ -37,18 +39,20 @@ const StandardsClassesManagement = ({ }) => {
 
 
     const config = getSessionCache("dashboardConfig");
+    const context = getSessionCache("dashboardContext");
     const standards = config?.standards || []
     const teachers = config?.users?.filter(
-  (user) => user.designation?.name === "TEACHER"
-);
+        (user) => user?.designation?.role?.is_teaching_staff === '1'
+    );
 
-    // console.log('**********************', config?.users[0]);
-    console.log('**********************', config);
+    // console.log('**********************', config);
 
     // const totalClasses = standard.reduce((sum, std) => sum + (std.classes?.length || 0), 0);
     // ==================================================================
     const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
     const [selectedStandard, setSelectedStandard] = useState('all');
+    const [selectedStandardId, setSelectedStandardId] = useState('all');
+    const [selectedTeacher, setSelectedTeacher] = useState('');
     const [expandedStandards, setExpandedStandards] = useState(new Set([]));
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -57,8 +61,16 @@ const StandardsClassesManagement = ({ }) => {
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
 
 
-    const [selectedClass, setSelectedClass] = useState([]);
-
+    const [selectedClass, setSelectedClass] = useState(null);
+    const [selectedClassId, setSelectedClassId] = useState(null);
+    const [section, setSection] = useState('');
+    console.log('**********************', selectedClassId);
+    useEffect(() => {
+        if (showEditModal && selectedItem?.data) {
+            setSection(selectedItem.data.section || '');
+            setSelectedTeacher(selectedItem.data.class_teacher?.id || '');
+        }
+    }, [showEditModal, selectedItem]);
     // ==================================================================
 
 
@@ -158,17 +170,35 @@ const StandardsClassesManagement = ({ }) => {
         link.click();
         setExportDropdownOpen(false);
     };
-    const downloadCSV = () => {
-        const csvContent = convertToCSV(filteredData);
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `staff_data_${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-        setExportDropdownOpen(false);
-    };
 
 
+    const handleAddClass = async () => {
+
+        const res = await addClass(
+
+            context?.profileId,
+            context?.session,
+            selectedStandardId,
+            selectedTeacher,
+            section
+        )
+        console.log('class created --', res);
+    }
+    const handleEditClass = async () => {
+
+        const res = await editClass(
+
+            context?.profileId,
+            context?.session,
+            selectedStandardId,
+            selectedTeacher,
+            section,
+            selectedClassId?.id
+        )
+        console.log('class edited --', res);
+        setShowEditModal(false);
+        setSelectedItem(null);
+    }
 
     // ==================================================================
     return (
@@ -431,6 +461,7 @@ const StandardsClassesManagement = ({ }) => {
                                     <div
 
                                         key={standardKey.id}
+                                        onClick={() => setSelectedStandardId(standardData?.id)}
                                         className="  bg-white rounded-lg shadow-sm border border-blue-100 overflow-hidden">
                                         {/* Standard Header */}
                                         <div className="bg-accent px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -514,26 +545,30 @@ const StandardsClassesManagement = ({ }) => {
                                                     </thead>
                                                     <tbody className="bg-white divide-y divide-gray-200">
                                                         {standardData.classes?.map((classData) => (
-                                                            <tr key={classData.id} className="hover:bg-gray-50">
+                                                            <tr
+
+                                                                key={classData.id} className="hover:bg-gray-50">
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="flex items-center">
-                                                                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                                                            <BookOpen className="w-4 h-4 text-blue-600" />
+                                                                    <TooltipInfo text='View Students'>
+
+                                                                        <div className="flex items-center">
+                                                                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                                                                <BookOpen className="w-4 h-4 text-blue-600" />
+                                                                            </div>
+                                                                            <div
+                                                                                className='bg-white'
+                                                                                onClick={() => {
+                                                                                    setSelectedClass(classData);
+                                                                                    setShowModal(true)
+                                                                                }}
+                                                                            >
+                                                                                <div className="text-sm font-medium text-gray-900">{classData.section}</div>
+                                                                                <div className="cursor-pointer text-sm text-gray-500">{classData?.students?.length} Students</div>
+
+
+                                                                            </div>
                                                                         </div>
-                                                                        <div
-                                                                            className='bg-white'
-                                                                            onClick={() => {
-                                                                                setSelectedClass(classData);  // store the clicked class
-                                                                                setShowModal(true);           // open modal
-                                                                            }}
-                                                                        >
-                                                                            <div className="text-sm font-medium text-gray-900">{classData.section}</div>
-                                                                            <div className="cursor-pointer text-sm text-gray-500">{classData?.students?.length} Students</div>
-
-
-
-                                                                        </div>
-                                                                    </div>
+                                                                    </TooltipInfo>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                                     {classData.class_teacher?.name}
@@ -561,16 +596,18 @@ const StandardsClassesManagement = ({ }) => {
                                                                         {classData.performance}%
                                                                     </span>
                                                                 </td> */}
-                                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                                < td className="px-6 py-4 whitespace-nowrap text-sm font-medium" >
                                                                     <div className="flex items-center gap-2">
                                                                         <button className="text-blue-600 hover:text-blue-900">
                                                                             <Eye className="w-4 h-4" />
                                                                         </button>
                                                                         <button
                                                                             onClick={() => {
-                                                                                setSelectedItem({ type: 'class', standardKey, classKey, data: classData });
+                                                                                setSelectedItem({ type: 'class', standardKey, data: classData });
                                                                                 setModalType('class');
                                                                                 setShowEditModal(true);
+                                                                                setSelectedClassId(classData)
+
                                                                             }}
                                                                             className="text-gray-600 hover:text-gray-900"
                                                                         >
@@ -600,7 +637,7 @@ const StandardsClassesManagement = ({ }) => {
                                                         className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
                                                     >
                                                         <Plus className="w-4 h-4" />
-                                                        Add New Class to {standardData.standardName}
+                                                        Add New Class to {standardData.name}
                                                     </button>
                                                 </div>
                                             </div>
@@ -754,11 +791,14 @@ const StandardsClassesManagement = ({ }) => {
 
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Class Name
+                                                    Section
                                                 </label>
                                                 <input
+                                                    value={section}
+                                                    id={section}
                                                     type="text"
                                                     placeholder="e.g., VI-E"
+                                                    onChange={(e) => setSection(e.target.value)}
                                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
                                             </div>
@@ -766,44 +806,14 @@ const StandardsClassesManagement = ({ }) => {
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     Class Teacher
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="e.g., Mrs. Sunita Kumar"
-                                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Room Number
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="205"
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Capacity
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        placeholder="50"
-                                                        min="1"
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Schedule
-                                                </label>
-                                                <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                    <option value="Morning">Morning Shift</option>
-                                                    <option value="Afternoon">Afternoon Shift</option>
+                                                <select
+                                                    onClick={(value) => setSelectedTeacher(value.target.value)}
+                                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    <option value="Morning">Choose Teacher</option>
+                                                    {teachers?.map(teacher => <option value={teacher?.id}>{teacher?.name}</option>)}
                                                 </select>
                                             </div>
+
                                         </>
                                     )}
                                 </form>
@@ -816,7 +826,7 @@ const StandardsClassesManagement = ({ }) => {
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={() => setShowAddModal(false)}
+                                        onClick={handleAddClass}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                                     >
                                         Add {modalType === 'standard' ? 'Standard' : 'Class'}
@@ -828,8 +838,8 @@ const StandardsClassesManagement = ({ }) => {
 
                     {/* Edit Modal */}
                     {showEditModal && selectedItem && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <div className="fixed inset-0   backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
+                            <div className="bg-white border border-accent ring-2 rounded-lg p-6 w-full max-w-md">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                                     Edit {selectedItem.type === 'standard' ? 'Standard' : 'Class'}
                                 </h2>
@@ -839,15 +849,33 @@ const StandardsClassesManagement = ({ }) => {
                                         <>
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Class Name
+                                                    Section
                                                 </label>
                                                 <input
+                                                    value={section}
                                                     type="text"
-                                                    defaultValue={selectedItem.data.className}
+                                                    placeholder="e.g., VI-E"
+                                                    onChange={(e) => setSection(e.target.value)}
                                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
                                             </div>
                                             <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Class Teacher
+                                                </label>
+
+                                                <select
+                                                    value={selectedTeacher}
+                                                    onChange={(e) => setSelectedTeacher(e.target.value)}
+                                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
+                                                    <option value="">Choose Teacher</option>
+                                                    {teachers?.map(teacher => (
+                                                        <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            {/* <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     Class Teacher
                                                 </label>
@@ -856,8 +884,8 @@ const StandardsClassesManagement = ({ }) => {
                                                     defaultValue={selectedItem.data.classTeacher}
                                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            </div> */}
+                                            {/* <div className="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                                         Room Number
@@ -879,8 +907,8 @@ const StandardsClassesManagement = ({ }) => {
                                                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </div> */}
+                                            {/* <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     Current Students
                                                 </label>
@@ -891,8 +919,8 @@ const StandardsClassesManagement = ({ }) => {
                                                     max={selectedItem.data.capacity}
                                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
-                                            </div>
-                                            <div>
+                                            </div> */}
+                                            {/* <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     Schedule
                                                 </label>
@@ -903,7 +931,7 @@ const StandardsClassesManagement = ({ }) => {
                                                     <option value="Morning">Morning Shift</option>
                                                     <option value="Afternoon">Afternoon Shift</option>
                                                 </select>
-                                            </div>
+                                            </div> */}
                                         </>
                                     )}
                                 </form>
@@ -919,10 +947,7 @@ const StandardsClassesManagement = ({ }) => {
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            setShowEditModal(false);
-                                            setSelectedItem(null);
-                                        }}
+                                        onClick={handleEditClass}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                                     >
                                         Save Changes
@@ -954,8 +979,8 @@ const StandardsClassesManagement = ({ }) => {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
 
 
 
@@ -964,7 +989,7 @@ const StandardsClassesManagement = ({ }) => {
                 showModal ? (
                     <StudentsModal
                         selectedData={selectedClass}
-                    // onClose={() => setShowModal(false)}
+                        onClose={() => setShowModal(false)}
                     />
                 ) : null
             }

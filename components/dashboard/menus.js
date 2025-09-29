@@ -76,50 +76,50 @@ const DashboardMenus = ({
   // const config = getSessionCache("dashboardConfig");
 
   // console.log('-------- selectedSession---------', selectedSession);
-  const mounted = useRef(true);
+  // const mounted = useRef(true);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      // session/context from client cache
-      // const context = getSessionCache('dashboardContext') || {};
+  // async function load() {
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     // session/context from client cache
+  //     // const context = getSessionCache('dashboardContext') || {};
 
-      // call API (adjust args/order if getStudentList signature differs)
-      const data = await getUserDashboardData(Context?.profileId, selectedSession?.clientId || Context?.session, cookyGuid, cookyId);
+  //     // call API (adjust args/order if getStudentList signature differs)
+  //     const data = await getUserDashboardData(Context?.profileId, selectedSession?.clientId || Context?.session, cookyGuid, cookyId);
 
-      console.log('-------- data---------', data?.success);
+  //     console.log('-------- data---------', data?.success);
 
-      setSessionCache("dashboardConfig", data.results);
-      if (mounted.current && data?.results) {
-        setSessionCache("dashboardConfig", data.results);
-      }
-      // if (mounted && data) {
-      //   setDashboardData(data?.results)
+  //     setSessionCache("dashboardConfig", data.results);
+  //     if (mounted.current && data?.results) {
+  //       setSessionCache("dashboardConfig", data.results);
+  //     }
+  //     // if (mounted && data) {
+  //     //   setDashboardData(data?.results)
 
-      // }
-    } catch (err) {
-      if (mounted.current) setError(err);
-      console.error('Failed to load student list', err);
-    } finally {
-      if (mounted.current) setLoading(false);
-    }
-  }
-  useEffect(() => {
-    mounted.current = true;
-    load();
-    return () => {
-      mounted.current = false;
-    };
-  }, [
-    Context?.profileId,
-    Context?.session,
-    cookyGuid,
-    cookyId,
-    // selectedSession?.clientId
-  ]);
+  //     // }
+  //   } catch (err) {
+  //     if (mounted.current) setError(err);
+  //     console.error('Failed to load student list', err);
+  //   } finally {
+  //     if (mounted.current) setLoading(false);
+  //   }
+  // }
+  // useEffect(() => {
+  //   mounted.current = true;
+  //   load();
+  //   return () => {
+  //     mounted.current = false;
+  //   };
+  // }, [
+  //   Context?.profileId,
+  //   Context?.session,
+  //   cookyGuid,
+  //   cookyId,
+  //   // selectedSession?.clientId
+  // ]);
 
-  console.log('loading -----------????', loading);
+  // console.log('loading -----------????', loading);
 
 
 

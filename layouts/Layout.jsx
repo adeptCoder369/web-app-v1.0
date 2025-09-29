@@ -12,113 +12,85 @@ import Loader from '../components/ui/status/Loader';
 
 
 export default function Layout({ children, dashboardData }) {
-  // ==============================================================================
   const config = getSessionCache("dashboardConfig");
   const Context = getSessionCache("dashboardContext");
 
-  const schoolSessions = config?.school?.sessions
-  const currentSession = config?.year
+  const schoolSessions = config?.school?.sessions;
+  const currentSession = config?.year;
 
   const [userProfile, setUserProfile] = useState(config?.profile || null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingDashboard, setLoadingDashboard] = useState(false); // ✅ new
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showIdleDialogue, setShowIdleDialogue] = useState(false);
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [selectedSession, setSelectedSession] = useState('')
-
-  console.log('--------- selectedSession ---------', selectedSession);
-
+  const [error, setError] = useState(null);
+  const [selectedSession, setSelectedSession] = useState(Context?.session || "");
+  console.log('selectedSession -------', selectedSession);
 
   const mounted = useRef(true);
 
-  async function load() {
-    setLoading(true);
+  async function load(sessionOverride) {
+    setLoadingDashboard(true); // ✅ instead of generic loading
     setError(null);
+
     try {
-      // session/context from client cache
-      // const context = getSessionCache('dashboardContext') || {};
+      const ctx = getSessionCache("dashboardContext"); // always latest context
+      const activeSession = sessionOverride || ctx?.session;
 
-      // call API (adjust args/order if getStudentList signature differs)
-      const data = await getUserDashboardData(Context?.profileId, selectedSession?.clientId || Context?.session);
+      const data = await getUserDashboardData(
+        ctx?.profileId,
+        activeSession
+      );
 
-      console.log('-------- data---------', data?.success);
-
-      setSessionCache("dashboardConfig", data.results);
       if (mounted.current && data?.results) {
         setSessionCache("dashboardConfig", data.results);
       }
-      // if (mounted && data) {
-      //   setDashboardData(data?.results)
-
-      // }
     } catch (err) {
       if (mounted.current) setError(err);
-      console.error('Failed to load student list', err);
+      console.error("Failed to load dashboard data", err);
     } finally {
-      if (mounted.current) setLoading(false);
+      if (mounted.current) setLoadingDashboard(false);
     }
   }
+
   useEffect(() => {
-    mounted.current = true;
-    load();
-    return () => {
-      mounted.current = false;
-    };
-  }, [
-    Context?.profileId,
-    Context?.session,
-    // cookyGuid,
-    // cookyId,
-    // selectedSession?.clientId
-  ]);
+    if (!selectedSession?.clientId) return;
+
+    const newSession = selectedSession?.clientId;
+    const currentContext = getSessionCache("dashboardContext");
+
+    if (currentContext?.session !== newSession) {
+      setSessionCache("dashboardContext", {
+        ...currentContext,
+        session: newSession,
+      });
+
+      load(newSession); // ✅ use the new session directly
+    }
+  }, [selectedSession?.clientId]);
 
 
-
-
-
-
-
-
-
-
-
-  const loadProfile = async () => {
-    // if profile already in cache, no need to fetch again
+  // Initial profile load
+  useEffect(() => {
     if (config?.profile) {
       setUserProfile(config.profile);
       setLoadingProfile(false);
-
     } else {
-      try {
-        // const profileData = await fetchProfile(); //  API call
-        // setUserProfile(profileData);
-        setLoadingProfile(false);
-
-      } catch (err) {
-        console.error("Failed to load profile", err);
-      }
+      setLoadingProfile(false); // or fetch if API is ready
     }
-  };
-  useEffect(() => {
-
-    loadProfile();
   }, []);
 
-
-  // When dashboardConfig is updated elsewhere, listen for changes (optional)
-  useEffect(() => {
-    // Listen for storage events if cache is updated in another tab
-    const onStorage = (e) => {
-      if (e.key === "dashboardConfig") {
-        const config = getSessionCache("dashboardConfig");
-        setUserProfile(config?.profile || null);
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
+  // Sync profile if dashboardConfig updates in another tab
+  // useEffect(() => {
+  //   const onStorage = (e) => {
+  //     if (e.key === "dashboardConfig") {
+  //       const config = getSessionCache("dashboardConfig");
+  //       setUserProfile(config?.profile || null);
+  //     }
+  //   };
+  //   window.addEventListener("storage", onStorage);
+  //   return () => window.removeEventListener("storage", onStorage);
+  // }, []);
 
   // ==============================================================================
   return (
@@ -160,11 +132,7 @@ export default function Layout({ children, dashboardData }) {
         )}
       </div>
 
-      {!loading ? <div className="flex-1 flex flex-col">
-        {/* Navbar */}
-        {/* <header className="bg-white shadow p-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Dashboard</h1>
-        </header> */}
+      <div className="flex-1 flex flex-col">
         <Navbar
           currentSession={currentSession}
           schoolSessions={schoolSessions}
@@ -172,16 +140,14 @@ export default function Layout({ children, dashboardData }) {
           userProfile={userProfile}
           loading={loadingProfile}
           sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen} />
-        {/* Main Content Area */}
-        <main className="flex-1  bg-muted overflow-y-auto ">
-          {/* <ContentArea /> */}
+          setSidebarOpen={setSidebarOpen}
+        />
 
-          {children}
-          {/* <p>Welcome to your dashboard!</p> */}
+        <main className="flex-1 bg-muted overflow-y-auto">
+          {loadingDashboard ? <Loader /> : children}
         </main>
-        {/* <Footer /> */}
-      </div> : <Loader />}
+      </div>
+
     </div>
   );
 }

@@ -8,7 +8,6 @@ export async function getUserDashboardData(profileId, sessionId, guid, cookyId, 
 
   let resolvedGuid = guid ?? getCookie("guid", ctx);
   let resolvedUserId = getCookie("id", ctx);
-  console.log('resolvedGuid ---:', resolvedGuid,);
 
   try {
     const response = await axios.post(`${API_BASE_URL_}/api`, {
