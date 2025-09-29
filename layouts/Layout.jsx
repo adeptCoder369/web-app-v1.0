@@ -4,14 +4,17 @@ import Navbar from '../components/Navbar';
 import ConfirmationDialogueBox from '../components/ui/status/Confirmation';
 import IdleTimeContainer from '../autoLogout';
 import Sidebar from '../components/Sidebar';
-import { useEffect, useState } from 'react';
-import { getSessionCache } from '../utils/sessionCache';
+import { useEffect, useState, useRef } from 'react';
+import { getSessionCache, setSessionCache } from '../utils/sessionCache';
+import { getUserDashboardData } from '../api/dashboard';
+import Loader from '../components/ui/status/Loader';
 // ==============================================================================
 
 
-export default function Layout({ children, setSelectedSession, dashboardData }) {
+export default function Layout({ children, dashboardData }) {
   // ==============================================================================
   const config = getSessionCache("dashboardConfig");
+  const Context = getSessionCache("dashboardContext");
 
   const schoolSessions = config?.school?.sessions
   const currentSession = config?.year
@@ -20,8 +23,65 @@ export default function Layout({ children, setSelectedSession, dashboardData }) 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showIdleDialogue, setShowIdleDialogue] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [selectedSession, setSelectedSession] = useState('')
 
-  
+  console.log('--------- selectedSession ---------', selectedSession);
+
+
+  const mounted = useRef(true);
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      // session/context from client cache
+      // const context = getSessionCache('dashboardContext') || {};
+
+      // call API (adjust args/order if getStudentList signature differs)
+      const data = await getUserDashboardData(Context?.profileId, selectedSession?.clientId || Context?.session);
+
+      console.log('-------- data---------', data?.success);
+
+      setSessionCache("dashboardConfig", data.results);
+      if (mounted.current && data?.results) {
+        setSessionCache("dashboardConfig", data.results);
+      }
+      // if (mounted && data) {
+      //   setDashboardData(data?.results)
+
+      // }
+    } catch (err) {
+      if (mounted.current) setError(err);
+      console.error('Failed to load student list', err);
+    } finally {
+      if (mounted.current) setLoading(false);
+    }
+  }
+  useEffect(() => {
+    mounted.current = true;
+    load();
+    return () => {
+      mounted.current = false;
+    };
+  }, [
+    Context?.profileId,
+    Context?.session,
+    // cookyGuid,
+    // cookyId,
+    // selectedSession?.clientId
+  ]);
+
+
+
+
+
+
+
+
+
+
 
   const loadProfile = async () => {
     // if profile already in cache, no need to fetch again
@@ -100,7 +160,7 @@ export default function Layout({ children, setSelectedSession, dashboardData }) 
         )}
       </div>
 
-      <div className="flex-1 flex flex-col">
+      {!loading ? <div className="flex-1 flex flex-col">
         {/* Navbar */}
         {/* <header className="bg-white shadow p-4 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Dashboard</h1>
@@ -121,7 +181,7 @@ export default function Layout({ children, setSelectedSession, dashboardData }) 
           {/* <p>Welcome to your dashboard!</p> */}
         </main>
         {/* <Footer /> */}
-      </div>
+      </div> : <Loader />}
     </div>
   );
 }

@@ -26,6 +26,7 @@ import {
 import Layout from '../../layouts/Layout';
 import { getSessionCache } from '../../utils/sessionCache';
 import StudentsModal from '../../components/ui/tables/modernTable/component/StudentsModal';
+import { FaDownload, FaFileCsv, FaFileExcel } from 'react-icons/fa';
 
 
 // ==================================================================
@@ -37,11 +38,16 @@ const StandardsClassesManagement = ({ }) => {
 
     const config = getSessionCache("dashboardConfig");
     const standards = config?.standards || []
+    const teachers = config?.users?.filter(
+  (user) => user.designation?.name === "TEACHER"
+);
+
+    // console.log('**********************', config?.users[0]);
     console.log('**********************', config);
 
     // const totalClasses = standard.reduce((sum, std) => sum + (std.classes?.length || 0), 0);
     // ==================================================================
-    const [searchTerm, setSearchTerm] = useState('');
+    const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
     const [selectedStandard, setSelectedStandard] = useState('all');
     const [expandedStandards, setExpandedStandards] = useState(new Set([]));
     const [showAddModal, setShowAddModal] = useState(false);
@@ -54,260 +60,6 @@ const StandardsClassesManagement = ({ }) => {
     const [selectedClass, setSelectedClass] = useState([]);
 
     // ==================================================================
-    // Mock data structure
-    const [academicData, setAcademicData] = useState({
-        '6th': {
-            standardName: '6th Standard',
-            totalStudents: 180,
-            totalClasses: 4,
-            subjects: ['Mathematics', 'Science', 'English', 'Hindi', 'Social Studies'],
-            classTeacher: 'Mrs. Priya Sharma',
-            classes: {
-                'VI-A': {
-                    className: 'VI-A',
-                    students: 45,
-                    capacity: 50,
-                    classTeacher: 'Mrs. Sunita Kumar',
-                    room: '201',
-                    schedule: 'Morning',
-                    subjects: 6,
-                    performance: 85
-                },
-                'VI-B': {
-                    className: 'VI-B',
-                    students: 48,
-                    capacity: 50,
-                    classTeacher: 'Mr. Rajesh Gupta',
-                    room: '202',
-                    schedule: 'Morning',
-                    subjects: 6,
-                    performance: 82
-                },
-                'VI-C': {
-                    className: 'VI-C',
-                    students: 42,
-                    capacity: 50,
-                    classTeacher: 'Mrs. Kavita Singh',
-                    room: '203',
-                    schedule: 'Morning',
-                    subjects: 6,
-                    performance: 88
-                },
-                'VI-D': {
-                    className: 'VI-D',
-                    students: 45,
-                    capacity: 50,
-                    classTeacher: 'Mr. Amit Verma',
-                    room: '204',
-                    schedule: 'Morning',
-                    subjects: 6,
-                    performance: 79
-                }
-            }
-        },
-        '7th': {
-            standardName: '7th Standard',
-            totalStudents: 195,
-            totalClasses: 4,
-            subjects: ['Mathematics', 'Science', 'English', 'Hindi', 'Social Studies', 'Computer'],
-            classTeacher: 'Mr. Vikram Joshi',
-            classes: {
-                'VII-A': {
-                    className: 'VII-A',
-                    students: 50,
-                    capacity: 50,
-                    classTeacher: 'Mrs. Meera Patel',
-                    room: '301',
-                    schedule: 'Morning',
-                    subjects: 7,
-                    performance: 87
-                },
-                'VII-B': {
-                    className: 'VII-B',
-                    students: 49,
-                    capacity: 50,
-                    classTeacher: 'Mr. Suresh Reddy',
-                    room: '302',
-                    schedule: 'Morning',
-                    subjects: 7,
-                    performance: 84
-                },
-                'VII-C': {
-                    className: 'VII-C',
-                    students: 46,
-                    capacity: 50,
-                    classTeacher: 'Mrs. Anjali Mehta',
-                    room: '303',
-                    schedule: 'Morning',
-                    subjects: 7,
-                    performance: 91
-                },
-                'VII-D': {
-                    className: 'VII-D',
-                    students: 50,
-                    capacity: 50,
-                    classTeacher: 'Mr. Ravi Kumar',
-                    room: '304',
-                    schedule: 'Morning',
-                    subjects: 7,
-                    performance: 86
-                }
-            }
-        },
-        '8th': {
-            standardName: '8th Standard',
-            totalStudents: 168,
-            totalClasses: 4,
-            subjects: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Social Studies'],
-            classTeacher: 'Mrs. Deepika Nair',
-            classes: {
-                'VIII-A': {
-                    className: 'VIII-A',
-                    students: 42,
-                    capacity: 45,
-                    classTeacher: 'Mr. Arun Sinha',
-                    room: '401',
-                    schedule: 'Morning',
-                    subjects: 8,
-                    performance: 89
-                },
-                'VIII-B': {
-                    className: 'VIII-B',
-                    students: 44,
-                    capacity: 45,
-                    classTeacher: 'Mrs. Pooja Agarwal',
-                    room: '402',
-                    schedule: 'Morning',
-                    subjects: 8,
-                    performance: 85
-                },
-                'VIII-C': {
-                    className: 'VIII-C',
-                    students: 41,
-                    capacity: 45,
-                    classTeacher: 'Mr. Manoj Tiwari',
-                    room: '403',
-                    schedule: 'Morning',
-                    subjects: 8,
-                    performance: 92
-                },
-                'VIII-D': {
-                    className: 'VIII-D',
-                    students: 41,
-                    capacity: 45,
-                    classTeacher: 'Mrs. Shalini Jain',
-                    room: '404',
-                    schedule: 'Morning',
-                    subjects: 8,
-                    performance: 87
-                }
-            }
-        },
-        '9th': {
-            standardName: '9th Standard',
-            totalStudents: 160,
-            totalClasses: 4,
-            subjects: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Social Studies', 'Computer'],
-            classTeacher: 'Mr. Sandeep Joshi',
-            classes: {
-                'IX-A': {
-                    className: 'IX-A',
-                    students: 40,
-                    capacity: 42,
-                    classTeacher: 'Mrs. Nisha Kapoor',
-                    room: '501',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 88
-                },
-                'IX-B': {
-                    className: 'IX-B',
-                    students: 41,
-                    capacity: 42,
-                    classTeacher: 'Mr. Prakash Singh',
-                    room: '502',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 86
-                },
-                'IX-C': {
-                    className: 'IX-C',
-                    students: 39,
-                    capacity: 42,
-                    classTeacher: 'Mrs. Ritu Sharma',
-                    room: '503',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 90
-                },
-                'IX-D': {
-                    className: 'IX-D',
-                    students: 40,
-                    capacity: 42,
-                    classTeacher: 'Mr. Ashok Kumar',
-                    room: '504',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 84
-                }
-            }
-        },
-        '10th': {
-            standardName: '10th Standard',
-            totalStudents: 150,
-            totalClasses: 4,
-            subjects: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Social Studies', 'Computer'],
-            classTeacher: 'Mrs. Rekha Gupta',
-            classes: {
-                'X-A': {
-                    className: 'X-A',
-                    students: 38,
-                    capacity: 40,
-                    classTeacher: 'Mr. Dinesh Yadav',
-                    room: '601',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 91
-                },
-                'X-B': {
-                    className: 'X-B',
-                    students: 37,
-                    capacity: 40,
-                    classTeacher: 'Mrs. Geeta Kumari',
-                    room: '602',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 89
-                },
-                'X-C': {
-                    className: 'X-C',
-                    students: 38,
-                    capacity: 40,
-                    classTeacher: 'Mr. Ramesh Pandey',
-                    room: '603',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 93
-                },
-                'X-D': {
-                    className: 'X-D',
-                    students: 37,
-                    capacity: 40,
-                    classTeacher: 'Mrs. Usha Srivastava',
-                    room: '604',
-                    schedule: 'Morning',
-                    subjects: 9,
-                    performance: 88
-                }
-            }
-        }
-    });
-
-
-
-    // useEffect(() => {
-    //     setAcademicData(standards)
-    // }, [standards?.length]);
 
 
     const toggleStandardExpansion = (standardId) => {
@@ -352,10 +104,9 @@ const StandardsClassesManagement = ({ }) => {
     };
 
     const filteredData = useMemo(() => {
-        // if (selectedStandard === 'all') return academicData;
         if (selectedStandard === 'all') return standards;
         return { selectedStandard };
-    }, [selectedStandard, academicData]);
+    }, [selectedStandard]);
 
     const stats = getOverallStats();
 
@@ -375,10 +126,54 @@ const StandardsClassesManagement = ({ }) => {
 
 
 
+
+
+    // === Function(s) ========================================
+    const downloadExcel = () => {
+        // For Excel export, we'll create a simple HTML table format that Excel can read
+        const headers = ['Name', 'Subject', 'Description', 'Date', 'Time', 'Total Students', 'Platform'];
+        let htmlContent = '<table><tr>';
+        headers.forEach(header => {
+            htmlContent += `<th>${header}</th>`;
+        });
+        htmlContent += '</tr>';
+
+        filteredData.forEach(row => {
+            htmlContent += '<tr>';
+            htmlContent += `<td>${row.name || 'N/A'}</td>`;
+            htmlContent += `<td>${row.subject?.name || 'N/A'}</td>`;
+            htmlContent += `<td>${row.description || 'N/A'}</td>`;
+            htmlContent += `<td>${row.date || 'N/A'}</td>`;
+            htmlContent += `<td>${row.time || 'N/A'}</td>`;
+            htmlContent += `<td>${row.students?.length || 0}</td>`;
+            htmlContent += `<td>${row.info?.platform || 'N/A'}</td>`;
+            htmlContent += '</tr>';
+        });
+        htmlContent += '</table>';
+
+        const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `staff_data_${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+        setExportDropdownOpen(false);
+    };
+    const downloadCSV = () => {
+        const csvContent = convertToCSV(filteredData);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `staff_data_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        setExportDropdownOpen(false);
+    };
+
+
+
     // ==================================================================
     return (
         <>
-            <div className="min-h-screen bg-gray-50 p-6">
+            <div className="min-h-screen bg-gray-50 p-6 shadow-md rounded">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">
@@ -388,17 +183,42 @@ const StandardsClassesManagement = ({ }) => {
                                     <School className="w-8 h-8 text-blue-600" />
                                     Standards & Classes Management
                                 </h1>
-                                <p className="text-gray-600">Academic Structure Overview - Academic Year 2024-25</p>
+                                <p className="text-gray-600">Academic Structure Overview - Academic Year {config?.year?.session}</p>
                             </div>
                             <div className="flex gap-3">
-                                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                    <Download className="w-4 h-4" />
-                                    Export Data
-                                </button>
-                                <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+
+                                {/* Export Dropdown */}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
+                                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                                    >
+                                        <FaDownload className="text-sm" />
+                                        <span className="font-medium">Export</span>
+                                        <ChevronDown className={`w-4 h-4 transition-transform ${exportDropdownOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+
+                                    {exportDropdownOpen && (
+                                        <>
+                                            <div className="fixed inset-0 z-40" onClick={() => setExportDropdownOpen(false)} />
+                                            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
+
+                                                <button
+                                                    onClick={downloadExcel}
+                                                    className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                                                >
+                                                    <FaFileExcel className="text-green-700" />
+                                                    <span>Export Class-wise</span>
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
+                                {/* <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                                     <Upload className="w-4 h-4" />
                                     Import Data
-                                </button>
+                                </button> */}
                                 <button
                                     onClick={() => {
                                         setModalType('standard');
@@ -427,9 +247,9 @@ const StandardsClassesManagement = ({ }) => {
 
                                 {/* Text Content */}
                                 <div>
-                                    <div className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                                    {/* <div className="text-3xl font-extrabold text-gray-900 tracking-tight">
                                         {Object.keys(academicData).length}
-                                    </div>
+                                    </div> */}
                                     <div className="text-sm font-medium text-gray-600 group-hover:text-gray-800 transition">
                                         Total Standards
                                     </div>
@@ -668,7 +488,7 @@ const StandardsClassesManagement = ({ }) => {
 
                                         {/* Classes Table */}
                                         {expandedStandards.has(standardData.id) && (
-                                            <div className="overflow-x-auto">
+                                            <div className="bg-accent overflow-x-auto">
                                                 <table className="min-w-full divide-y divide-gray-200">
                                                     <thead className="bg-gray-50">
                                                         <tr>
@@ -770,7 +590,7 @@ const StandardsClassesManagement = ({ }) => {
                                                 </table>
 
                                                 {/* Add Class Button */}
-                                                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                                                <div className=" px-6 py-4 border-t border-gray-200 bg-gray-50">
                                                     <button
                                                         onClick={() => {
                                                             setSelectedItem({ standardKey });
@@ -880,7 +700,7 @@ const StandardsClassesManagement = ({ }) => {
 
                     {/* Add Modal */}
                     {showAddModal && (
-                        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
+                        <div className="fixed inset-0   backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
                             <div className="bg-white border border-accent ring-2 rounded-lg p-6 w-full max-w-md">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                                     Add New {modalType === 'standard' ? 'Standard' : 'Class'}
@@ -923,6 +743,15 @@ const StandardsClassesManagement = ({ }) => {
                                         </>
                                     ) : (
                                         <>
+
+
+
+
+
+
+
+
+
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     Class Name

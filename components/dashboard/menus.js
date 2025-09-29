@@ -116,7 +116,7 @@ const DashboardMenus = ({
     Context?.session,
     cookyGuid,
     cookyId,
-    selectedSession?.clientId
+    // selectedSession?.clientId
   ]);
 
   console.log('loading -----------????', loading);

@@ -33,7 +33,7 @@ const ImageCarousel = ({ images }) => {
   };
 
   return (
-    <div className="relative w-full h-full group">
+    <div className="relative w-full h-full group ">
       <div className="w-full h-full rounded-2xl overflow-hidden">
         <img
           src={images[currentIndex]}

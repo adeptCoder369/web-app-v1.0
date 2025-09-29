@@ -5,16 +5,16 @@ import { getCookie } from "cookies-next";
 
 export async function getUserDashboardData(profileId, sessionId, guid, cookyId, ctx) {
   const API_BASE_URL_ = API_BASE_URL;
-  // console.log('getUserDashboardData PAYLOAD ---:',profileId, sessionId, guid, cookyId,);
 
-  // let resolvedGuid = guid ?? getCookie("guid", ctx);
-  // let resolvedUserId = id ?? getCookie("id", ctx);
+  let resolvedGuid = guid ?? getCookie("guid", ctx);
+  let resolvedUserId = getCookie("id", ctx);
+  console.log('resolvedGuid ---:', resolvedGuid,);
 
   try {
     const response = await axios.post(`${API_BASE_URL_}/api`, {
       api: "client.getDashboard",
-      guid: guid,
-      logged_in_user_account_id: cookyId,
+      guid: resolvedGuid,
+      logged_in_user_account_id: resolvedUserId,
       user_account_id: profileId,
       client_id: sessionId,
       platform: "web",
