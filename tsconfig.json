@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "app/new-page/page.js", "components/studentManagement/listStudent.jsx", "components/FeeSummary/FeeSection.tsx"  ],
+, "app/new-page/page.js", "components/studentManagement/listStudent.jsx", "components/FeeSummary/FeeSection.tsx", "components/profile/ProfileSelection.js"  ],
   "exclude": [
     "node_modules"
   ]

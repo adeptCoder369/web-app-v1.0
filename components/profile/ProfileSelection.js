@@ -11,6 +11,7 @@ import { useProfile } from "../../controllers/profile";
 import { useRouter } from "next/navigation";
 import Loader from "../ui/status/Loader";
 import { setSessionCache } from "../../utils/sessionCache";
+import { getUserDashboardData } from "../../api/dashboard";
 
 
 // ===============================================================
@@ -88,9 +89,9 @@ export default function ProfileSelection() {
     setSelectedSession(null); // Reset session when school changes
   };
 
-  const handleSessionSelect = (session, profile, school) => {
+  const handleSessionSelect = async (session, profile, school) => {
     setSelectedSession(session);
-    
+
     console.log('----------- aaya ---------', session);
 
 
@@ -103,11 +104,14 @@ export default function ProfileSelection() {
     },
       // { encrypt: true }
     );
+    const data = await getUserDashboardData(profile?.id, session?.clientId);
+    console.log('data,data', data);
 
+    if (data) {
+      setSessionCache("dashboardConfig", data?.results);
 
-    // router.push(`/dashboard/${profile?.id}/${session?.clientId}/${school?.id}`);
-    router.push(`/dashboard`);
-
+      router.push(`/dashboard`);
+    }
 
   };
 
