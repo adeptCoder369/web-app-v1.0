@@ -46,6 +46,7 @@ import { getUserDashboardData } from '../../api/dashboard';
 import Layout from '../../layouts/Layout';
 import Image from "next/image";
 import Loader from '../../components/ui/status/Loader';
+import FeeCollectionChart from './FeeCollectionChart';
 
 
 
@@ -71,56 +72,7 @@ const DashboardMenus = ({
   // console.log("✅dashboardData", dashboardData);
   const [loading, setLoading] = useState(false)
   const [selectedSession, setSelectedSession] = useState('')
-  const [error, setError] = useState(null)
   const [dashboardData, setDashboardData] = useState([])
-  // const config = getSessionCache("dashboardConfig");
-
-  // console.log('-------- selectedSession---------', selectedSession);
-  // const mounted = useRef(true);
-
-  // async function load() {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     // session/context from client cache
-  //     // const context = getSessionCache('dashboardContext') || {};
-
-  //     // call API (adjust args/order if getStudentList signature differs)
-  //     const data = await getUserDashboardData(Context?.profileId, selectedSession?.clientId || Context?.session, cookyGuid, cookyId);
-
-  //     console.log('-------- data---------', data?.success);
-
-  //     setSessionCache("dashboardConfig", data.results);
-  //     if (mounted.current && data?.results) {
-  //       setSessionCache("dashboardConfig", data.results);
-  //     }
-  //     // if (mounted && data) {
-  //     //   setDashboardData(data?.results)
-
-  //     // }
-  //   } catch (err) {
-  //     if (mounted.current) setError(err);
-  //     console.error('Failed to load student list', err);
-  //   } finally {
-  //     if (mounted.current) setLoading(false);
-  //   }
-  // }
-  // useEffect(() => {
-  //   mounted.current = true;
-  //   load();
-  //   return () => {
-  //     mounted.current = false;
-  //   };
-  // }, [
-  //   Context?.profileId,
-  //   Context?.session,
-  //   cookyGuid,
-  //   cookyId,
-  //   // selectedSession?.clientId
-  // ]);
-
-  // console.log('loading -----------????', loading);
-
 
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -205,162 +157,6 @@ const DashboardMenus = ({
 
 
 
-  // Navigation menu structure based on your PHP code
-  const menuItems = [
-    {
-      name: "DASHBOARD",
-      icon: <LayoutDashboard className="w-5 h-5" />,
-      url: "/dashboard",
-      active: true
-    },
-    {
-      name: "ERP MANAGEMENT",
-      icon: <Settings className="w-5 h-5" />,
-      subMenu: [
-        { name: "Setup", url: "/client/setup", quickLink: true },
-        { name: "Images", url: "/client/images" },
-        { name: "Permissions", url: "/client/permissions", quickLink: true },
-        { name: "Staff Usage Report", url: "/staff-report" }
-      ]
-    },
-    {
-      name: "STANDARD MANAGEMENT",
-      icon: <GraduationCap className="w-5 h-5" />,
-      subMenu: [
-        { name: "All Standards", url: "/standards" },
-        { name: "All Classes", url: "/classes" },
-        { name: "Class Details", url: "/class-details" },
-        { name: "Bulk Promotion", url: "/bulk-promotion" }
-      ]
-    },
-    {
-      name: "STUDENT MANAGEMENT",
-      icon: <Users className="w-5 h-5" />,
-      subMenu: [
-        { name: "All Students", url: "/students" },
-        { name: "Add Student", url: "/add-student", quickLink: true },
-        { name: "Houses", url: "/houses" },
-        { name: "Download Student Data", url: "/student-downloads", quickLink: true },
-        { name: "Parents", url: "/student-parents" },
-        { name: "Birthdays", url: "/birthdays" }
-      ]
-    },
-    {
-      name: "STAFF MANAGEMENT",
-      icon: <UserCheck className="w-5 h-5" />,
-      subMenu: [
-        { name: "All Staff", url: "/users" },
-        { name: "Add Staff", url: "/add-staff", quickLink: true },
-        { name: "Departments", url: "/departments", quickLink: true },
-        { name: "School Roles", url: "/school-roles", quickLink: true },
-        { name: "Subject Class Mapping", url: "/subject-mapping", quickLink: true }
-      ]
-    },
-    {
-      name: "REPORT CARD",
-      icon: <FileText className="w-5 h-5" />,
-      subMenu: [
-        { name: "Subjects", url: "/subjects", quickLink: true },
-        { name: "Grades", url: "/grades", quickLink: true },
-        { name: "Exams", url: "/exams", quickLink: true },
-        { name: "Enter Marks", url: "/enter-marks", quickLink: true },
-        { name: "Report Card Formats", url: "/report-formats", quickLink: true }
-      ]
-    },
-    {
-      name: "ONLINE EXAM",
-      icon: <Calculator className="w-5 h-5" />,
-      subMenu: [
-        { name: "View Quizzes", url: "/quizzes", quickLink: true }
-      ]
-    },
-    {
-      name: "MOBITENDANCE",
-      icon: <CheckCircle className="w-5 h-5" />,
-      subMenu: [
-        { name: "Take Attendance", url: "/take-attendance", quickLink: true },
-        { name: "Daily Report", url: "/attendance-report", quickLink: true },
-        { name: "Download Report", url: "/download-attendance" },
-        { name: "Monthly Average", url: "/monthly-attendance" }
-      ]
-    },
-    {
-      name: "SMS CIRCULAR",
-      icon: <MessageSquare className="w-5 h-5" />,
-      subMenu: [
-        { name: "View Notices", url: "/notices", quickLink: true },
-        { name: "Send SMS Circular", url: "/send-notice", quickLink: true },
-        { name: "Notice Types", url: "/notice-types" }
-      ]
-    },
-    {
-      name: "HOMEWORK MESSAGE",
-      icon: <BookOpen className="w-5 h-5" />,
-      subMenu: [
-        { name: "View Homework", url: "/homework", quickLink: true },
-        { name: "Send Homework", url: "/send-homework", quickLink: true }
-      ]
-    },
-    {
-      name: "ONLINE FEE",
-      icon: <CreditCard className="w-5 h-5" />,
-      subMenu: [
-        { name: "View Fees", url: "/fees", quickLink: true },
-        { name: "Mark Student Fees", url: "/mark-fees", quickLink: true },
-        { name: "Fee Summary", url: "/fee-summary", quickLink: true },
-        { name: "Fee Defaulters", url: "/fee-defaulters" },
-        { name: "Transport Locations", url: "/locations" }
-      ]
-    },
-    {
-      name: "TRANSPORT MANAGEMENT",
-      icon: <Bus className="w-5 h-5" />,
-      subMenu: [
-        { name: "School Buses", url: "/school-buses" },
-        { name: "Transport Locations", url: "/locations" },
-        { name: "School Bus Attendance", url: "/bus-attendance" }
-      ]
-    },
-    {
-      name: "ID CARD",
-      icon: <IdCardIcon className="w-5 h-5" />,
-      subMenu: [
-        { name: "Download ID Card", url: "/id-card" },
-        { name: "Upload ID Card", url: "/upload-id-card" },
-        { name: "Staff ID Card", url: "/staff-id-cards" }
-      ]
-    },
-    {
-      name: "LIBRARY MANAGEMENT",
-      icon: <Library className="w-5 h-5" />,
-      subMenu: [
-        { name: "View Libraries", url: "/libraries" },
-        { name: "View Books", url: "/books" },
-        { name: "Book Issues", url: "/book-issues" }
-      ]
-    },
-    {
-      name: "GALLERY",
-      icon: <Album className="w-5 h-5" />,
-      subMenu: [
-        { name: "Album", url: "/album", quickLink: true },
-        { name: "Photo", url: "/photo", quickLink: true }
-      ]
-    }
-  ];
-
-  const dashboardStats = [
-    {
-      title: "Total Students",
-      value: "1,247",
-      change: "+12%",
-      icon: <Users className="w-6 h-6" />,
-      color: "blue"
-    },
-    { title: "Total Staff", value: "89", change: "+5%", icon: <UserCheck className="w-6 h-6" />, color: "green" },
-    { title: "Attendance Rate", value: "96.8%", change: "+2.1%", icon: <CheckCircle className="w-6 h-6" />, color: "purple" },
-    { title: "Fee Collection", value: "₹2,45,000", change: "+18%", icon: <DollarSign className="w-6 h-6" />, color: "orange" }
-  ];
 
   const quickActions = [
     {
@@ -735,23 +531,14 @@ const DashboardMenus = ({
 
                 </div>
 
-                {/* Chart/Analytics Section */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mt-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-semibold text-gray-900">Attendance Overview</h2>
-                    <div className="flex space-x-2">
-                      <button className="px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded-md">Week</button>
-                      <button className="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-md">Month</button>
-                    </div>
-                  </div>
-                  <div className="h-64 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <BarChart3 className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Weekly Charts </p>
-                      <p className="text-sm text-gray-500 mt-2">Weekly attendance trends and analytics</p>
-                    </div>
-                  </div>
-                </div>
+                {/* -================= Chart/Analytics -========================= */}
+
+
+
+                <FeeCollectionChart />
+
+
+
               </div>
 
               {/* Sidebar Content */}

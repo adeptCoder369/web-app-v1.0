@@ -101,3 +101,32 @@ export const getFeeCollection = async ({
 
   });
 };
+
+
+
+
+
+//========================================================================================================
+
+export const getFeeCollectionSummary = async ({
+  profileId,
+  sessionId,
+  guid,
+  id,
+  payloa
+
+}) => {
+
+  console.log('getFeeCollectionSummary()-----------',  );
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+    "api": "client.getFeeCollectionSummary",
+    "guid": "1758272216.8501skt68cd1ad8cf8976.28502279",
+    "logged_in_user_account_id": "885283",
+    "user_account_id": "558664",
+    "client_id": "2200",
+    "id": "2200",
+    "platform": "WEB"
+  });
+};
