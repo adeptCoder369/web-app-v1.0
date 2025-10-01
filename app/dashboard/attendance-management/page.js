@@ -1,5 +1,5 @@
 import { getClassesList } from '../../../api/classes';
-import AttendanceComponent from '../../../components/attendance/AttendanceComponent';
+import AttendanceDashboard from '../../../components/attendance/Dashboard';
 import { cookies } from 'next/headers';
 // ==================================================================================================
 export default async function AttendancePage({ params }) {
@@ -14,7 +14,7 @@ export default async function AttendancePage({ params }) {
 
   // ==================================================================================================
   return (
-    <AttendanceComponent
+    <AttendanceDashboard
       profile={resolvedParams.profile}
       session={resolvedParams.session}
       cookyGuid={cookyGuid}

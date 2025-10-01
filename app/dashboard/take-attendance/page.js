@@ -1,5 +1,5 @@
 import { getClassesList } from '../../../api/classes';
-import AttendanceComponent from '../../../components/attendance/AttendanceComponent';
+import AttendanceComponent from '../../../components/attendance/Report';
 import { cookies } from 'next/headers';
 // ==================================================================================================
 export default async function AttendancePage({ params }) {

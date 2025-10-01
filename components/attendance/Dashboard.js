@@ -1,15 +1,24 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { CalendarDays, Users, CheckCircle, XCircle, MinusCircle, Send, TrendingUp, Clock, UserCheck, AlertCircle } from 'lucide-react';
+import { CalendarDays, Users, CheckCircle, XCircle, MinusCircle, Send, TrendingUp, Clock, UserCheck, AlertCircle, School, ChevronDown, Plus, ReceiptTextIcon } from 'lucide-react';
 import Layout from '../../layouts/Layout';
 import { useAttendance } from '../../controllers/attendance';
 import { markAttendance } from '../../api/attendance';
 import Loader from '../ui/status/Loader';
 import { useAuthContext } from '../../context/auth';
 import { getSessionCache } from '../../utils/sessionCache';
+import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
+import { FaDownload, FaFileExcel } from 'react-icons/fa';
+
+
+const breadcrumbs = [
+  { label: "Home", href: "/" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Manage Attendance" },
+];
 // ==================================================================================================
 
-export default function AttendanceComponent({
+export default function AttendanceDashboard({
   profile,
   session,
   cookyGuid,
@@ -232,26 +241,59 @@ export default function AttendanceComponent({
 
   return (
     <Layout>
+
+
       <div
+
         style={{
           backgroundImage: "url('/bg/appbackground@2x.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
-        className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-        <div className="container mx-auto px-4 py-8">
+        className="min-h-[calc(100vh-100px)] p-6 space-y-6"
+      >
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div className="min-h-screen bg-gray-50 p-6 shadow-md rounded">
           {/* Header Section */}
-          <div className="text-center mb-8">
-            {/* <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#15487d] to-[#007aff] rounded-full mb-4 shadow-lg">
-            <UserCheck className="h-10 w-10 text-white" />
-          </div> */}
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-[#15487d] to-[#007aff] bg-clip-text text-transparent">
-              Daily Attendance
-            </h1>
-            <p className="text-lg text-gray-600 font-medium">
-              Mark attendance and notify parents instantly
-            </p>
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+                    <ReceiptTextIcon className="w-8 h-8 text-blue-600" />
+                    Daily Attendance Management
+                  </h1>
+                  <p className="text-gray-600">              Mark attendance and notify parents instantly</p>
+
+                </div>
+                {/* <div className="flex gap-3">
+
+
+
+                  <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    <Upload className="w-4 h-4" />
+                    Import Data
+                  </button>
+                  <button
+                    onClick={() => {
+                      setModalType('standard');
+                      setShowAddModal(true);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Standard
+                  </button>
+                </div> */}
+              </div>
+            </div>
+
+
+
+
+
           </div>
 
           <div className="max-w-6xl mx-auto">
@@ -475,6 +517,9 @@ export default function AttendanceComponent({
           </div>
         </div>
       </div>
+
+
+
     </Layout>
   );
 };

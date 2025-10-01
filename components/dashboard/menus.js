@@ -406,7 +406,16 @@ const DashboardMenus = ({
       ),
       color: "bg-yellow-100",
       url: "/dashboard/attendance-management",
-      features: ["Mark Attendance", "Attendance Reports"]
+      features: [
+        {
+          name: "Mark Attendance",
+          url: "/dashboard/attendance-management",
+        },
+{
+          name: "Attendance Reports",
+          url: "/dashboard/attendance-report",
+        },
+        ]
     },
     {
       title: "Manage Staff",
@@ -617,7 +626,7 @@ const DashboardMenus = ({
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                     {quickActions.map((action, index) => (
                       <button
-                        onClick={() => router.push(action.url)}
+                        // onClick={() => router.push(action.url)}
                         key={index}
                         className="cursor-pointer flex flex-col items-center p-6 rounded-2xl border border-yellow-100 bg-white hover:shadow-md hover:border-blue-200 transition-all duration-300 group"
                       >
@@ -633,23 +642,25 @@ const DashboardMenus = ({
                           {action.title}
                         </span>
 
-                     {/* Features List */}
-{action.features && (
-  <div className="mt-4 flex flex-wrap gap-2 justify-center">
-    {action.features.map((feature, fIdx) => (
-      <span
-        key={fIdx}
-        className="px-3 py-1.5 rounded-full text-xs font-medium
+                        {/* Features List */}
+                        {action.features && (
+                          <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                            {action.features.map((feature, fIdx) => (
+                              <span
+                                onClick={() => router.push(feature.url)}
+
+                                key={fIdx}
+                                className="px-3 py-1.5 rounded-full text-xs font-medium
                    bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100
                    text-blue-700 shadow-sm
                    hover:from-blue-200 hover:via-indigo-200 hover:to-purple-200
                    hover:shadow-md transition-all duration-300 cursor-pointer"
-      >
-        {feature}
-      </span>
-    ))}
-  </div>
-)}
+                              >
+                                {feature?.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
 
                       </button>
                     ))}

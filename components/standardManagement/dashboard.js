@@ -40,6 +40,7 @@ const breadcrumbs = [
 
 
 const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,setReloadKey}) => {
+    const [showModal, setShowModal] = useState(false);
 
     console.log('**********dashboardConfig************', dashboardConfig);
 
@@ -58,7 +59,6 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,
     // const [reloadKey, setReloadKey] = useState(0);
 
     const [loading, setLoading] = useState(false);
-    const [showModal, setShowModal] = useState(false);
     const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
     const [selectedStandard, setSelectedStandard] = useState('all');
     const [selectedStandardId, setSelectedStandardId] = useState('all');
@@ -1054,7 +1054,14 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,
 
 
 
-
+ {
+                    showModal ? (
+                        <StudentsModal
+                            selectedData={selectedClass}
+                            onClose={() => setShowModal(false)}
+                        />
+                    ) : null
+                }
 
         </>
     );
