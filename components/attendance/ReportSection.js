@@ -1,14 +1,18 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
+import Loader from '../ui/status/Loader';
 
-const AttendanceReportSection = ({ reports }) => {
+const AttendanceReportSection = ({ reports, isSuccess, selectedDate, setSelectedDate }) => {
+
+  // console.log('reports== -----------', reports[0]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStandard, setSelectedStandard] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  // const [selectedDate, setSelectedDate] = useState('');
   const reportsPerPage = 6; // Adjust this number as needed
 
-  console.log(reports, 'attendanceReportData=-=');
+  // console.log(reports, 'attendanceReportData=-=');
 
   // Extract unique standards/classes from reports
   const standards = useMemo(() => {
@@ -20,20 +24,25 @@ const AttendanceReportSection = ({ reports }) => {
   // Filter reports based on selected criteria
   const filteredReports = useMemo(() => {
     if (!reports) return [];
-    
+
     return reports.filter(report => {
-      const matchesStandard = !selectedStandard || report?.class?.name === selectedStandard;
-      const matchesDate = !selectedDate || report?.date === selectedDate;
-      return matchesStandard && matchesDate;
+      // Filter only by selected standard
+      return !selectedStandard || report?.class?.name === selectedStandard;
     });
-  }, [reports, selectedStandard, selectedDate]);
+  }, [reports, selectedStandard]);
 
   // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1);
   }, [selectedStandard, selectedDate]);
 
-  if (!reports || reports.length === 0) {
+  if (!isSuccess) {
+    return (
+      <Loader />
+    )
+
+  }
+  if (reports?.length === 0) {
     return <p className="text-center text-gray-500">No attendance reports</p>;
   }
 
@@ -116,7 +125,7 @@ const AttendanceReportSection = ({ reports }) => {
         {/* Active Filters Info */}
         {(selectedStandard || selectedDate) && (
           <div className="mt-4 text-sm text-gray-600">
-            Active filters: 
+            Active filters:
             {selectedStandard && <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded">Class: {selectedStandard}</span>}
             {selectedDate && <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded">Date: {selectedDate}</span>}
           </div>
@@ -204,11 +213,10 @@ const AttendanceReportSection = ({ reports }) => {
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`w-10 h-10 rounded-lg transition ${
-                  currentPage === page
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
+                className={`w-10 h-10 rounded-lg transition ${currentPage === page
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
               >
                 {page}
               </button>
