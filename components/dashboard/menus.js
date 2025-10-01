@@ -376,7 +376,21 @@ const DashboardMenus = ({
       ),
       color: "bg-yellow-100",
       url: "/dashboard/standard-management",
-      features: ["Add Staff", "View Departments"]
+      features: [
+        {
+          name: "Add Staff",
+          url: "/dashboard/standard-management",
+        },
+        {
+          name: "View Departments",
+          url: "/dashboard/standard-management",
+        },
+      ]
+
+
+
+
+      // features: ["Add Staff", "View Departments"]
     },
     {
       title: "Manage Students",
@@ -391,7 +405,22 @@ const DashboardMenus = ({
       ),
       color: "bg-yellow-100",
       url: "/dashboard/student-management",
-      features: ["Add Student", "View All Students"]
+      features: [
+        {
+          name: "Add Student",
+          url: "/dashboard/student-management",
+        },
+        {
+          name: "View All Students",
+          url: "/dashboard/student-management",
+        },
+      ]
+
+
+
+
+
+
     },
     {
       title: "Manage Attendance",
@@ -411,11 +440,11 @@ const DashboardMenus = ({
           name: "Mark Attendance",
           url: "/dashboard/attendance-management",
         },
-{
+        {
           name: "Attendance Reports",
           url: "/dashboard/attendance-report",
         },
-        ]
+      ]
     },
     {
       title: "Manage Staff",
@@ -430,7 +459,21 @@ const DashboardMenus = ({
       ),
       color: "bg-yellow-100",
       url: "/dashboard/staff-management",
-      features: ["Add Staff", "View All Staff"]
+
+      features: [
+        {
+          name: "Add Staff",
+          url: "/dashboard/staff-management",
+        },
+        {
+          name: "View All Staff",
+          url: "/dashboard/staff-management",
+        },
+      ]
+
+
+
+
     },
     {
       title: "Report Cards",
@@ -445,7 +488,19 @@ const DashboardMenus = ({
       ),
       color: "bg-yellow-100",
       url: "/dashboard/report-cards",
-      features: ["Design Reports", "View Reports"]
+      features: [
+        {
+          name: "Design Reports",
+          url: "/dashboard/report-cards",
+        },
+        {
+          name: "View Reports",
+          url: "/dashboard/report-cards",
+        },
+      ]
+
+
+
     },
     {
       title: "Fee Management",
@@ -460,7 +515,18 @@ const DashboardMenus = ({
       ),
       color: "bg-yellow-100",
       url: "/dashboard/fee-summary",
-      features: ["Collect Fee", "View Summary"]
+
+      features: [
+        {
+          name: "View Fees",
+          url: "/dashboard/view-fee",
+        },
+        {
+          name: "View Summary",
+          url: "/dashboard/fee-summary",
+        },
+      ]
+
     }
   ];
 

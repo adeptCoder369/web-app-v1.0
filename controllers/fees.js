@@ -120,7 +120,7 @@ export const useFees = () => {
 
   return {
     getFees,
-    feesData: getFeesMutation?.data?.data?.results,
+    feesData: getFeesMutation?.data?.data?.results?.fees,
     isLoading: getFeesMutation.isLoading,
     isError: getFeesMutation.isError,
     error: getFeesMutation.error,
