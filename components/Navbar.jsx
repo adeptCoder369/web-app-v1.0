@@ -6,6 +6,8 @@ import { Calendar, ChevronDown, User, LogOut, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { getSessionCache } from '../utils/sessionCache';
+import NotificationPanel from '../components/NotificationPanel';
+import { getNotifications } from '../api/notifications';
 
 const UserProfile = ({ profile, router, loading }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -141,11 +143,43 @@ const Navbar = ({
     // router.push('/profile-selection')
   };
 
-  const notifications = [
-    { id: 1, text: 'Assignment due tomorrow', time: '2 hours ago' },
-    { id: 2, text: 'New announcement posted', time: '5 hours ago' },
-    { id: 3, text: 'Fee payment reminder', time: '1 day ago' },
-  ];
+
+
+  // ✅ Notifications state
+  const [notifications, setNotifications] = useState([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [error, setError] = useState(null);
+
+  // ✅ Fetch notifications on mount
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setLoadingNotifications(true);
+      setError(null);
+      try {
+        const data = await getNotifications(context?.profileId, context?.session);
+        // console.log('nooti ---', data?.results?.notifications?.length);
+
+        if (isMounted) {
+          setNotifications(data?.results?.notifications || []); // adapt based on your API response
+        }
+      } catch (err) {
+        if (isMounted) setError("Failed to load notifications");
+        console.error("Error fetching notifications:", err);
+      } finally {
+        if (isMounted) setLoadingNotifications(false);
+      }
+    };
+    let isMounted = true;
+
+
+    fetchNotifications();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [context?.profileId, context?.session]);
+
+
 
   return (
     <>
@@ -201,23 +235,13 @@ const Navbar = ({
 
               {showNotifications && (
                 <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100">
-                      <h3 className="font-semibold text-gray-900">Notifications</h3>
-                    </div>
-                    <div className="max-h-80 overflow-y-auto">
-                      {notifications.map((notif) => (
-                        <div key={notif.id} className="p-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors">
-                          <p className="text-sm text-gray-900">{notif.text}</p>
-                          <p className="text-xs text-gray-500 mt-1">{notif.time}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="p-3 bg-gray-50">
-                      <button className="cursor-pointer text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</button>
-                    </div>
-                  </div>
+
+
+                  <NotificationPanel
+                    onClose={() => setShowNotifications(false)}
+                    notifications={notifications}
+                    isOpen={showNotifications}
+                  />
                 </>
               )}
             </div>
