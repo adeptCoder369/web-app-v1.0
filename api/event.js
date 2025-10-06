@@ -6,36 +6,7 @@ import { getCookie } from 'cookies-next';
 
 //========================================================================================================
 
-
-
-export const getStudentFee = async ({
-  studentId,
-  profileId,
-  sessionId,
-  guid,
-  id, }) => {
-  // console.log('======== studetnFeesData ==========',
-  //   studentId,
-  //   profileId,
-  //   sessionId,
-  //   guid,
-  //   id,);
-
-  return axios.post(`${API_BASE_URL}/api`, {
-    api: 'student.getFees',
-    id: studentId,
-    guid: guid,
-    logged_in_user_account_id: id,
-    user_account_id: profileId,
-    client_id: sessionId,
-    platform: 'android',
-    version_code: '1.1.3.19'
-  });
-};
-
-//========================================================================================================
-
-export const getFee = async ({
+export const getEvents = async ({
   profileId,
   sessionId,
   guid,

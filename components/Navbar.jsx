@@ -36,13 +36,9 @@ const UserProfile = ({ profile, router, loading }) => {
     sessionStorage.removeItem('dashboardContext');
     sessionStorage.removeItem('dashboardConfig');
 
-    // Optionally clear all localStorage (uncomment if needed)
-    // localStorage.clear();
 
-    // Redirect to login page
     window.location.href = '/login';
   };
-  // console.log('loading', profile?.name);
 
   if (loading) {
     return (
@@ -69,17 +65,7 @@ const UserProfile = ({ profile, router, loading }) => {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
           <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
-            {/* <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
-                  {profile?.name?.charAt(0) || 'U'}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">{profile?.name || 'n/a'}</p>
-                  <p className="text-sm text-gray-500">{profile?.type  || 'n/a'}</p>
-                </div>
-              </div>
-            </div> */}
+
             <div className="py-2">
               <button
                 className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors"
@@ -205,16 +191,16 @@ const Navbar = ({
           </div>
 
           {/* Center Section - Search (hidden on mobile) */}
-          {/* <div className="hidden lg:flex flex-1 max-w-xl mx-8">
-            <div className="relative w-full">
+          <div className="hidden lg:flex flex-1 max-w-xl mx-8">
+            {/* <div className="relative w-full">
               <TbSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-200" />
               <input
                 type="text"
                 placeholder="Search students, classes, or announcements..."
                 className="w-full pl-12 pr-4 py-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:bg-white/20 transition-all duration-300"
               />
-            </div>
-          </div> */}
+            </div> */}
+          </div>
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
@@ -301,17 +287,7 @@ const Navbar = ({
         </div>
       </header>
 
-      {/* Mobile Search Overlay */}
-      {/* <div className="lg:hidden px-4 pb-4 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 border-b border-white/10">
-        <div className="relative">
-          <TbSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-200" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full pl-12 pr-4 py-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400/50 transition-all duration-300"
-          />
-        </div>
-      </div> */}
+
 
       <style jsx>{`
         @keyframes swing {

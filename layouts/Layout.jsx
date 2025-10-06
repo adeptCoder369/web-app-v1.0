@@ -14,7 +14,7 @@ import Loader from '../components/ui/status/Loader';
 export default function Layout({ children, dashboardData, stateChanged }) {
 
   const initialConfig = getSessionCache("dashboardConfig");
-  // console.log('---- stateChanged', initialConfig);
+  console.log('---- stateChanged', initialConfig);
   const initialContext = getSessionCache("dashboardContext");
 
   const [dashboardConfig, setDashboardConfig] = useState(initialConfig);
