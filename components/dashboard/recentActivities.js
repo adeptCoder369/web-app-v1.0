@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { getEvents } from '../../api/event';
 import { getSessionCache } from '../../utils/sessionCache';
 import ChartLoadingSkeleton from '../ui/status/ChartLoadingSkeleton';
-import { useRouter } from 'next/navigation';
 
 // =============================
 // Utility: Format date
@@ -23,9 +22,7 @@ const formatDate = (dateStr) => {
 // =============================
 // Component
 // =============================
-const UpcomingEvent = ({ context }) => {
-  const router = useRouter();
-
+const RecentActivites = ({ context }) => {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -84,20 +81,20 @@ const UpcomingEvent = ({ context }) => {
   const displayEvents =
     !isLoading && events.length > 0
       ? events.map((event) => ({
-        id: event.id,
-        title: event.title || 'Untitled Event',
-        description:
-          event.description || 'An engaging event with school participation.',
-        event_type: event.event_type || {
-          name: 'General',
-          color: '#6366F1',
-        },
-        start_date: event.start_date,
-        end_date: event.end_date,
-        display_time:
-          event.display_time?.trim() || '10:00 AM - 12:00 PM',
-        venue: event.venue || 'Main Campus Grounds',
-      }))
+          id: event.id,
+          title: event.title || 'Untitled Event',
+          description:
+            event.description || 'An engaging event with school participation.',
+          event_type: event.event_type || {
+            name: 'General',
+            color: '#6366F1',
+          },
+          start_date: event.start_date,
+          end_date: event.end_date,
+          display_time:
+            event.display_time?.trim() || '10:00 AM - 12:00 PM',
+          venue: event.venue || 'Main Campus Grounds',
+        }))
       : dummyEvents;
 
   // =============================
@@ -156,10 +153,11 @@ const UpcomingEvent = ({ context }) => {
               {/* Right Section */}
               <div className="text-right mt-3 sm:mt-0 sm:ml-4">
                 <p className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
-                  {`${formatDate(event.start_date)}${event.end_date && event.start_date !== event.end_date
-                    ? ` - ${formatDate(event.end_date)}`
-                    : ''
-                    }`}
+                  {`${formatDate(event.start_date)}${
+                    event.end_date && event.start_date !== event.end_date
+                      ? ` - ${formatDate(event.end_date)}`
+                      : ''
+                  }`}
                 </p>
                 {event.display_time && (
                   <p className="text-[11px] text-gray-500 mt-1 flex items-center justify-end gap-1">
@@ -172,14 +170,11 @@ const UpcomingEvent = ({ context }) => {
         </div>
       )}
 
-      <button
-        onClick={() => router.push(`/dashboard/calendar`
-        )}
-        className="w-full mt-5 text-sm text-blue-600 hover:text-blue-800 font-medium">
+      <button className="w-full mt-5 text-sm text-blue-600 hover:text-blue-800 font-medium">
         View Calendar →
       </button>
     </div>
   );
 };
 
-export default UpcomingEvent;
+export default RecentActivites;

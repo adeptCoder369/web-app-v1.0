@@ -48,6 +48,7 @@ import Image from "next/image";
 import Loader from '../../components/ui/status/Loader';
 import FeeCollectionChart from './FeeCollectionChart';
 import UpcomingEvent from './events';
+import TodaySummary from './todaySummary';
 
 
 
@@ -161,7 +162,7 @@ const DashboardMenus = ({
 
   const quickActions = [
     {
-      title: "Manage Standards",
+      title: "Standards Management",
       icon: (
         <Image
           src="/icons/standard_managment.png"
@@ -175,11 +176,11 @@ const DashboardMenus = ({
       url: "/dashboard/standard-management",
       features: [
         {
-          name: "Add Staff",
+          name: "All  Standard",
           url: "/dashboard/standard-management",
         },
         {
-          name: "View Departments",
+          name: "All  Classes",
           url: "/dashboard/standard-management",
         },
       ]
@@ -190,7 +191,7 @@ const DashboardMenus = ({
       // features: ["Add Staff", "View Departments"]
     },
     {
-      title: "Manage Students",
+      title: "Student Management",
       icon: (
         <Image
           src="/icons/student_managment.png"
@@ -204,11 +205,11 @@ const DashboardMenus = ({
       url: "/dashboard/student-management",
       features: [
         {
-          name: "Add Student",
+          name: "All Student",
           url: "/dashboard/student-management",
         },
         {
-          name: "View All Students",
+          name: "Add Students",
           url: "/dashboard/student-management",
         },
       ]
@@ -220,7 +221,7 @@ const DashboardMenus = ({
 
     },
     {
-      title: "Manage Attendance",
+      title: "Attendance Management",
       icon: (
         <Image
           src="/icons/mobiTENDANCE.png"
@@ -244,7 +245,7 @@ const DashboardMenus = ({
       ]
     },
     {
-      title: "Manage Staff",
+      title: "Staff Management",
       icon: (
         <Image
           src="/icons/staff_management.png"
@@ -540,76 +541,16 @@ const DashboardMenus = ({
 
 
 
-                <UpcomingEvent />
+                <UpcomingEvent
+                  context={Context}
+                />
 
 
 
 
 
 
-
-                {/* Recent Activities */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-semibold text-gray-900">Recent Activities</h2>
-                    <Clock className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <div className="space-y-4 max-h-80 overflow-y-auto">
-                    {recentActivities.map((activity, index) => (
-                      <div key={index} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                        <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-                          {activity.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                          <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
-                    View all activities →
-                  </button>
-                </div>
-
-                {/* Today's Summary */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Today's Summary</h2>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                        <span className="text-sm font-medium text-gray-700">Present Students</span>
-                      </div>
-                      <span className="font-bold text-green-600">1,198</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <AlertCircle className="w-5 h-5 text-red-600" />
-                        <span className="text-sm font-medium text-gray-700">Absent Students</span>
-                      </div>
-                      <span className="font-bold text-red-600">49</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <UserCheck className="w-5 h-5 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-700">Staff Present</span>
-                      </div>
-                      <span className="font-bold text-blue-600">84</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <DollarSign className="w-5 h-5 text-purple-600" />
-                        <span className="text-sm font-medium text-gray-700">Fee Collected</span>
-                      </div>
-                      <span className="font-bold text-purple-600">₹12,500</span>
-                    </div>
-                  </div>
-                </div>
-
-
-
-
+                <TodaySummary />
 
 
               </div>

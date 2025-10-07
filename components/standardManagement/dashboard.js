@@ -31,11 +31,11 @@ import { addClass, editClass } from '../../api/classes';
 import TooltipInfo from '../ui/tooltip/TooltipInfo';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 
-const breadcrumbs = [
-    { label: "Home", href: "/" },
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "Manage Standards & Classes" },
-];
+    const breadcrumbs = [
+        { label: "Home", href: "/" },
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Manage Standards & Classes" },
+    ];
 // ==================================================================
 
 

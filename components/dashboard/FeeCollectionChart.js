@@ -27,7 +27,7 @@ const FeeCollectionChart = () => {
   // ==================================================================================================
 
 
-  console.log("data ========>", feeCollectionSummary);
+  // console.log("data ========>", feeCollectionSummary);
 
   // ==================================================================================================
   const context = getSessionCache("dashboardContext");
