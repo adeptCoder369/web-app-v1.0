@@ -1,23 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import {
-  User, Mail, Phone, MapPin, Calendar, Book, Users, Heart, BadgePlus,
-  Award, Shield, Bus, Globe, List, Save, X, Plus, Trash2,
-  GraduationCap,
-  School,
-  ScrollText,
-  FileMinus,
-  FileInput,
-  Church,
-  Languages,
-  Flag,
-  HeartPulse,
-  MapPinHouse,
-  Transgender,
-  FileUser,
-  // UserStar
-} from 'lucide-react';
-import Layout from '../../layouts/Layout';
+import { User, BadgePlus, List, Save, } from 'lucide-react';
 import { StaffList } from './listStaff';
 import StaffProfile from './staffProfile';
 import AddStaff from './addStaffForm';
@@ -25,9 +8,9 @@ import { getSessionCache } from '../../utils/sessionCache';
 import { useStaff } from '../../controllers/staff';
 
 import Loader from '../../components/ui/status/Loader';
-import { RiUserStarFill } from 'react-icons/ri';
 import { addStaff } from '../../api/staff';
 
+// ===================================================================
 
 
 
@@ -57,12 +40,12 @@ const StaffMangementDashboard = ({
 
 
   const [activeTab, setActiveTab] = useState('list');
-  const [selectedStaff, setSelectedStaff] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [currentFormStep, setCurrentFormStep] = useState('basic');
 
 
+  const [selectedTitle, setSelectedTitle] = useState('');
 
 
 
@@ -76,26 +59,6 @@ const StaffMangementDashboard = ({
   const categoriesOptions = config?.caste_categories || [];
 
 
-
-
-
-  // console.log(Context,'Context');
-
-  const { getStaff, stadffData, isLoading } = useStaff()
-
-  useEffect(() => {
-    if (!stadffData?.length > 0) {
-
-      getStaff(
-        Context?.profileId || profile,
-        Context?.session,
-        cookyGuid,
-        cookyId,
-
-
-      )
-    }
-  }, [])
 
 
 
@@ -241,7 +204,7 @@ const StaffMangementDashboard = ({
     }
   };
 
-  /* ----------------------- Add Staff Section ----------------------- */
+  // ===================================================================
 
 
 
@@ -252,7 +215,8 @@ const StaffMangementDashboard = ({
 
     >
       <div className=" mx-auto px-4 py-4 shadow-lg">
-        {/* Navigation Tabs */}
+        {/* =====================     Navigation Tabs =================================================================== */}
+
         <div className="bg-white rounded-xl shadow-md mb-4">
           <div className="flex space-x-1 p-1">
             {tabs?.map((tab) => (
@@ -371,16 +335,13 @@ const StaffMangementDashboard = ({
         {/* List Students */}
         {activeTab === 'list' && (
           <>
-            {isLoading ? <StaffList
+            <StaffList
               setActiveTab={setActiveTab}
-              staff={stadffData?.users}
-              setSelectedStaff={setSelectedStaff}
+              // staff={stadffData?.users}
 
-            /> : (
-              <>
-                <Loader />
-              </>
-            )}
+
+            />
+
           </>
         )}
 
@@ -411,9 +372,13 @@ const StaffMangementDashboard = ({
 
           </>
         )}
+        {/* ======================================================================================== */}
+
       </div>
     </div>
   );
 };
 
+{/* ======================================================================================== */ }
 export default StaffMangementDashboard;
+{/* ======================================================================================== */ }

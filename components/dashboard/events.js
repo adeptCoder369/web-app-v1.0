@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { CalendarDays, MapPin, Clock, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getEvents } from '../../api/event';
-import { getSessionCache } from '../../utils/sessionCache';
 import ChartLoadingSkeleton from '../ui/status/ChartLoadingSkeleton';
 import { useRouter } from 'next/navigation';
 
@@ -24,6 +23,7 @@ const formatDate = (dateStr) => {
 // Component
 // =============================
 const UpcomingEvent = ({ context }) => {
+
   const router = useRouter();
 
   const [events, setEvents] = useState([]);

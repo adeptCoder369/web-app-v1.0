@@ -21,7 +21,8 @@ import {
     BarChart3,
     School,
     Mars,
-    Venus
+    Venus,
+
 } from 'lucide-react';
 import Layout from '../../layouts/Layout';
 import { getSessionCache } from '../../utils/sessionCache';
@@ -31,15 +32,15 @@ import { addClass, editClass } from '../../api/classes';
 import TooltipInfo from '../ui/tooltip/TooltipInfo';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 
-    const breadcrumbs = [
-        { label: "Home", href: "/" },
-        { label: "Dashboard", href: "/dashboard" },
-        { label: "Manage Standards & Classes" },
-    ];
+const breadcrumbs = [
+    { label: "Home", href: "/" },
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Manage Standards & Classes" },
+];
 // ==================================================================
 
 
-const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,setReloadKey}) => {
+const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard, setReloadKey }) => {
     const [showModal, setShowModal] = useState(false);
 
     console.log('**********dashboardConfig************', dashboardConfig);
@@ -121,12 +122,13 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,
 
 
     };
+    console.log('=====standards====', standards);
 
     const totalStudents = standards?.reduce(
         (sum, std) =>
             sum +
             (std.classes?.reduce(
-                (classSum, cls) => classSum + (cls.number_of_students || 0),
+                (classSum, cls) => classSum + (cls?.students?.length || 0),
                 0
             ) || 0),
         0
@@ -340,14 +342,14 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,
                                 <div className="relative flex items-center gap-4">
                                     {/* Icon Wrapper */}
                                     <div className="p-3 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 shadow-inner ring-1 ring-white/40">
-                                        <GraduationCap className="w-7 h-7 text-blue-600" />
+                                        <School className="w-7 h-7 text-blue-600" />
                                     </div>
 
                                     {/* Text Content */}
                                     <div>
-                                        {/* <div className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                                        {Object.keys(academicData).length}
-                                    </div> */}
+                                        <div className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                                            <div className="text-2xl font-bold text-gray-900">{standards?.length}</div>
+                                        </div>
                                         <div className="text-sm font-medium text-gray-600 group-hover:text-gray-800 transition">
                                             Total Standards
                                         </div>
@@ -369,7 +371,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,
                                 <div className="relative flex items-center gap-4">
                                     {/* Icon Wrapper */}
                                     <div className="p-3 rounded-xl bg-gradient-to-br from-green-100 to-green-200 shadow-inner ring-1 ring-white/40">
-                                        <BookOpen className="w-6 h-6 text-green-600" />
+                                        <GraduationCap className="w-6 h-6 text-green-600" />
                                     </div>
 
                                     {/* Text Content */}
@@ -1054,14 +1056,14 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig ,reloadDashboard,
 
 
 
- {
-                    showModal ? (
-                        <StudentsModal
-                            selectedData={selectedClass}
-                            onClose={() => setShowModal(false)}
-                        />
-                    ) : null
-                }
+            {
+                showModal ? (
+                    <StudentsModal
+                        selectedData={selectedClass}
+                        onClose={() => setShowModal(false)}
+                    />
+                ) : null
+            }
 
         </>
     );

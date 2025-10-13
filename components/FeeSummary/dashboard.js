@@ -28,7 +28,6 @@ import FeeSummaryFiltersSummary from './filtersSummary';
 import FeeSummaryFilterPanel from './FilterPanel';
 import { getSessionCache } from '../../utils/sessionCache';
 import { useFeeCollection, useFees } from '../../controllers/fees';
-import Loader from '../../components/ui/status/Loader';
 import FeeSummary from './Summary';
 import { useMemo } from 'react';
 import FeeSummaryDrawer from '../ui/drawer/FeeSummary';
@@ -37,23 +36,10 @@ import FeeSummaryDrawer from '../ui/drawer/FeeSummary';
 
 
 
-const FeeManagementDashboard = ({
-  profile,
-  session,
-  cookyGuid,
-  cookyId,
-  school
-}) => {
+const FeeManagementDashboard = ({ cookyGuid, cookyId, }) => {
 
-
-
-
-
-
-  
   const config = getSessionCache("dashboardConfig");
   const Context = getSessionCache("dashboardContext");
-  let standards = config?.standards
   const [standardFees, setStandardFees] = useState(config?.standards); // default first period
   const [selectedStandardId, setSelectedStandardId] = useState(config?.standards[0] ? config?.standards[0] : []);
   const [activePeriodId, setActivePeriodId] = useState("april"); // default first period
@@ -80,7 +66,7 @@ const FeeManagementDashboard = ({
     paymentMode: "",
     depositStartDate: "",
     depositEndDate: "",
-    
+
   });
 
   const [studentStatus, setStudentStatus] = useState([
@@ -333,7 +319,7 @@ const FeeManagementDashboard = ({
 
 
 
-  console.log('------------##', filters)
+  // console.log('------------##', filters)
 
 
   // Utility: get all class IDs from config
@@ -344,7 +330,7 @@ const FeeManagementDashboard = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Modern Header */}
+      {/* ================== Header ======================================================================================= */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
@@ -422,7 +408,8 @@ const FeeManagementDashboard = ({
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Enhanced Stats Cards */}
+        {/* ==================  Stats Cards  ======================================================================================= */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
@@ -498,8 +485,8 @@ const FeeManagementDashboard = ({
             </div>
           </div>
         </div>
+        {/* ==================   Filters and Search  ======================================================================================= */}
 
-        {/* Modern Filters and Search */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6">
 
@@ -793,9 +780,9 @@ const FeeManagementDashboard = ({
             toggleFilter={toggleFilter}
           // getAvailableCategories={getAvailableCategories}
           />
+          {/* ==================    Compact Fee Periods Dropdown ======================================================================================= */}
 
 
-          {/* ============ Compact Fee Periods Dropdown ============ */}
           <div className="relative mb-6">
             <button
               onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
@@ -997,8 +984,8 @@ const FeeManagementDashboard = ({
             )}
           </div>
 
+          {/* ================== Table ======================================================================================= */}
 
-          {/* Enhanced Data Table */}
 
           <FeeSummary
 
@@ -1209,6 +1196,7 @@ const FeeManagementDashboard = ({
             </div>
           </div>
         </div>
+        {/* ==================   QuickActions ======================================================================================= */}
 
         <QuickActions />
       </div>

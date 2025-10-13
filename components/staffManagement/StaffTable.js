@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { 
-  FaBook, 
-  FaExternalLinkAlt, 
-  FaDownload, 
-  FaFileExcel, 
+import {
+  FaBook,
+  FaExternalLinkAlt,
+  FaDownload,
+  FaFileExcel,
   FaFileCsv,
   FaChevronLeft,
   FaChevronRight,
@@ -11,11 +11,15 @@ import {
   FaSearch
 } from "react-icons/fa";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
+import Loader from "../ui/status/Loader";
 
 const StaffTable = ({
   staffs = [],
   handleClassClick = () => { },
   columns = ['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action'],
+  isLoading,
+  
+
 }) => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,9 +73,9 @@ const StaffTable = ({
 
   // Filter and paginate data
   const filteredData = useMemo(() => {
-    return staffs.filter(staff => 
-      staff.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      staff.subject?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return staffs?.filter(staff =>
+      staff?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      staff?.subject?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       staff.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [staffs, searchTerm]);
@@ -98,7 +102,7 @@ const StaffTable = ({
         `"${row.info?.platform || 'N/A'}"`
       ].join(','))
     ].join('\n');
-    
+
     return csvContent;
   };
 
@@ -120,7 +124,7 @@ const StaffTable = ({
       htmlContent += `<th>${header}</th>`;
     });
     htmlContent += '</tr>';
-    
+
     filteredData.forEach(row => {
       htmlContent += '<tr>';
       htmlContent += `<td>${row.name || 'N/A'}</td>`;
@@ -133,7 +137,7 @@ const StaffTable = ({
       htmlContent += '</tr>';
     });
     htmlContent += '</table>';
-    
+
     const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -184,7 +188,7 @@ const StaffTable = ({
               Showing {paginatedData.length} of {filteredData.length} records
             </p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             {/* Search */}
             <div className="relative">
@@ -211,7 +215,7 @@ const StaffTable = ({
                 <span className="font-medium">Export</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${exportDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
-              
+
               {exportDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setExportDropdownOpen(false)} />
@@ -239,7 +243,7 @@ const StaffTable = ({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      {isLoading ? <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -386,7 +390,23 @@ const StaffTable = ({
             )}
           </tbody>
         </table>
-      </div>
+      </div> : (
+        <>
+          <div className="flex justify-center items-center">
+            <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
+              <img
+                src="/logo/logo.png"
+                alt="Loading"
+                className="w-6 h-6 animate-spin"
+              />
+              <span className="text-gray-700 text-sm font-medium">
+                Loading...
+              </span>
+            </div>
+          </div>
+        </>
+
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
@@ -428,13 +448,12 @@ const StaffTable = ({
                     key={index}
                     onClick={() => typeof page === 'number' ? goToPage(page) : null}
                     disabled={page === '...'}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      page === currentPage
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : page === '...'
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${page === currentPage
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : page === '...'
                         ? 'text-gray-400 cursor-default'
                         : 'text-gray-600 hover:bg-gray-100'
-                    }`}
+                      }`}
                   >
                     {page}
                   </button>

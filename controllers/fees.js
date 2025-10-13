@@ -97,7 +97,10 @@ export const useFees = () => {
     sessionId,
 
     guid,
-    id, f
+    id,
+    page = 1,
+    limit = 10,
+
   ) => {
     try {
 
@@ -106,6 +109,8 @@ export const useFees = () => {
         sessionId,
         guid,
         id,
+        page,
+        limit,
       });
 
       return { success: true, data };
@@ -120,8 +125,14 @@ export const useFees = () => {
 
   return {
     getFees,
+    feesResponse: getFeesMutation?.data?.data?.results, // <-- full payload: count, limit, fees[], next_page, ...
     feesData: getFeesMutation?.data?.data?.results?.fees,
-    isLoading: getFeesMutation.isLoading,
+    totalCount: getFeesMutation?.data?.data?.results?.count,
+    isLoading: getFeesMutation?.isPending,
+    limit: getFeesMutation?.data?.data?.results?.limit,
+    offset: getFeesMutation?.data?.data?.results?.offset,
+    next_page: getFeesMutation?.data?.data?.results?.next_page,
+    prev_page: getFeesMutation?.data?.data?.results?.prev_page,
     isError: getFeesMutation.isError,
     error: getFeesMutation.error,
 

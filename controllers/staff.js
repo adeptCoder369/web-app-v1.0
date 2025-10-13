@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getStaffApi} from '../api/staff';
+import { getStaffApi } from '../api/staff';
 
 
 
@@ -31,19 +31,14 @@ export const useStaff = () => {
   const getStaff = async (
     profileId,
     sessionId,
-
-    guid,
-    id,
-    payload
+    params
   ) => {
     try {
 
       const data = await getStaffMutation.mutateAsync({
         profileId,
         sessionId,
-        guid,
-        id,
-        payload
+        params
       });
 
       return { success: true, data };

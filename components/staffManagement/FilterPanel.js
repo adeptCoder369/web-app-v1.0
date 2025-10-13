@@ -1,5 +1,5 @@
 import React from "react";
-import { commonIcons, moduleIcons, studentStatusIcons } from './icons';
+import { commonIcons, moduleIcons, staffStatusIcons } from './icons';
 
 const { FaCheck, FaCheckIcon, FaTimesIcon } = commonIcons;
 
@@ -11,14 +11,14 @@ const StaffFilterPanel = ({
 
     isFilterPanelOpen,
     modules,
-    studentStatus,
+    staffStatus,
     filters,
     toggleFilter,
     // getAvailableCategories,
     setDateFilter,        // new prop for handling date changes
     setPaymentModeFilter, // new prop for handling dropdown selection
 }) => {
-    const paymentModes = ["CASH", "CHEQUE", "ONLINE", "CARD(POS Machine)","BANK(Direct)","DEMAND DRAFT","NACH"];
+    const paymentModes = ["CASH", "CHEQUE", "ONLINE", "CARD(POS Machine)", "BANK(Direct)", "DEMAND DRAFT", "NACH"];
 
     if (!isFilterPanelOpen) {
         return null;
@@ -27,6 +27,7 @@ const StaffFilterPanel = ({
     let fee_frequency = config?.fee_frequency
     let fee_head_types = config?.fee_head_types
     let fee_types = config?.fee_types
+    let titles = config?.titles
     // console.log('config', config);
 
 
@@ -66,9 +67,9 @@ const StaffFilterPanel = ({
 
 
             <div>
-                <h3 className="font-medium text-gray-700 mb-3">Student Status</h3>
+                <h3 className="font-medium text-gray-700 mb-3">Status</h3>
                 <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                    {studentStatus?.map((status, index) => (
+                    {staffStatus?.map((status, index) => (
                         <div key={index} className="flex items-center">
                             <button
                                 onClick={(e) => toggleFilter("status", status.name, e)}
@@ -85,8 +86,8 @@ const StaffFilterPanel = ({
                                     )}
                                 </div>
                                 <span className="ml-3 text-gray-700 flex items-center">
-                                    {studentStatusIcons[status.name] && (
-                                        <span className="mr-2">{studentStatusIcons[status.name]}</span>
+                                    {staffStatusIcons[status.name] && (
+                                        <span className="mr-2">{staffStatusIcons[status.name]}</span>
                                     )}
                                     {status.name}
                                 </span>
@@ -164,26 +165,26 @@ const StaffFilterPanel = ({
 
             {/* Payment Mode filter (Dropdown) */}
             <div>
-                <h3 className="font-medium text-gray-700 mb-3">Payment Mode</h3>
+                <h3 className="font-medium text-gray-700 mb-3">Title</h3>
                 <select
-                    value={filters.paymentMode || ""} // take first value from array
+                    value={filters.title || ""} // take first value from array
                     onChange={(e) => {
                         const value = e.target.value;
                         if (value === "") {
                             // reset filter
-                            setFilters(prev => ({ ...prev, paymentMode: "" }));
+                            setFilters(prev => ({ ...prev, title: "" }));
                         } else {
                             // set single value
-                            setFilters(prev => ({ ...prev, paymentMode: value }));
+                            setFilters(prev => ({ ...prev, title: value }));
                         }
                     }}
                     className="w-full border border-gray-300 rounded-md p-2 text-gray-700 
                focus:border-blue-500 focus:ring focus:ring-blue-200"
                 >
-                    <option value="">All Modes</option>
-                    {paymentModes?.map((mode, idx) => (
-                        <option key={idx} value={mode}>
-                            {mode}
+                    <option value="">All Titles</option>
+                    {titles?.map((mode) => (
+                        <option key={mode?.id} value={mode?.id}>
+                            {mode?.name}
                         </option>
                     ))}
                 </select>

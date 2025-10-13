@@ -1,6 +1,6 @@
 // components/inventory/ActiveFilters.jsx
 import React from 'react';
-import { paymentModeIcons, categoryIcons, studentStatusIcons, commonIcons } from './icons'
+import { paymentModeIcons, categoryIcons, staffStatusIcons, commonIcons } from './icons'
 
 const { FaTimes } = commonIcons;
 
@@ -35,6 +35,12 @@ const StaffFiltersSummary = ({ filters, toggleFilter, clearFilters }) => {
         }
 
 
+        if (filters.title) {
+            allFilters.push({
+                type: 'title',
+                value: filters.title, // no .name, it's just a string
+            });
+        }
         filters.status.forEach(status => {
             allFilters.push({
                 type: 'status',
@@ -75,8 +81,8 @@ const StaffFiltersSummary = ({ filters, toggleFilter, clearFilters }) => {
                             {/* {filter.type === 'categories' && categoryIcons[filter.value] && (
                             <span className="mr-1">{categoryIcons[filter.value]}</span>
                         )} */}
-                            {filter.type === 'status' && studentStatusIcons[filter.value] && (
-                            <span className="mr-1">{studentStatusIcons[filter.value]}</span>
+                            {filter.type === 'status' && staffStatusIcons[filter.value] && (
+                            <span className="mr-1">{staffStatusIcons[filter.value]}</span>
                         )}
                             {filter.value}
                         </span>

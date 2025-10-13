@@ -1,5 +1,5 @@
 import axios from 'axios';
-import httpClient from '../services/httpClient';
+import { getCookie } from 'cookies-next';
 import { API_BASE_URL } from '../config/server';
 
 
@@ -9,24 +9,25 @@ import { API_BASE_URL } from '../config/server';
 export const getStaffApi = async ({
   profileId,
   sessionId,
-  guid,
-  id,
+
+  params
 
 }) => {
 
 
-  console.log('======= payload : ', profileId,
-    sessionId,
-    guid,
-    id,);
+  console.log('======= payload : ', params);
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
 
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "user.getList",
-    "guid": guid,
-    logged_in_user_account_id: id,
+    "guid": resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
     user_account_id: profileId,
     client_id: sessionId,
     "platform": "web",
+    ...params
 
   });
 };

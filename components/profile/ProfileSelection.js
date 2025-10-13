@@ -2,8 +2,6 @@
 //============================================================================
 
 
-
-
 import { useEffect, useState } from "react";
 import { Search, Calendar, ChevronDown, ChevronRight, Check, Eye, User, BookOpen, School } from "lucide-react";
 import Footer from "../Footer";
@@ -195,60 +193,9 @@ export default function ProfileSelection() {
               <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
             </div>
 
-            {/* <div className="flex gap-3">
-            <button
-              className="bg-white hover:bg-gray-50 text-indigo-600 font-medium px-5 py-3 rounded-full shadow-md flex items-center gap-2 transition-colors border border-gray-100"
-            >
-              <Calendar size={18} />
-              Filter
-            </button>
-            <button
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-3 rounded-full shadow-md flex items-center gap-2 transition-colors"
-            >
-              <Eye size={18} />
-              View All
-            </button>
-          </div> */}
           </div>
 
-          {/* Selection Progress */}
-          {/* <div className="bg-white rounded-xl shadow-md p-5 mb-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center">
-              <div className={`flex items-center justify-center w-8 h-8 rounded-full ${selectedProfile ? 'bg-green-500' : 'bg-gray-200'} text-white`}>
-                {selectedProfile ? <Check size={16} /> : '1'}
-              </div>
-              <div className="ml-3">
-                <p className="font-medium">Select Profile</p>
-                <p className="text-sm text-gray-500">{selectedProfile?.name || 'Not selected'}</p>
-              </div>
-            </div>
-
-            <div className="hidden sm:block w-8 h-0.5 bg-gray-200"></div>
-
-            <div className="flex items-center">
-              <div className={`flex items-center justify-center w-8 h-8 rounded-full ${selectedSchool ? 'bg-green-500' : 'bg-gray-200'} text-white`}>
-                {selectedSchool ? <Check size={16} /> : '2'}
-              </div>
-              <div className="ml-3">
-                <p className="font-medium">Select School</p>
-                <p className="text-sm text-gray-500">{selectedSchool?.name || 'Not selected'}</p>
-              </div>
-            </div>
-
-            <div className="hidden sm:block w-8 h-0.5 bg-gray-200"></div>
-
-            <div className="flex items-center">
-              <div className={`flex items-center justify-center w-8 h-8 rounded-full ${selectedSession ? 'bg-green-500' : 'bg-gray-200'} text-white`}>
-                {selectedSession ? <Check size={16} /> : '3'}
-              </div>
-              <div className="ml-3">
-                <p className="font-medium">Select Session</p>
-                <p className="text-sm text-gray-500">{selectedSession || 'Not selected'}</p>
-              </div>
-            </div>
-          </div>
-        </div> */}
+          
 
           {/* Profiles Grid */}
           <div className="grid grid-cols-1 gap-6">
@@ -315,14 +262,7 @@ export default function ProfileSelection() {
                             className={`p-4 rounded-lg transition-all duration-200 ${selectedSchool?.name === school.name ? 'bg-indigo-50 border border-indigo-100' : 'bg-white border border-gray-100 hover:border-indigo-200'}`}
                           >
                             <div className="flex items-start">
-                              {/* <div
-                          className={`h-5 w-5 rounded-full border-2 mr-3 mt-0.5 flex-shrink-0 cursor-pointer ${selectedSchool?.name === school.name ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300'}`}
-                          onClick={() => handleSchoolSelect(school)}
-                        >
-                          {selectedSchool?.name === school.name && (
-                            <Check size={12} className="text-white m-auto" />
-                          )}
-                        </div> */}
+                             
                               <div className="flex-1">
                                 <div className="flex items-center cursor-pointer" onClick={() => handleSchoolSelect(school)}>
                                   {school?.logo ? (
@@ -335,12 +275,7 @@ export default function ProfileSelection() {
                                     <School className="h-10 w-10 text-gray-500 mr-2 flex-shrink-0" />
                                   )}
 
-                                  {/* <img
-                                src={{ uri: school?.logo_url }}
-                                // src={'https://infoeight-s3-new.s3.ap-south-1.amazonaws.com/schools/logo/thumbnail-1687416160.5367school_logo_upload6493ed608309a6.10353660.png'}
-                                alt={school.name}
-                                className="h-8 w-8 rounded-full object-cover mr-2 flex-shrink-0"
-                              /> */}
+                               
                                   <h4 className="font-medium text-gray-800">{school.name}</h4>
                                 </div>
                                 {/* Sessions */}

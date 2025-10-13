@@ -28,7 +28,9 @@ import {
     MdGrain,
     MdChildCare,
     MdLocalGroceryStore,
-    MdNewReleases
+    MdNewReleases,
+    MdAccountBox,
+    MdAdminPanelSettings
 } from "react-icons/md";
 import { PiContactlessPaymentFill } from "react-icons/pi";
 import { MdBookOnline } from "react-icons/md";
@@ -36,6 +38,7 @@ import { HiBanknotes } from "react-icons/hi2";
 import { FaCreditCard } from "react-icons/fa";
 import { RiBankFill } from "react-icons/ri";
 import { SiIcicibank } from "react-icons/si";
+import { BiNotification } from "react-icons/bi";
 
 export const paymentModeIcons = {
     "CASH": <RiCashFill className="text-accent" />,
@@ -53,7 +56,11 @@ export const studentStatusIcons = {
     "New": <MdNewReleases className="text-accent" />,
     "Deposited": <FaMoneyBillTransfer  className="text-accent"/>,
 };
-
+export const staffStatusIcons = {
+    "Receive Daily Notification": <BiNotification className="text-accent" />,
+    "Has Account": <MdAccountBox className="text-accent" />,
+    "Allowed for Admin Accesss": <MdAdminPanelSettings  className="text-accent"/>,
+};
 
 export const categoryIcons = {
     "Upcoming": <ListCollapse className="text-blue-500" />,

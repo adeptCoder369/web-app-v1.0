@@ -9,12 +9,13 @@ const FeeCollectionChart = () => {
 
 
 
+  const feeCollectionConfig = getSessionCache("feeCollectionConfig");
 
 
 
 
   const [selectedView, setSelectedView] = useState('overview');
-  const [feeCollectionSummary, setFeeCollectionSummary] = useState([]);
+  // const [feeCollectionSummary, setFeeCollectionSummary] = useState(feeCollectionConfig);
 
 
 
@@ -27,36 +28,12 @@ const FeeCollectionChart = () => {
   // ==================================================================================================
 
 
-  // console.log("data ========>", feeCollectionSummary);
-
+  
   // ==================================================================================================
-  const context = getSessionCache("dashboardContext");
-  const fetchData = async () => {
-    try {
-      const data = await getFeeCollectionSummary(
-        context?.profileId,
-        context?.session,
-      );
-
-
-
-      if (data?.data?.success) setFeeCollectionSummary(data?.data?.results);
-    } catch (err) {
-      console.error("Failed to fetch fee collection summary:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-
-  }, [context?.profileId, context?.session]);
-
-
-
-
-
-
-  const data = feeCollectionSummary
+  
+  
+  console.log("data ========>", feeCollectionConfig);
+  const data = feeCollectionConfig
   // Payment modes data for pie chart
   const paymentModesData = [
     { name: 'Cash', value: data?.cash_amount, frequency: data?.cash_frequency },
@@ -88,7 +65,7 @@ const FeeCollectionChart = () => {
 
         )} */}
 
-      {feeCollectionSummary?.standard_data?.length > 0 ?
+      {feeCollectionConfig?.standard_data?.length > 0 ?
         <>
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
