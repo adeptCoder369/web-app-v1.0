@@ -43,7 +43,6 @@ const UserInfoCard = ({ name, subtitle, businessName, image, details, selectedLe
 
 
   const handleConfirmation = async () => {
-    console.log('confirmDelete');
 
     if (!selectedLead) return;
     setConfirmDelete(true)

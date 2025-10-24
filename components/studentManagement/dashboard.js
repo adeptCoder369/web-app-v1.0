@@ -1,27 +1,18 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  User, Mail, Phone, MapPin, Calendar, Book, Users, Heart, BadgePlus,
-  Award, Shield, Bus, Globe, List, Save, X, Plus, Trash2,
-  GraduationCap,
-  School,
-  ScrollText,
-  FileMinus,
-  FileInput,
-  Church,
-  Languages,
-  Flag,
-  HeartPulse,
-  MapPinHouse,
-  Transgender,
-  FileUser
-} from 'lucide-react';
+import { User, Book, Users, Heart, BadgePlus, List, Save, FileInput, } from 'lucide-react';
 import Layout from '../../layouts/Layout';
 import { StudentList } from './listStudent';
 import StudentProfile from './studentProfile';
 import { getSessionCache } from '../../utils/sessionCache';
-import { getStudentList } from '../../api/student';
+import { addStudent, getStudentList } from '../../api/student';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
+import BasicInfoForm from './BasicInfoForm';
+import PersonalInfoForm from './PersonalInfoForm';
+import ParentsInfoForm from './ParentInfoForm';
+import AcademicInfoForm from './AcademicInfoForm';
+import DocumentInfoForm from './DocumentInfoForm';
+import { useStudent } from '../../context/studentContext';
 
 
 
@@ -45,6 +36,8 @@ const StudentMangementDashboard = ({
 
 }) => {
 
+  const { selectedStudent, setSelectedStudent } = useStudent()
+  console.log('selectedStudent', selectedStudent);
 
   const [studentListData, setStudentListData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -83,20 +76,22 @@ const StudentMangementDashboard = ({
 
   const classesOptions = config?.classes || [];
   const schoolOptions = config?.school || [];
+  const houses = config?.houses || [];
   const genderOptions = config?.gender_students || [];
   const religionsOptions = config?.religions || [];
   const motherTonguesOptions = config?.mother_tongues || [];
   const nationalitiesOptions = config?.nationalities || [];
   const bloodGroupsOptions = config?.blood_groups || [];
   const categoriesOptions = config?.caste_categories || [];
+  const renewalStatus = config?.renewal_status_list || [];
 
 
 
 
 
 
-  const [activeTab, setActiveTab] = useState('list');
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [activeTab, setActiveTab] = useState(selectedStudent?.id ? 'view' : 'list');
+  // const [selectedStudent, setSelectedStudent] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [currentFormStep, setCurrentFormStep] = useState('basic');
@@ -131,8 +126,9 @@ const StudentMangementDashboard = ({
 
     // Parents Information
     parents: [
-      { name: '', gender: '', relation: 'FATHER', phone: '', email: '', occupation: '', address: '' },
-      { name: '', gender: '', relation: 'MOTHER', phone: '', email: '', occupation: '', address: '' }
+      { name: '', gender: 'MALE', relation: "FATHER", qualification: '', annualIncome: '', phones: [''] },
+      { name: '', gender: 'FEMALE', relation: "MOTHER", qualification: '', annualIncome: '', phones: [''] },
+      { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
     ]
   });
 
@@ -174,304 +170,88 @@ const StudentMangementDashboard = ({
     }));
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    // Add your API call here
-    alert('Student data saved successfully!');
+
+
+
+
+  const handleSubmit = async () => {
+    setIsSaving(true);
+    try {
+      // Prepare the payload for your API
+      const payload = {
+        ...formData,
+        school: Context?.schoolId
+        // You can transform or validate fields here if needed
+      };
+
+
+      console.log('====== payload : ', Context, payload)
+
+      // Example: Call your addStaff API or controller function
+      let res = await addStudent(
+        Context?.profileId,
+        Context?.session,
+        cookyGuid,
+        cookyId,
+
+        payload
+      );
+      console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
+      if (!res?.data?.success) {
+        console.log('====== resaxxx : ', res?.data?.results?.message)
+        setError(res?.data?.results?.message || 'Failed to save student data. Please try again.');
+
+      }
+      // Optionally, reset the form or go back to the list tab
+      if (res?.data?.success) {
+        console.log('====== res sddddssssssssssss: ', res?.data)
+
+        setFormData({
+          school: '',
+          class: '',
+          name: '',
+          rollNo: '',
+          phone: '',
+          alternatePhone: '',
+          email: '',
+          dateOfBirth: '',
+          aadharCard: '',
+          religion: '',
+          motherTongue: '',
+          nationality: 'Indian',
+          bloodGroup: '',
+          address: '',
+          registrationNumber: '',
+          schoolBus: '',
+          smsNumber: '',
+          // parents: [
+          //   { name: '', gender: '', relation: 'FATHER', phone: '', email: '', occupation: '', address: '' },
+          //   { name: '', gender: '', relation: 'MOTHER', phone: '', email: '', occupation: '', address: '' }
+          // ]
+        });
+        setCurrentFormStep('basic');
+        setActiveTab('list');
+      }
+
+
+
+    } catch (error) {
+      setError(error || 'Failed to save staff data. Please try again.');
+
+      console.error('Error saving staff:', error);
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => {
+        setError('');
+      }, 5000);
+    }
   };
 
-  const InputField = ({ label, value, onChange, type = "text", required = false, placeholder = "", options = null, icon: Icon = null }) => (
-    <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <div className="relative">
-        {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon className="h-4 w-4 text-gray-600" />
-          </div>
-        )}
-        {options ? (
-          <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className={`w-full ${Icon ? 'pl-10' : 'pl-3'} pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            required={required}
-          >
-            <option value="">Select {label}</option>
-            {options.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
-        ) : (
-          <input
-            type={type}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            className={`w-full ${Icon ? 'pl-10' : 'pl-3'} pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            required={required}
-          />
-        )}
-      </div>
-    </div>
-  );
-  const BasicInfoForm = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <InputField
-        icon={School}
-        label="School"
-        value={formData.school}
-        onChange={(value) => handleInputChange("school", value)}
-        required
-        options={schoolOptions ? [schoolOptions.full_name] : []}
-      />
 
-      <InputField
-        icon={School}
 
-        label="Class"
-        value={formData.class}
-        onChange={(value) => handleInputChange('class', value)}
-        required={true}
-        //  options={['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']}
-        options={classesOptions?.map((x) => x.name) || []}
-      />
-      <InputField
-        icon={User}
 
-        label="Student Name"
-        value={formData.name}
-        onChange={(value) => handleInputChange('name', value)}
-        required={true}
-        placeholder="Enter full name"
-      />
-      <InputField
-        icon={ScrollText}
 
-        label="Roll Number"
-        value={formData.rollNo}
-        onChange={(value) => handleInputChange('rollNo', value)}
-        required={true}
-        placeholder="Enter roll number"
-      />
-      <InputField
-        icon={Phone}
 
-        label="Phone Number"
-        value={formData.phone}
-        onChange={(value) => handleInputChange('phone', value)}
-        required={true}
-        type="tel"
-        placeholder="Enter phone number"
-      />
-      <InputField
-        icon={Phone}
-
-        label="Alternate Phone"
-        value={formData.alternatePhone}
-        onChange={(value) => handleInputChange('alternatePhone', value)}
-        type="tel"
-        placeholder="Enter alternate phone"
-      />
-      <InputField
-        icon={Mail}
-
-        label="Email Address"
-        value={formData.email}
-        onChange={(value) => handleInputChange('email', value)}
-        required={true}
-        type="email"
-        placeholder="Enter email address"
-      />
-      <InputField
-        icon={Calendar}
-
-        label="Date of Birth"
-        value={formData.dateOfBirth}
-        onChange={(value) => handleInputChange('dateOfBirth', value)}
-        type="date"
-        required={true}
-      />
-    </div>
-  );
-
-  const PersonalDetailsForm = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <InputField
-        icon={FileInput}
-
-        label="Aadhaar Card Number"
-        value={formData.aadharCard}
-        onChange={(value) => handleInputChange('aadharCard', value)}
-        placeholder="Enter Aadhaar number"
-      />
-      <InputField
-        icon={Church}
-
-        label="Religion"
-        value={formData.religion}
-        onChange={(value) => handleInputChange('religion', value)}
-        options={religionsOptions}
-      />
-      <InputField
-        icon={Languages}
-
-        label="Mother Tongue"
-        value={formData.motherTongue}
-        onChange={(value) => handleInputChange('motherTongue', value)}
-        options={motherTonguesOptions}
-      />
-      <InputField
-        icon={Flag}
-
-        label="Nationality"
-        value={formData.nationality}
-        onChange={(value) => handleInputChange('nationality', value)}
-        options={nationalitiesOptions}
-      />
-      <InputField
-        icon={HeartPulse}
-
-        label="Blood Group"
-        value={formData.bloodGroup}
-        onChange={(value) => handleInputChange('bloodGroup', value)}
-        options={bloodGroupsOptions}
-      />
-      <InputField
-        icon={FileUser}
-
-        label="Category"
-        value={formData.schoolBus}
-        onChange={(value) => handleInputChange('FileUser', value)}
-        options={categoriesOptions}
-      />
-      <div className="md:col-span-2">
-        <InputField
-          icon={MapPinHouse}
-
-          label="Address"
-          value={formData.address}
-          onChange={(value) => handleInputChange('address', value)}
-          placeholder="Enter complete address"
-        />
-      </div>
-    </div>
-  );
-
-  const ParentsInfoForm = () => (
-    <div className="space-y-6">
-      {formData.parents.map((parent, index) => (
-        <div key={index} className="bg-gray-50 p-4 rounded-lg border">
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="text-lg font-semibold text-gray-800">Parent {index + 1}</h4>
-            {formData.parents.length > 1 && (
-              <button
-                onClick={() => removeParent(index)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InputField
-              icon={User}
-
-              label="Name"
-              value={parent.name}
-              onChange={(value) => handleParentChange(index, 'name', value)}
-              required={true}
-              placeholder="Enter parent name"
-            />
-            <InputField
-              icon={Transgender}
-
-              label="Gender"
-              value={parent.gender}
-              onChange={(value) => handleParentChange(index, 'gender', value)}
-              options={genderOptions}
-              required={true}
-            />
-            <InputField
-              icon={Shield}
-
-              label="Relation"
-              value={parent.relation}
-              onChange={(value) => handleParentChange(index, 'relation', value)}
-              options={['FATHER', 'MOTHER', 'GUARDIAN', 'OTHER']}
-              required={true}
-            />
-            <InputField
-              icon={Phone}
-
-              label="Phone"
-              value={parent.phone}
-              onChange={(value) => handleParentChange(index, 'phone', value)}
-              type="tel"
-              required={true}
-              placeholder="Enter phone number"
-            />
-            <InputField
-              icon={Mail}
-
-              label="Email"
-              value={parent.email}
-              onChange={(value) => handleParentChange(index, 'email', value)}
-              type="email"
-              placeholder="Enter email address"
-            />
-            <InputField
-
-              label="Occupation"
-              value={parent.occupation}
-              onChange={(value) => handleParentChange(index, 'occupation', value)}
-              placeholder="Enter occupation"
-            />
-            <div className="md:col-span-2">
-              <InputField
-                icon={MapPinHouse}
-
-                label="Address"
-                value={parent.address}
-                onChange={(value) => handleParentChange(index, 'address', value)}
-                placeholder="Enter address"
-              />
-            </div>
-          </div>
-        </div>
-      ))}
-      <button
-        onClick={addParent}
-        className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-      >
-        <Plus className="h-4 w-4" />
-        <span>Add Parent/Guardian</span>
-      </button>
-    </div>
-  );
-
-  const AcademicInfoForm = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <InputField
-        icon={Phone}
-
-        label="Registration Number"
-        value={formData.registrationNumber}
-        onChange={(value) => handleInputChange('registrationNumber', value)}
-        placeholder="Enter registration number"
-      />
-      <InputField
-        icon={Phone}
-
-        label="SMS Number"
-        value={formData.smsNumber}
-        onChange={(value) => handleInputChange('smsNumber', value)}
-        type="tel"
-        placeholder="Enter SMS number"
-      />
-    </div>
-  );
 
 
 
@@ -493,14 +273,14 @@ const StudentMangementDashboard = ({
 
         <div className=" mx-auto px-4 py-8">
           {/* Navigation Tabs */}
-        <Breadcrumbs items={breadcrumbs} />
+          <Breadcrumbs items={breadcrumbs} />
           <div className="bg-white rounded-xl shadow-md mb-8">
             <div className="flex space-x-1 p-1">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === tab.id
+                  className={`cursor-pointer flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === tab.id
                     ? 'bg-blue-500 text-white shadow-md'
                     : 'text-gray-600 hover:bg-gray-50'
                     }`}
@@ -526,7 +306,7 @@ const StudentMangementDashboard = ({
                   <button
                     key={step.id}
                     onClick={() => setCurrentFormStep(step.id)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors flex-1 justify-center ${currentFormStep === step.id
+                    className={`cursor-pointer flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors flex-1 justify-center ${currentFormStep === step.id
                       ? 'bg-white text-blue-600 shadow-sm'
                       : 'text-gray-600 hover:bg-gray-50'
                       }`}
@@ -539,10 +319,56 @@ const StudentMangementDashboard = ({
 
               {/* Form Content */}
               <div className="mb-8">
-                {currentFormStep === 'basic' && <BasicInfoForm />}
-                {currentFormStep === 'personal' && <PersonalDetailsForm />}
-                {currentFormStep === 'parents' && <ParentsInfoForm />}
-                {currentFormStep === 'academic' && <AcademicInfoForm />}
+                {currentFormStep === 'basic' &&
+                  <BasicInfoForm
+                    formData={formData}
+                    setFormData={setFormData}
+                    classes={classesOptions}
+                  />}
+                {currentFormStep === 'personal' &&
+                  <PersonalInfoForm
+
+                    formData={formData}
+                    setFormData={setFormData}
+                    houses={houses}
+                    renewalStatus={renewalStatus}
+                    nationality={nationalitiesOptions}
+                    categories={categoriesOptions}
+                    religions={religionsOptions}
+                    motherTongues={motherTonguesOptions}
+                    bloodGroups={bloodGroupsOptions}
+
+                  />}
+                {currentFormStep === 'parents' &&
+                  <ParentsInfoForm
+
+                    formData={formData}
+                    setFormData={setFormData}
+
+                    genderOptions={genderOptions}
+
+                  />}
+                {/* } */}
+                {currentFormStep === 'academic' &&
+                  <AcademicInfoForm
+
+                    formData={formData}
+                    setFormData={setFormData}
+
+                    genderOptions={genderOptions}
+
+                  />
+                }
+                {currentFormStep === 'documents' &&
+                  <DocumentInfoForm
+
+                    formData={formData}
+                    setFormData={setFormData}
+
+                    genderOptions={genderOptions}
+
+                  />
+                }
               </div>
 
               {/* Form Actions */}
@@ -569,17 +395,17 @@ const StudentMangementDashboard = ({
                           setCurrentFormStep(formSteps[currentIndex + 1].id);
                         }
                       }}
-                      className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                      className="cursor-pointer px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                     >
                       Next
                     </button>
                   ) : (
                     <button
                       onClick={handleSubmit}
-                      className="flex items-center space-x-2 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                      className="cursor-pointer flex items-center space-x-2 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
                     >
                       <Save className="h-4 w-4" />
-                      <span>Save Student</span>
+                      <span>{!isSaving ? "Save Student" : "saving ..."}</span>
                     </button>
                   )}
                 </div>
@@ -629,6 +455,13 @@ const StudentMangementDashboard = ({
           )}
         </div>
       </div>
+
+      {error && (
+        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md shadow-md z-50">
+          <span>{error}</span>
+        </div>
+      )}
+
     </Layout>
   );
 };

@@ -11,6 +11,7 @@ import { useStaff } from "../../controllers/staff";
 
 export const StaffList = ({
   setActiveTab,
+  setSelectedStaff
 
 }) => {
 
@@ -19,7 +20,7 @@ export const StaffList = ({
 
 
   const [staff, setStaff] = useState([]);
-  const [selectedStaff, setSelectedStaff] = useState(null);
+  // const [selectedStaff, setSelectedStaff] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,83 +44,95 @@ export const StaffList = ({
   ]);
 
 
+  const [accountStatus, setAccountStatus] = useState([
+    {
+      name: "Active",
 
+    },
+    {
+      name: "Disabled",
+    },
+
+
+  ]);
 
 
 
   // console.log(Context,'Context');
   const [filters, setFilters] = useState({
-    // modules: [
-    //   {
-    //     moduleName: "Meetsdings",
-    //     categories: [
-    //       "Upcoming",
-    //       "All",
-
-    //     ]
-    //   },
-
-    // ],
-
+    joinedDate: "",
     status: [],
+    accountStatus: [],
+    designations: [],
     title: "",
-    depositStartDate: "",
-    depositEndDate: "",
+    name: "",
+    motherName: "",
+    fatherName: "",
+    mobile: "",
+    emergencyContact: "",
+    isSearch: false,
   });
 
   const { getStaff, stadffData, isLoading } = useStaff()
 
 
-  const fetchData = async () => {
-    try {
-      const params = {
-        // mode: filters?.paymentMode || undefined, 
-        // standardId: selectedStandard !== "all" ? selectedStandard : undefined,
-        // class_ids: selectedClass?.length > 0 ? selectedClass.join(",") : undefined, // ✅ fix
-        // status: filterStatus !== "all" ? filterStatus : undefined,
-        user_title_id: filters?.title || undefined,
-        // is_promoted_student: filters.status.includes("Promoted") ? true : undefined,
-        is_allowed_for_admin_access: filters.status.includes("Allowed for Admin Accesss") ? true : undefined,
-        has_account: filters.status.includes("Has Account") ? true : undefined,
-        receive_daily_attendance_notification: filters.status.includes("Receive Daily Notification") ? true : undefined,
-        // only_deposited: filters.status.includes("Deposited") ? true : undefined,
-        // depositStartDate: filters.depositStartDate,
-        // depositEndDate: filters.depositEndDate
-      };
+ const fetchData = async () => {
+  try {
+    const rawParams = {
+      user_title_id: filters?.title || undefined,
+      is_allowed_for_admin_access: filters.status.includes("Allowed for Admin Accesss") ? true : undefined,
+      has_account: filters.status.includes("Has Account") ? true : undefined,
+      receive_daily_attendance_notification: filters.status.includes("Receive Daily Notification") ? true : undefined,
+      join_time: filters.joinedDate || undefined,
+      name: filters.name || undefined,
+      mother_name: filters.motherName || undefined,
+      father_name: filters.fatherName || undefined,
+      phone: filters.mobile || undefined,
+      emergency_contact_number: filters.emergencyContact || undefined,
+      school_designation_ids:
+      filters.designations?.length > 0 ? filters.designations : undefined,
+    };
 
-      // 🔹 Call API with all filters as params
-      const data = await getStaff(
-        Context?.profileId,
-        Context?.session,
+    // ✅ Remove undefined, null, empty string, or empty array values
+    const params = Object.fromEntries(
+      Object.entries(rawParams).filter(
+        ([_, v]) =>
+          v !== undefined &&
+          v !== null &&
+          v !== "" &&
+          !(Array.isArray(v) && v.length === 0)
+      )
+    );
 
-        params
-      );
-      // console.log(data?.data?.data?.results, 'data');
+    // 🔹 Call API with only valid params
+    const data = await getStaff(Context?.profileId, Context?.session, params);
 
-      // let result = data?.data?.data?.results?.fee_collections || [];
-      setStaff(data?.data?.data?.results?.users || []);
-    } catch (err) {
-      console.error("Failed to fetch fee collection data", err);
-      // setFilteredData([]); // fallback
-    }
-  };
+    setStaff(data?.data?.data?.results?.users || []);
+  } catch (err) {
+    console.error("❌ Failed to fetch staff data:", err);
+  }
+};
 
 
 
 
+  // console.log(filters);
 
   useEffect(() => {
     fetchData();
     // if (filters.depositStartDate && filters.depositEndDate) {
     // }
   }, [
-    filters.paymentMode,
+    filters.joinedDate,
     filters.status,
     filters?.title,
+    filters?.name,
+    filters?.isSearch,
+    filters?.designations?.length,
   ]);
 
 
-  console.log('selectedStaff', selectedStaff);
+  // console.log('filters =============', filters);
 
 
 
@@ -136,26 +149,30 @@ export const StaffList = ({
 
 
   const menuRef = useRef(null);
+
   const toggleFilter = (filterType, value, event) => {
     // console.log('---- values ----', filterType, value, event);
 
     if (event) {
       event.stopPropagation();
     }
-
     setFilters(prev => {
-      if (prev[filterType].includes(value)) {
-        return {
-          ...prev,
-          [filterType]: prev[filterType].filter(item => item !== value)
-        };
-      } else {
-        return {
-          ...prev,
-          [filterType]: [...prev[filterType], value]
-        };
+
+      const current = prev[filterType];
+      // If current is an array (multi-select), toggle value in the array
+      if (Array.isArray(current)) {
+        if (current.includes(value)) {
+          return { ...prev, [filterType]: current.filter(item => item !== value) };
+        } else {
+          return { ...prev, [filterType]: [...current, value] };
+        }
       }
+      // If scalar (string/date), toggle between value and empty
+      return { ...prev, [filterType]: current === value ? '' : value };
+
+
     });
+
   };
   const clearFilters = () => {
     setFilters({
@@ -255,7 +272,7 @@ export const StaffList = ({
     setIsFilterPanelOpen(!isFilterPanelOpen);
   };
   const getFilterCount = () => {
-    return filters.status.length;
+    return filters?.status?.length + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
   };
 
   const handleStandardChange = (e) => {
@@ -312,26 +329,26 @@ export const StaffList = ({
 
       <StaffFilterPanel
         setFilters={setFilters}
+        filters={filters}
         config={config}
         isFilterPanelOpen={isFilterPanelOpen}
-        filters={filters}
         staffStatus={staffStatus}
+        accountStatus={accountStatus}
         toggleFilter={toggleFilter}
 
       />
 
 
-      {/* <StaffFiltersSummary
-        filteredCount={filteredData.length}
-        totalCount={staff.length}
-        sort={sort}
-        handleSort={handleSort}
-      /> */}
+
       <StaffTable
         columns={['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action']}
         staffs={staff}
         handleClassClick={handleRowClick}
         isLoading={isLoading}
+
+
+        setFilters={setFilters}
+        filters={filters}
 
       />
 

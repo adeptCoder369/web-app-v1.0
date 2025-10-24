@@ -93,7 +93,7 @@ const NotificationPanel = ({ notifications, isOpen, onClose, onMarkRead }) => {
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-1.5 hover:bg-white/20 rounded-full transition-colors"
+                  className="cursor-pointer p-1.5 hover:bg-white/20 rounded-full transition-colors"
                 >
                   <HiX className="text-xl" />
                 </button>

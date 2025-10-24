@@ -3,7 +3,6 @@ import axios from "axios";
 import { API_BASE_URL } from "../config/server";
 // ==================================================================================================
 export async function getStudentList(profile, session, cookyGuid, cookyId) {
-  console.log(profile, session, cookyGuid, cookyId);
 
   // ==================================================================================================
   const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
@@ -26,7 +25,7 @@ export async function getStudentList(profile, session, cookyGuid, cookyId) {
       "guid": cookyGuid,
       "logged_in_user_account_id": cookyId,
       "user_account_id": profile,
-      "client_id": session, 
+      "client_id": session,
       "platform": "android"
       // "version_code": "1.1.2.18"
     });
@@ -109,3 +108,86 @@ export async function patchStudentDetail(payload) {
 }
 // ==================================================================================================
 
+
+
+//========================================================================================================
+
+export const addStudent = async (
+  profile,
+  session,
+  cookyGuid,
+  cookyId,
+
+  payload
+) => {
+
+
+  console.log('=======--------------- payload : ', payload
+  );
+
+  return axios.post(`${API_BASE_URL}/api`, {
+    "api": "student.add",
+    "guid": cookyGuid,
+    "logged_in_user_account_id": cookyId,
+    "user_account_id": profile,
+    "client_id": session,
+    "platform": "web",
+
+    "school_id": "5384",
+    "name": "Test Student v 1.0",
+    "roll_number": "14",
+    "admission_number": "5693",
+    "class_id": "100009",
+    "is_new": "true",
+    "fee_category": "GENERAL",
+    "registration_number": "A/B-Testing666",
+    "aadhar_card_number": "665599665588",
+    "emails": [
+      "well@somemail.com"
+    ],
+    "phones": [
+      3212322345
+    ],
+    "date_of_birth": "1998-01-07",
+    "gender": "MALE",
+    "house_id": "1810",
+    "student_fee_category_id": "GENERAL",
+    "renewal_status": "NEW",
+    "nationality": "INDIAN",
+    "date_of_admission": "2021-01-03",
+    "category": "GENERAL",
+    "religion": "BUDDHISM",
+    "mother_tongue": "HINDI",
+    "address": "Flat 243",
+    "locality": "Lake town",
+    "landmark": "LT Hospital",
+    "pincode": 234567,
+    "city": "NameOfTheCity",
+    "blood_group": "AB-",
+    "height": "132",
+    "weight": "42",
+    "dental_hygiene": "NORMAL",
+    "parents": [
+      {
+        "relation_with_student": "FATHER",
+        "name": "Test Student Father",
+        "gender": "MALE",
+        "phones": [
+          9870123654
+        ],
+        "emails": [
+          "blah@blah.com"
+        ]
+      },
+      {
+        "relation_with_student": "MOTHER",
+        "name": "Test Student Mother",
+        "gender": "FEMALE",
+        "phones": [],
+        "emails": []
+      }
+    ],
+    "registered_phone_for_sms": "9870123654",
+    "emergency_contact_number": "9870123654"
+  });
+};

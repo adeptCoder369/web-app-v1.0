@@ -175,7 +175,7 @@ const UpcomingEvent = ({ context }) => {
       <button
         onClick={() => router.push(`/dashboard/calendar`
         )}
-        className="w-full mt-5 text-sm text-blue-600 hover:text-blue-800 font-medium">
+        className="cursor-pointer w-full mt-5 text-sm text-blue-600 hover:text-blue-800 font-medium">
         View Calendar →
       </button>
     </div>

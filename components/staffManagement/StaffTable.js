@@ -18,7 +18,10 @@ const StaffTable = ({
   handleClassClick = () => { },
   columns = ['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action'],
   isLoading,
-  
+
+  setFilters,
+  filters
+
 
 }) => {
   // Pagination states
@@ -195,10 +198,11 @@ const StaffTable = ({
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
               <input
                 type="text"
-                placeholder="Search staff, subjects..."
+                placeholder="Search by staff name"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
+                  setFilters( prev => ({ ...prev, name: e.target.value }) );
                   setCurrentPage(1);
                 }}
                 className="pl-10 pr-4 py-2.5 w-full sm:w-64 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"

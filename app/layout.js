@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // import { useState, useEffect } from "react";
 import { AuthProvider } from "../context/auth";
 import ClientProviders from "./ClientProviders";
+import { StudentProvider } from "../context/studentContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +32,10 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClientProviders>
+          <StudentProvider>
 
-          {children}
+            {children}
+          </StudentProvider>
         </ClientProviders>
         {/* <QueryClientProvider client={queryClient}>
           <AuthProvider>

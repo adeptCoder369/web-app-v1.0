@@ -5,46 +5,59 @@ import {
     Plus,
     Edit2,
     Trash2,
-    Search,
-    Filter,
     MoreVertical,
     BookOpen,
     GraduationCap,
     ChevronDown,
     ChevronRight,
     UserPlus,
-    Settings,
-    Download,
-    Upload,
     Eye,
     PieChart,
-    BarChart3,
     School,
-    Mars,
-    Venus,
+    Menu,
+    Download,
+
 
 } from 'lucide-react';
-import Layout from '../../layouts/Layout';
 import { getSessionCache } from '../../utils/sessionCache';
 import StudentsModal from '../ui/tables/modernTable/component/StudentsModal';
-import { FaDownload, FaFileCsv, FaFileExcel } from 'react-icons/fa';
+import { FaDownload, FaFileCsv, FaFileExcel, FaSortAlphaDown } from 'react-icons/fa';
 import { addClass, editClass } from '../../api/classes';
 import TooltipInfo from '../ui/tooltip/TooltipInfo';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
+import { AddStandardModal } from './AddStandardClassModal'
+import { EditClassModal } from './EditClassModal'
+import { QuickStats } from './QuickStats'
 
+import ConfirmationDialogueBox from '../ui/status/Confirmation';
+import { useRouter } from 'next/navigation';
+import { useStudent } from '../../context/studentContext';
+
+// ==========================================================================================
 const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
     { label: "Manage Standards & Classes" },
 ];
-// ==================================================================
+// ==========================================================================================
 
 
 const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard, setReloadKey }) => {
+
+    const router = useRouter()
+
+    const { selectedStudent, setSelectedStudent } = useStudent()
+
+
+
+
     const [showModal, setShowModal] = useState(false);
 
-    console.log('**********dashboardConfig************', dashboardConfig);
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [confirmArrangeRole, setConfirmArrangeRole] = useState(false)
 
+    const [openDropdownId, setOpenDropdownId] = useState(null);
+    const [subOpenId, setSubOpenId] = useState(null);
     useEffect(() => {
         if (!dashboardConfig) {
             reloadDashboard(); // forces Layout to fetch fresh config
@@ -80,13 +93,6 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
     const teachers = config?.users?.filter(
         (user) => user?.designation?.role?.is_teaching_staff === '1'
     );
-    // console.log(';;;;;;;;;;;;', config?.standards);
-
-    // useEffect(() => {
-    //     const dashboardConfig = getSessionCache("dashboardConfig");
-    //     setConfig(dashboardConfig)
-
-    // }, [stateChanged]);
 
 
     useEffect(() => {
@@ -95,8 +101,6 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
             setSelectedTeacher(selectedItem.data.class_teacher?.id || '');
         }
     }, [showEditModal, selectedItem]);
-
-
 
 
 
@@ -122,7 +126,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
 
     };
-    console.log('=====standards====', standards);
+    // console.log('=====standards====', standards);
 
     const totalStudents = standards?.reduce(
         (sum, std) =>
@@ -252,8 +256,27 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
 
 
+    const handleConfirmation = async (classData) => {
+        setSelectedClass(classData)
+        if (!selectedStandard) return;
+        setConfirmDelete(true)
 
 
+    };
+
+
+    const handleConfirmationArrangeRole = async (classData) => {
+        setConfirmArrangeRole(true)
+
+
+    };
+
+
+    const handleSelectStudent = async (data) => {
+        setSelectedStudent(data)
+        // Current page
+        router.push('/dashboard/student-management');
+    };
 
     // ==================================================================
     return (
@@ -291,7 +314,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                     <div className="relative">
                                         <button
                                             onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
-                                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                                            className="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
                                         >
                                             <FaDownload className="text-sm" />
                                             <span className="font-medium">Export</span>
@@ -305,7 +328,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
                                                     <button
                                                         onClick={downloadExcel}
-                                                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                                                        className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                                                     >
                                                         <FaFileExcel className="text-green-700" />
                                                         <span>Export Class-wise</span>
@@ -315,16 +338,13 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                         )}
                                     </div>
 
-                                    {/* <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                                    <Upload className="w-4 h-4" />
-                                    Import Data
-                                </button> */}
+
                                     <button
                                         onClick={() => {
                                             setModalType('standard');
                                             setShowAddModal(true);
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                        className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                                     >
                                         <Plus className="w-4 h-4" />
                                         Add Standard
@@ -455,69 +475,6 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
                         </div>
 
-                        {/* ============================  Controls ============================  */}
-                        {/* <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-                            <div className="flex flex-wrap gap-4 items-center justify-between">
-                                <div className="flex flex-wrap gap-4 items-center">
-                                    <div className="relative">
-                                        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            placeholder="Search standards or classes..."
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
-                                        />
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                    <Filter className="w-4 h-4 text-gray-500" />
-                                    <select
-                                        value={selectedStandard}
-                                        onChange={(e) => setSelectedStandard(e.target.value)}
-                                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="all">All Standards</option>
-                                        {Object.entries(standards).map(([key, standard]) => (
-                                            <option key={key.id} value={key.id}>{standard.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                    <div className="flex bg-gray-100 rounded-lg p-1">
-                                        <button
-                                            onClick={() => setViewMode('list')}
-                                            className={`px-3 py-1 rounded-md text-sm transition-colors ${viewMode === 'list'
-                                                ? 'bg-white text-gray-900 shadow-sm'
-                                                : 'text-gray-600 hover:text-gray-900'
-                                                }`}
-                                        >
-                                            List View
-                                        </button>
-                                        <button
-                                            onClick={() => setViewMode('grid')}
-                                            className={`px-3 py-1 rounded-md text-sm transition-colors ${viewMode === 'grid'
-                                                ? 'bg-white text-gray-900 shadow-sm'
-                                                : 'text-gray-600 hover:text-gray-900'
-                                                }`}
-                                        >
-                                            Grid View
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <button className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">
-                                        <BarChart3 className="w-4 h-4" />
-                                        Analytics
-                                    </button>
-                                    <button className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">
-                                        <Settings className="w-4 h-4" />
-                                        Settings
-                                    </button>
-                                </div>
-                            </div>
-                        </div> */}
 
                         {/* Main Content */}
                         {viewMode === 'list' ? (
@@ -525,7 +482,6 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                             <div className="space-y-4">
                                 {Object.entries(filteredData).map(([standardKey, standardData]) => {
 
-                                    // console.log('===== standardData=====', standardData);
 
                                     return (
                                         <div
@@ -561,20 +517,12 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                 {standardData.classes?.reduce((sum, cls) => sum + (cls.students?.length || 0), 0)} Students
                                                             </span>
                                                             <span className="text-gray-800">|</span>
-                                                            {/* <div className='flex items-center gap-1'>
-                                                            <Mars size={14} /> {standardData.student_count?.MALE}
-                                                        </div>
-                                                        <div className='flex items-center gap-1'>
-                                                            <Venus size={14} /> {standardData.student_count?.FEMALE}
-                                                        </div> */}
-                                                            {/* <span><Mars size={14}/> {standardData.student_count?.MALE}</span>
-                                                    <span>Female: {standardData.student_count?.FEMALE}</span> */}
+
                                                         </div>
                                                     </div>
 
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex items-center gap-2">
-                                                            {/* <span className="text-sm text-gray-600">Subjects: {standardData.subjects.length}</span> */}
                                                             <span className="text-sm text-gray-600">Exams: {standardData?.fees?.length}</span>
                                                         </div>
 
@@ -599,15 +547,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                                     Class Teacher
                                                                 </th>
-                                                                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                                Students
-                                                            </th> */}
-                                                                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Room
-                                                        </th> */}
-                                                                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                                Performance
-                                                            </th> */}
+
                                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                                     Actions
                                                                 </th>
@@ -619,97 +559,370 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
                                                                     key={classData.id} className="hover:bg-gray-50">
                                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                                        <TooltipInfo text='View Students'>
 
-                                                                            <div className="flex items-center">
-                                                                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                                                                    <BookOpen className="w-4 h-4 text-blue-600" />
-                                                                                </div>
-                                                                                <div
-                                                                                    className='bg-white'
-                                                                                    onClick={() => {
-                                                                                        setSelectedClass(classData);
-                                                                                        setShowModal(true)
-                                                                                    }}
-                                                                                >
-                                                                                    <div className="text-sm font-medium text-gray-900">{classData.section}</div>
-                                                                                    <div className="cursor-pointer text-sm text-gray-500">{classData?.students?.length} Students</div>
-
-
-                                                                                </div>
+                                                                        <div className="flex items-center">
+                                                                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                                                                <BookOpen className="w-4 h-4 text-blue-600" />
                                                                             </div>
-                                                                        </TooltipInfo>
+                                                                            <div
+                                                                                className='bg-white'
+
+                                                                            >
+                                                                                <div className="text-sm font-medium text-gray-900">{classData.section}</div>
+                                                                                <div className=" text-sm text-gray-500">{classData?.students?.length} Students</div>
+
+
+                                                                            </div>
+                                                                        </div>
                                                                     </td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                                         {classData.class_teacher?.name}
                                                                     </td>
-                                                                    {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="flex items-center">
-                                                                        <span className={`text-sm font-medium ${getOccupancyColor(classData.students.length, classData.capacity)}`}>
-                                                                            {classData.total_number_of_students}/{120}
-                                                                        </span>
-                                                                        <div className="ml-2 w-16 bg-gray-200 rounded-full h-2">
-                                                                            <div
-                                                                                className={`h-2 rounded-full ${(classData.students / classData.capacity) >= 0.95 ? 'bg-red-500' :
-                                                                                    (classData.students / classData.capacity) >= 0.85 ? 'bg-yellow-500' : 'bg-green-500'
-                                                                                    }`}
-                                                                                style={{ width: `${(classData.students / classData.capacity) * 100}%` }}
-                                                                            ></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </td> */}
-                                                                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                                Room {classData.room}
-                                                            </td> */}
-                                                                    {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPerformanceColor(classData.performance)}`}>
-                                                                        {classData.performance}%
-                                                                    </span>
-                                                                </td> */}
-                                                                    < td className="px-6 py-4 whitespace-nowrap text-sm font-medium" >
-                                                                        <div className="flex items-center gap-2">
-                                                                            <button className="text-blue-600 hover:text-blue-900">
-                                                                                <Eye className="w-4 h-4" />
-                                                                            </button>
-                                                                            <button
-                                                                                onClick={() => {
-                                                                                    setSelectedItem({ type: 'class', standardKey, data: classData });
-                                                                                    setModalType('class');
-                                                                                    setShowEditModal(true);
-                                                                                    setSelectedClassId(classData)
 
-                                                                                }}
-                                                                                className="text-gray-600 hover:text-gray-900"
-                                                                            >
-                                                                                <Edit2 className="w-4 h-4" />
-                                                                            </button>
-                                                                            <button className="text-green-600 hover:text-green-900">
-                                                                                <UserPlus className="w-4 h-4" />
-                                                                            </button>
-                                                                            <button className="text-red-600 hover:text-red-900">
-                                                                                <Trash2 className="w-4 h-4" />
-                                                                            </button>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                                        <div className="flex items-center gap-2">
+
+                                                                            {/* View Students */}
+                                                                            <TooltipInfo text="View Students">
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        setShowModal(true);
+                                                                                        setSelectedClass(classData);
+                                                                                    }}
+                                                                                    className="cursor-pointer text-blue-600 hover:text-blue-900"
+                                                                                >
+                                                                                    <Eye className="w-4 h-4" />
+                                                                                </button>
+                                                                            </TooltipInfo>
+
+                                                                            {/* Edit Class */}
+                                                                            <TooltipInfo text="Edit Class">
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        setSelectedItem({ type: "class", standardKey, data: classData });
+                                                                                        setModalType("class");
+                                                                                        setShowEditModal(true);
+                                                                                        setSelectedClassId(classData);
+                                                                                    }}
+                                                                                    className="cursor-pointer text-gray-600 hover:text-gray-900"
+                                                                                >
+                                                                                    <Edit2 className="w-4 h-4" />
+                                                                                </button>
+                                                                            </TooltipInfo>
+
+                                                                            {/* Arrange Roll No. */}
+                                                                            <TooltipInfo text="Arrange Roll No. by Name">
+                                                                                <button
+                                                                                    onClick={() => handleConfirmationArrangeRole(classData)}
+                                                                                    className="cursor-pointer text-green-600 hover:text-green-800"
+                                                                                >
+                                                                                    <FaSortAlphaDown className="w-4 h-4" />
+                                                                                </button>
+                                                                            </TooltipInfo>
+
+                                                                            {/* Remove All Students */}
+                                                                            <TooltipInfo text="Remove All Students">
+                                                                                <button
+                                                                                    onClick={() => handleConfirmation(classData)}
+                                                                                    className="cursor-pointer text-red-600 hover:text-red-800"
+                                                                                >
+                                                                                    <Trash2 className="w-4 h-4" />
+                                                                                </button>
+                                                                            </TooltipInfo>
+
+                                                                            {/* Downloads Dropdown */}
+                                                                            <div className="relative inline-block text-left">
+                                                                                {/* Main Button */}
+                                                                                <button
+                                                                                    onClick={() =>
+                                                                                        setOpenDropdownId(openDropdownId === classData.id ? null : classData.id)
+                                                                                    }
+                                                                                    className="cursor-pointer text-gray-600 hover:text-gray-900 flex items-center gap-1 px-2 py-1 border rounded-md text-sm md:text-base"
+                                                                                >
+                                                                                    <Download className="w-4 h-4 md:w-5 md:h-5" />
+                                                                                </button>
+
+                                                                                {/* Dropdown List */}
+                                                                                {openDropdownId === classData.id && (
+                                                                                    <div className="absolute right-0 mt-2 w-48 md:w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 overflow-auto max-h-60">
+                                                                                        <ul className="flex flex-col">
+                                                                                            {/* PDF */}
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "pdf")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    Folder
+                                                                                                </button>
+                                                                                            </li>
+
+                                                                                            {/* Excel */}
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "excel")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    Id Card
+                                                                                                </button>
+                                                                                            </li>
+
+                                                                                            {/* CSV */}
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    Admit Card
+                                                                                                </button>
+                                                                                            </li>
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    PTM Sheet
+                                                                                                </button>
+                                                                                            </li>
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    Student Details
+                                                                                                </button>
+                                                                                            </li>
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    Login Credentials
+                                                                                                </button>
+                                                                                            </li>
+                                                                                            {/* Nested Example */}
+                                                                                            <li className="relative">
+                                                                                                <button
+                                                                                                    onClick={() =>
+                                                                                                        setSubOpenId(subOpenId === classData.id ? null : classData.id)
+                                                                                                    }
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
+                                                                                                >
+                                                                                                    Proof Reading
+                                                                                                    <span
+                                                                                                        className={`ml-2 transition-transform ${subOpenId === classData.id ? "rotate-90" : ""
+                                                                                                            }`}
+                                                                                                    >
+                                                                                                        ▶
+                                                                                                    </span>
+                                                                                                </button>
+
+                                                                                                {subOpenId === classData.id && (
+                                                                                                    <ul className="ml-4 mt-1 flex flex-col border-l border-gray-200">
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "json")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Soft Copy(.xlsx)
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Hard Copy(.pdf)
+
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Background Download
+
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Soft Copy(mobiATTENDANCE)(.xlsx)
+
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Hard Copy-A4(mobiATTENDANCE)(.pdf)
+
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Hard Copy-A4(mobiATTENDANCE)(.pdf)
+
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                    </ul>
+                                                                                                )}
+                                                                                            </li>
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                                            <li className="relative">
+                                                                                                <button
+                                                                                                    onClick={() =>
+                                                                                                        setSubOpenId(subOpenId === classData.id ? null : classData.id)
+                                                                                                    }
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
+                                                                                                >
+                                                                                                    Class Change
+                                                                                                    <span
+                                                                                                        className={`ml-2 transition-transform ${subOpenId === classData.id ? "rotate-90" : ""
+                                                                                                            }`}
+                                                                                                    >
+                                                                                                        ▶
+                                                                                                    </span>
+                                                                                                </button>
+
+                                                                                                {subOpenId === classData.id && (
+                                                                                                    <ul className="ml-4 mt-1 flex flex-col border-l border-gray-200">
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "json")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Soft Copy(.xlsx)
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Hard Copy(.pdf)
+
+                                                                                                            </button>
+                                                                                                        </li>
+
+                                                                                                    </ul>
+                                                                                                )}
+                                                                                            </li>
+
+
+
+
+
+                                                                                            <li className="relative">
+                                                                                                <button
+                                                                                                    onClick={() =>
+                                                                                                        setSubOpenId(subOpenId === classData.id ? null : classData.id)
+                                                                                                    }
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
+                                                                                                >
+                                                                                                    Download A4 Marksheet
+                                                                                                    <span
+                                                                                                        className={`ml-2 transition-transform ${subOpenId === classData.id ? "rotate-90" : ""
+                                                                                                            }`}
+                                                                                                    >
+                                                                                                        ▶
+                                                                                                    </span>
+                                                                                                </button>
+
+                                                                                                {subOpenId === classData.id && (
+                                                                                                    <ul className="ml-4 mt-1 flex flex-col border-l border-gray-200">
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "json")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Download Full
+                                                                                                            </button>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <button
+                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                            >
+                                                                                                                Choose Options
+
+                                                                                                            </button>
+                                                                                                        </li>
+
+                                                                                                    </ul>
+                                                                                                )}
+                                                                                            </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+
+
                                                                         </div>
                                                                     </td>
+
                                                                 </tr>
                                                             ))}
                                                         </tbody>
                                                     </table>
 
                                                     {/* Add Class Button */}
-                                                    <div className=" px-6 py-4 border-t border-gray-200 bg-gray-50">
+                                                    <div className="px-6 py-4 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50/10 hover:from-blue-50 hover:to-blue-100/20 transition-colors duration-300">
                                                         <button
                                                             onClick={() => {
                                                                 setSelectedItem({ standardKey });
                                                                 setModalType('class');
                                                                 setShowAddModal(true);
                                                             }}
-                                                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
+                                                            className="cursor-pointer flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:scale-[1.02] transition-all duration-200"
                                                         >
-                                                            <Plus className="w-4 h-4" />
+                                                            <span className="p-1.5 bg-blue-100/70 rounded-full shadow-sm">
+                                                                <Plus className="w-4 h-4 text-blue-600" />
+                                                            </span>
                                                             Add New Class to {standardData.name}
                                                         </button>
                                                     </div>
+
                                                 </div>
                                             )}
                                         </div>
@@ -807,248 +1020,35 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
                         {/* Add Modal */}
                         {showAddModal && (
-                            <div className="fixed inset-0   backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
-                                <div className="bg-white border border-accent ring-2 rounded-lg p-6 w-full max-w-md">
-                                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                        Add New {modalType === 'standard' ? 'Standard' : 'Class'}
-                                    </h2>
-
-                                    <form className="space-y-4">
-                                        {modalType === 'standard' ? (
-                                            <>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Standard Name
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="e.g., 11th Standard"
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Class Teacher
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="e.g., Mrs. Priya Sharma"
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Number of Classes
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        placeholder="4"
-                                                        min="1"
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-
-
-
-
-
-
-
-
-
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Section
-                                                    </label>
-                                                    <input
-                                                        value={section}
-                                                        id={section}
-                                                        type="text"
-                                                        placeholder="e.g., VI-E"
-                                                        onChange={(e) => setSection(e.target.value)}
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Class Teacher
-                                                    </label>
-                                                    <select
-                                                        onClick={(value) => setSelectedTeacher(value.target.value)}
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                        <option value="Morning">Choose Teacher</option>
-                                                        {teachers?.map(teacher => <option value={teacher?.id}>{teacher?.name}</option>)}
-                                                    </select>
-                                                </div>
-
-                                            </>
-                                        )}
-                                    </form>
-
-                                    <div className="flex justify-end gap-3 mt-6">
-                                        <button
-                                            onClick={() => setShowAddModal(false)}
-                                            className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            onClick={handleAddClass}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                        >
-                                            {!loading ? 'Add  Class' : 'saving ...'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <AddStandardModal
+                                modalType={modalType}
+                                teachers={teachers}
+                                handleAddClass={handleAddClass}
+                                loading={loading}
+                                setShowAddModal={setShowAddModal}
+                            />
                         )}
 
                         {/* Edit Modal */}
                         {showEditModal && selectedItem && (
-                            <div className="fixed inset-0   backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
-                                <div className="bg-white border border-accent ring-2 rounded-lg p-6 w-full max-w-md">
-                                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                        Edit {selectedItem.type === 'standard' ? 'Standard' : 'Class'}
-                                    </h2>
-
-                                    <form className="space-y-4">
-                                        {selectedItem.type === 'class' && (
-                                            <>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Section
-                                                    </label>
-                                                    <input
-                                                        value={section}
-                                                        type="text"
-                                                        placeholder="e.g., VI-E"
-                                                        onChange={(e) => setSection(e.target.value)}
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Class Teacher
-                                                    </label>
-
-                                                    <select
-                                                        value={selectedTeacher}
-                                                        onChange={(e) => setSelectedTeacher(e.target.value)}
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    >
-                                                        <option value="">Choose Teacher</option>
-                                                        {teachers?.map(teacher => (
-                                                            <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                {/* <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Class Teacher
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    defaultValue={selectedItem.data.classTeacher}
-                                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div> */}
-                                                {/* <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Room Number
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        defaultValue={selectedItem.data.room}
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Capacity
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        defaultValue={selectedItem.data.capacity}
-                                                        min="1"
-                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </div> */}
-                                                {/* <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Current Students
-                                                </label>
-                                                <input
-                                                    type="number"
-                                                    defaultValue={selectedItem.data.students}
-                                                    min="0"
-                                                    max={selectedItem.data.capacity}
-                                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div> */}
-                                                {/* <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Schedule
-                                                </label>
-                                                <select
-                                                    defaultValue={selectedItem.data.schedule}
-                                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                >
-                                                    <option value="Morning">Morning Shift</option>
-                                                    <option value="Afternoon">Afternoon Shift</option>
-                                                </select>
-                                            </div> */}
-                                            </>
-                                        )}
-                                    </form>
-
-                                    <div className="flex justify-end gap-3 mt-6">
-                                        <button
-                                            onClick={() => {
-                                                setShowEditModal(false);
-                                                setSelectedItem(null);
-                                            }}
-                                            className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            onClick={handleEditClass}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                        >
-                                            {!loading ? 'Save Changes' : 'saving ...'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <EditClassModal
+                                setShowEditModal={setShowEditModal}
+                                selectedItem={selectedItem}
+                                section={section}
+                                teachers={teachers}
+                                handleEditClass={handleEditClass}
+                                selectedTeacher={selectedTeacher}
+                                loading={loading}
+                                setSection={setSection}
+                                setSelectedTeacher={setSelectedTeacher}
+                            />
                         )}
 
                         {/* Quick Stats Summary */}
-                        <div className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Academic Summary</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-blue-600">{standards.reduce((sum, std) => sum + (std?.classes?.length || 0), 0)}</div>
-                                    <div className="text-sm text-gray-600">Total Classes</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-green-600">{stats.totalStudents}</div>
-                                    <div className="text-sm text-gray-600">Total Enrollment</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-purple-600">{stats.totalCapacity}</div>
-                                    <div className="text-sm text-gray-600">Total Capacity</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-yellow-600">{stats.occupancyRate}%</div>
-                                    <div className="text-sm text-gray-600">Occupancy Rate</div>
-                                </div>
-                            </div>
-                        </div>
+                        <QuickStats
+                            standards={standards}
+                            stats={stats}
+                        />
                     </div >
                 </div >
 
@@ -1056,15 +1056,34 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
 
 
-            {
-                showModal ? (
-                    <StudentsModal
-                        selectedData={selectedClass}
-                        onClose={() => setShowModal(false)}
-                    />
-                ) : null
-            }
+            {showModal && (
+                <StudentsModal
+                    selectedData={selectedClass}
+                    onSelectStudent={handleSelectStudent}
+                    onClose={() => {
+                        setShowModal(false);
+                        setSelectedClass(null);
+                    }} />)}
 
+
+
+
+            {confirmDelete && (
+                <ConfirmationDialogueBox
+                    title="Remove All Students?"
+                    description={`Are you sure you want to delete all students from the ${selectedClass?.name}?`}
+                    // onConfirm={handleLeadConversion}
+                    onCancel={() => setConfirmDelete(false)} // Close modal if canceled
+                />
+            )}
+            {confirmArrangeRole && (
+                <ConfirmationDialogueBox
+                    title="Arrange Roll No. By Names?"
+                    description={`Are you sure you want to arrange the roll number by name ?`}
+                    // onConfirm={handleLeadConversion}
+                    onCancel={() => setConfirmArrangeRole(false)} // Close modal if canceled
+                />
+            )}
         </>
     );
 };

@@ -7,54 +7,45 @@ const { FaTimes } = commonIcons;
 const StaffFiltersSummary = ({ filters, toggleFilter, clearFilters }) => {
 
 
-    // console.log('---------- filters -------->',filters);
 
 
     const getDisplayedFilters = () => {
         const allFilters = [];
+        const safeFilters = filters || {};
+        const { joinedDate, title, status = [] } = safeFilters;
 
-        // filters.modules.forEach(module => {
-        //     allFilters.push({
-        //         type: 'modules',
-        //         value: typeof module === 'string' ? module : module.moduleName // FIX: use string
-        //     });
-        // });
-
-        // filters.modules.forEach(module => {
-        //     allFilters.push({
-        //         type: 'studentStauts',
-        //         value: typeof module === 'string' ? module : module.moduleName // FIX: use string
-        //     });
-        // });
-
-        if (filters.paymentMode) {
+        if (joinedDate) {
             allFilters.push({
-                type: 'paymentMode',
-                value: filters.paymentMode, // no .name, it's just a string
+                type: 'joinedDate',
+                value: joinedDate,
             });
         }
 
-
-        if (filters.title) {
+        if (title) {
             allFilters.push({
                 type: 'title',
-                value: filters.title, // no .name, it's just a string
+                value: title,
             });
         }
-        filters.status.forEach(status => {
+
+        (Array.isArray(status) ? status : []).forEach(s => {
             allFilters.push({
                 type: 'status',
-                value: status
+                value: s,
             });
         });
+        // console.log('---------- allFilters -------->', allFilters);
 
         return allFilters;
     };
 
 
 
-    const a = getDisplayedFilters()
+    const displayedFilters = getDisplayedFilters();
 
+    if (displayedFilters.length === 0) {
+        return null;
+    }
     if (getDisplayedFilters().length === 0) {
         return null;
     }
@@ -63,27 +54,25 @@ const StaffFiltersSummary = ({ filters, toggleFilter, clearFilters }) => {
         <div className="flex flex-wrap items-center gap-2 p-4">
             <span className="text-sm font-medium text-gray-500">Active filters:</span>
 
-            {getDisplayedFilters().map((filter, index) => {
-                // console.log('filters =filter=========', filter);
-
+            {displayedFilters.map((filter, index) => {
                 return (
                     <div
                         key={index}
                         className="flex items-center bg-white border border-gray-300 rounded-full px-3 py-1 text-sm"
                     >
                         <span className="capitalize mr-1">
-                            {filter.type === 'paymentMode' ? 'Mode' : filter.type === 'categories' ? 'Category' : 'Status'}:
+                            {filter.type === 'paymentMode' ? 'Mode' : filter.type}:
                         </span>
                         <span className="font-medium flex items-center">
-                            {filter.type === 'paymentMode' && paymentModeIcons[filter.value] && (
-                            <span className="mr-1">{paymentModeIcons[filter.value]}</span>
-                        )}
-                            {/* {filter.type === 'categories' && categoryIcons[filter.value] && (
-                            <span className="mr-1">{categoryIcons[filter.value]}</span>
-                        )} */}
+                            {filter.type === 'paymentMode' && staffStatusIcons[filter.value] && (
+                                <span className="mr-1">{staffStatusIcons[filter.value]}</span>
+                            )}
                             {filter.type === 'status' && staffStatusIcons[filter.value] && (
-                            <span className="mr-1">{staffStatusIcons[filter.value]}</span>
-                        )}
+                                <span className="mr-1">{staffStatusIcons[filter.value]}</span>
+                            )}
+                            {filter.type === 'title' && (
+                                <span className="mr-1 w-4">{staffStatusIcons?.title}</span>
+                            )}
                             {filter.value}
                         </span>
                         <button
@@ -93,7 +82,6 @@ const StaffFiltersSummary = ({ filters, toggleFilter, clearFilters }) => {
                             <FaTimes size={14} />
                         </button>
                     </div>
-
                 )
             })}
 

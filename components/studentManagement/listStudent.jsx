@@ -7,8 +7,6 @@ import Loader from '../../components/ui/status/LoaderWIthoutBgBlurr';
 export const StudentList = ({ students, setSelectedStudent, setActiveTab, loading }) => {
   const [openMenu, setOpenMenu] = useState(null);
   const menuRef = useRef(null);
-  console.log(students, '--- students -----===-----');
-
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {

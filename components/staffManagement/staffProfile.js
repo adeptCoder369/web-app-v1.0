@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Book, Users, Heart, Award, Shield, Bus, Globe, Church, Cake } from 'lucide-react';
 import { FaEdit } from 'react-icons/fa';
-import { getStudentDetail, patchStudentDetail } from '../../api/student';
-import { GiTempleDoor } from 'react-icons/gi';
-import { getStaffDetails } from '../../api/staff';
+
+import { getStaffDetails, patchStaffDetail } from '../../api/staff';
 import { getSessionCache } from '../../utils/sessionCache';
+
 const getInitials = (name) => {
   return name
     .split(' ')
@@ -13,6 +13,7 @@ const getInitials = (name) => {
     .join('')
     .slice(0, 2);
 };
+
 const StaffProfile = ({
   bloodGroupsOptions,
   religionsOptions,
@@ -21,7 +22,8 @@ const StaffProfile = ({
   session,
   cookyGuid,
   cookyId,
-  school
+  school,
+
 }) => {
 
   const context = getSessionCache("dashboardContext");
@@ -65,7 +67,6 @@ const StaffProfile = ({
 
 
   const [activeTab, setActiveTab] = useState('personal');
-  console.log('------------- $ staffDetail--------', staffDetail);
 
 
   // ====================================================================
@@ -111,8 +112,10 @@ const StaffProfile = ({
     setError(null); // Clear previous errors
 
     try {
+      console.log(' ==========', profile,session);
+
       // Replace with your actual API endpoint and store ID
-      const response = await patchStudentDetail(
+      const response = await patchStaffDetail(
         {
           "user_account_id": profile,
           "client_id": session,
@@ -126,7 +129,7 @@ const StaffProfile = ({
           name
         }
       )
-      // body: JSON.stringify({ name: name.trim() }),
+      console.log('rsp ==========', response);
 
       if (!response?.data?.status == 200) {
         const errorData = await response.json();
@@ -312,7 +315,6 @@ const StaffProfile = ({
       );
 
 
-      console.log('resp ==========', response);
 
 
       if (!response?.success) {
@@ -494,8 +496,7 @@ const StaffProfile = ({
           <div className="flex space-x-1 p-1">
             {[
               { id: 'personal', label: 'Personal Details', icon: User },
-              // { id: 'parents', label: 'Parents', icon: Users },
-              // { id: 'academic', label: 'Academic Info', icon: Book }
+              { id: 'academic', label: 'Academic Info', icon: Book }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -754,7 +755,7 @@ const StaffProfile = ({
 
         {activeTab === 'academic' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <InfoCard icon={Book} title="Class" value={staffDetail.class.name} />
+            <InfoCard icon={Book} title="Class Assigned" value={staffDetail.class.name} />
             <InfoCard icon={Shield} title="Roll Number" value={staffDetail.roll_number} />
             <InfoCard icon={Award} title="Registration Number" value={staffDetail.registration_number ? staffDetail.registration_number : "n/a"} />
             <InfoCard icon={Shield} title="Aadhar Card" value={staffDetail.aadhar_card_number} />

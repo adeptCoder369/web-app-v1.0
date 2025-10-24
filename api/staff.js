@@ -102,15 +102,46 @@ export const addStaff = async (
     "gender": payload?.gender,
     "school_designation_id": payload?.school,
     "class_id": payload?.class,
-    // "date_of_birth": "1981-01-21",
-    // "joining_date": "2021-01-03",
-    // "is_enabled_for_invoice_notification": "1",
-    // "emails": "something@somemail.com",
-    // "phones": '7392988369'
-    // "emergency_contact_number": "1239870455",
-    // "father_name": "Test User Father",
-    // "mother_name": "Test User Mother",
-    // "aadhaar_number": "669933225566",
-    // "address": "Somewhere in some place"
+    "date_of_birth": payload?.dateOfBirth,
+    "joining_date": payload?.joiningDate,
+    "is_enabled_for_invoice_notification": payload?.invoiceNotificationEnabled,
+    "emails": payload?.email,
+    "phones": payload?.phone,
+    "emergency_contact_number": payload?.emergencyPhone,
+    "father_name": payload?.fatherName,
+    "mother_name": payload?.motherName,
+    "aadhaar_number": payload?.aadhaar,
+    "address": payload?.currentAddress,
   });
 };
+
+
+
+
+//========================================================================================================
+export async function patchStaffDetail(payload) {
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+  let finalPayloadd = {
+    "api": "user.edit",
+    logged_in_user_account_id: resolvedUserId,
+    "guid": resolvedGuid,
+    "platform": "web",
+    ...payload,
+  }
+  // console.log('finalPayloadd', finalPayloadd);
+
+  // ==================================================================================================
+  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
+  // ==================================================================================================
+
+  try {
+    const response = await axios.post(`${API_BASE_URL_}/api`, finalPayloadd);
+
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
+  }
+}

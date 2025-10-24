@@ -26,14 +26,14 @@ const ConfirmationDialogueBox = ({ onConfirm, onCancel, title, description }) =>
                 <div className="flex gap-4">
                     <button
                         onClick={onConfirm}
-                        className="bg-error w-full text-white py-2 px-8 rounded-full text-sm transition ease-in-out"
+                        className="cursor-pointer bg-error w-full text-white py-2 px-8 rounded-full text-sm transition ease-in-out"
                     >
                         Yes
                     </button>
 
                     <button
                         onClick={onCancel}
-                        className="bg-gray-300 w-full text-gray-800 py-2 px-8 rounded-full text-sm transition ease-in-out"
+                        className="cursor-pointer bg-gray-300 w-full text-gray-800 py-2 px-8 rounded-full text-sm transition ease-in-out"
                     >
                         Cancel
                     </button>

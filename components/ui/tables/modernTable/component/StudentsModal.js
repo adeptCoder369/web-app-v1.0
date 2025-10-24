@@ -1,87 +1,14 @@
 import dynamic from 'next/dynamic';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { BiArchive, BiPackage, BiTag } from 'react-icons/bi';
-import { CiShoppingCart } from 'react-icons/ci';
-import { FaDollarSign, FaEye, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaChalkboardTeacher, FaUser, FaUserGraduate } from 'react-icons/fa';
+import { BiTag } from 'react-icons/bi';
+import { FaMapMarkerAlt, FaPhone, FaChalkboardTeacher, FaUser, FaUserGraduate } from 'react-icons/fa';
 import { FaX } from 'react-icons/fa6';
-import { FcPackage } from 'react-icons/fc';
 import { FiFileText, FiLayers } from 'react-icons/fi';
-import { MdDeliveryDining } from 'react-icons/md'; // Import the new icon
-import { CiUser } from "react-icons/ci";
+import TooltipInfo from '../../../tooltip/TooltipInfo';
 
 
-{/* //====================================================================== */ }
-
-const ImageCarousel = ({ images }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  if (!images || images.length === 0) {
-    return (
-      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center rounded-2xl">
-        <CiUser className="w-16 h-16 text-gray-400" />
-      </div>
-    );
-  }
-
-  const nextImage = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  return (
-    <div className="relative w-full h-full group ">
-      <div className="w-full h-full rounded-2xl overflow-hidden">
-        <img
-          src={images[currentIndex]}
-          alt={`Product image ${currentIndex + 1}`}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => {
-            e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48L2xpbmVhcjxncmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMC alturasPSIyMDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmUibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOWNhM2FmIiBmb250LXNpemU9IjE0Ij5ObyBJbWFnZTwvdGV4dD48L2x2Zz4=";
-          }}
-        />
-      </div>
-
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={prevImage}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={nextImage}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-200 ${index === currentIndex
-                  ? 'bg-white scale-125'
-                  : 'bg-white/50 hover:bg-white/80'
-                  }`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
-{/* //====================================================================== */ }
+//====================================================================== */ }
 
 // InfoCard Component (remains the same)
 const InfoCard = ({ icon: Icon, label, value, className = "" }) => (
@@ -100,7 +27,7 @@ const InfoCard = ({ icon: Icon, label, value, className = "" }) => (
 {/* //====================================================================== */ }
 
 // OrderDetailModal Component (with new button)
-const StudentsModal = ({ selectedData }) => {
+const StudentsModal = ({ selectedData, onClose, onSelectStudent }) => {
   // console.log('selectedData', selectedData);
 
   {/* //====================================================================== */ }
@@ -116,39 +43,10 @@ const StudentsModal = ({ selectedData }) => {
 
 
 
-  const handleOverlayClick = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      handleClose();
-    }
-  };
-  const handleClose = () => {
-    setIsVisible(false);
-  };
-  if (!selectedData) return null;
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'paid':
-        return 'bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-800 border-emerald-200';
-      case 'pending':
-        return 'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-800 border-amber-200';
-      case 'cancelled':
-        return 'bg-gradient-to-r from-red-50 to-rose-50 text-red-800 border-red-200';
-      default:
-        return 'bg-gradient-to-r from-gray-50 to-slate-50 text-gray-800 border-gray-200';
-    }
-  };
 
-  const calculateTotalPrice = (items) => {
-    if (!Array.isArray(items) || items.length === 0) return 0;
-    return items.reduce((total, item) => {
-      // Only add if item and quantity are valid numbers
-      if (item && typeof item.quantity === "number" && !isNaN(item.quantity)) {
-        return total + item.quantity;
-      }
-      return total;
-    }, 0);
-  };
+
+
 
 
   {/* //====================================================================== */ }
@@ -156,7 +54,7 @@ const StudentsModal = ({ selectedData }) => {
   return (
     <>
       <div
-        onClick={handleOverlayClick}
+        // onClick={onClose}
         className={`fixed inset-0  backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-all duration-300 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
       >
@@ -180,8 +78,8 @@ const StudentsModal = ({ selectedData }) => {
                 </div>
               </div>
               <button
-                onClick={handleClose}
-                className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-200 ml-4"
+                onClick={onClose}
+                className="cursor-pointer bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-200 ml-4"
               >
                 <FaX className="w-6 h-6" />
               </button>
@@ -246,51 +144,59 @@ const StudentsModal = ({ selectedData }) => {
 
                   <div className="space-y-6">
                     {selectedData?.students?.map((classItem) => {
-                      console.log('classItem', selectedData?.students);
+                      // console.log('classItem', selectedData?.students);
 
                       return (
-                        <div key={classItem?.id} className="space-y-3">
-                          {/* Class Header */}
-                          <h4 className="text-md font-semibold text-indigo-600">
-                            {/* {classItem.class.name}{" "} */}
-                            <span className="text-gray-500 text-sm">
-                              {/* ({classItem.class.total} Students) */}
-                            </span>
-                          </h4>
-
-                          {/* Students */}
-                          <div className="space-y-3">
+                        <>
                             <div
-                              key={classItem.id}
-                              className="flex items-center gap-4 bg-gray-50 p-3 rounded-xl border border-gray-100"
-                            >
-                              {/* Student Image */}
-                              <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-                                {classItem?.image_url ? (
-                                  <img
-                                    src={classItem.image_url}
-                                    alt={classItem.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <span>{classItem.name?.charAt(0) || "?"}</span> // fallback initial
-                                )}
-                              </div>
+                              onClick={() => onSelectStudent(classItem)}
+                              key={classItem?.id}
+                              className="cursor-pointer shadow rounded space-y-3">
+                              {/* Class Header */}
+                          <TooltipInfo text="View Student Detail">
+                              <h4 className="text-md font-semibold text-indigo-600">
+                                {/* {classItem.class.name}{" "} */}
+                                <span className="text-gray-500 text-sm">
+                                  {/* ({classItem.class.total} Students) */}
+                                </span>
+                              </h4>
 
-                              {/* Student Details */}
-                              <div className="flex-1">
-                                <p className="font-semibold text-gray-800">{classItem.name}</p>
-                                <p className="text-sm text-gray-600">
-                                  Roll No: {classItem.roll_number}
-                                </p>
+                              {/* Students */}
+                              <div className="space-y-3">
+                                <div
+                                  key={classItem.id}
+                                  className="flex items-center gap-4 bg-gray-50 p-3 rounded-xl border border-gray-100"
+                                >
+                                  {/* Student Image */}
+                                  <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                                    {classItem?.image_url ? (
+                                      <img
+                                        src={classItem.image_url}
+                                        alt={classItem.name}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <span>{classItem.name?.charAt(0) || "?"}</span> // fallback initial
+                                    )}
+                                  </div>
+
+                                  {/* Student Details */}
+                                  <div className="flex-1">
+                                    <p className="font-semibold text-gray-800">{classItem.name}</p>
+                                    <p className="text-sm text-gray-600">
+                                      Roll No: {classItem.roll_number}
+                                    </p>
+                                  </div>
+                                </div>
+
                               </div>
+                          </TooltipInfo>
                             </div>
 
-                          </div>
-                        </div>
+                        </>
                       )
                     })}
-                  </div>
+                  </div >
                 </div>
               )}
 

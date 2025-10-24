@@ -1,5 +1,5 @@
 // constants/icons.js
-import { ListCollapse, Presentation, Projector } from "lucide-react";
+import { ListCollapse, MonitorCheck, Presentation, Projector, User } from "lucide-react";
 import {
     FaSearch,
     FaFilter,
@@ -23,14 +23,16 @@ import {
 } from "react-icons/fa";
 import { RiCashFill } from "react-icons/ri";
 
-import { FaBowlRice, FaMoneyBillTransfer } from "react-icons/fa6";
+import { FaBowlRice, FaMoneyBillTransfer, FaPersonArrowDownToLine } from "react-icons/fa6";
 import {
     MdGrain,
     MdChildCare,
     MdLocalGroceryStore,
     MdNewReleases,
     MdAccountBox,
-    MdAdminPanelSettings
+    MdAdminPanelSettings,
+    MdTitle,
+    MdDisabledVisible
 } from "react-icons/md";
 import { PiContactlessPaymentFill } from "react-icons/pi";
 import { MdBookOnline } from "react-icons/md";
@@ -39,6 +41,7 @@ import { FaCreditCard } from "react-icons/fa";
 import { RiBankFill } from "react-icons/ri";
 import { SiIcicibank } from "react-icons/si";
 import { BiNotification } from "react-icons/bi";
+import { GiShieldDisabled } from "react-icons/gi";
 
 export const paymentModeIcons = {
     "CASH": <RiCashFill className="text-accent" />,
@@ -60,6 +63,9 @@ export const staffStatusIcons = {
     "Receive Daily Notification": <BiNotification className="text-accent" />,
     "Has Account": <MdAccountBox className="text-accent" />,
     "Allowed for Admin Accesss": <MdAdminPanelSettings  className="text-accent"/>,
+    "title": <MdTitle  className="text-accent"/>,
+    "Active": <MonitorCheck  className="text-accent"/>,
+    "Disabled": <GiShieldDisabled  className="text-accent"/>,
 };
 
 export const categoryIcons = {

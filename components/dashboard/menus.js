@@ -1,42 +1,6 @@
 'use client'
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  LayoutDashboard,
-  Settings,
-  GraduationCap,
-  Users,
-  UserCheck,
-  FileText,
-  Calculator,
-  MessageSquare,
-  BookOpen,
-  CreditCard,
-  Bus,
-  CreditCard as IdCardIcon,
-  Smartphone,
-  Calendar,
-  Library,
-  FileImage,
-  School,
-  Album,
-  Headphones,
-  Video,
-  Bell,
-  ChevronDown,
-  ChevronRight,
-  Menu,
-  X,
-  Search,
-  Plus,
-  BarChart3,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  DollarSign,
-  Star,
-  Building
-} from 'lucide-react';
+import { GraduationCap, UserCheck, Plus, Building } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getSessionCache, setSessionCache, } from '../../utils/sessionCache';
 import { BiMobile } from 'react-icons/bi';
@@ -48,8 +12,7 @@ import UpcomingEvent from './events';
 import TodaySummary from './todaySummary';
 import { getFeeCollectionSummary, getFeeNameWiseSummary } from '../../api/fees';
 
-// ===================================================================
-// ===================================================================
+// ====================================================================================
 
 
 
@@ -269,7 +232,7 @@ const DashboardMenus = () => {
       const resp = await getFeeNameWiseSummary(Context?.profileId, Context?.session);
 
 
-      console.log('resp ---------', resp?.data);
+      console.log('feeConfig RESP ---------', resp?.data);
 
       const fetched = resp?.data || [];
 
@@ -295,16 +258,16 @@ const DashboardMenus = () => {
         Context?.session,
       );
 
+      console.log('feeCollectionConfig RESP ---------',  data?.data);
 
-      console.log('resp ---------', data?.data);
 
       const fetched = data?.data || [];
 
       if (fetched) {
-        
+
+        setSessionCache("feeCollectionConfig", fetched?.results);
       }
     } catch (err) {
-      setSessionCache("feeCollectionConfig", fetched?.results);
       console.error("Failed to fetch fee collection summary:", err);
     }
   };
