@@ -20,8 +20,10 @@ import {
   Globe,
   Video
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function SchoolERPLanding() {
+  const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
@@ -77,20 +79,20 @@ export default function SchoolERPLanding() {
   ];
 
   const benefits = [
-    { 
-      title: "Save Time", 
+    {
+      title: "Save Time",
       description: "Automate administrative tasks and focus on education",
       icon: <Zap className="w-6 h-6" />,
       color: "from-blue-500 to-blue-800"
     },
-    { 
-      title: "Reduce Costs", 
+    {
+      title: "Reduce Costs",
       description: "Eliminate paperwork, reduce errors, streamline operations",
       icon: <TrendingUp className="w-6 h-6" />,
       color: "from-blue-500 to-blue-800"
     },
-    { 
-      title: "Improve Satisfaction", 
+    {
+      title: "Improve Satisfaction",
       description: "Real-time updates, transparent communication, easy access",
       icon: <Award className="w-6 h-6" />,
       color: "from-blue-500 to-blue-800"
@@ -106,9 +108,8 @@ export default function SchoolERPLanding() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrollY > 50 ? 'bg-white shadow-xl' : 'bg-white/80 backdrop-blur-xl'
-      }`}>
+      <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrollY > 50 ? 'bg-white shadow-xl' : 'bg-white/80 backdrop-blur-xl'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
@@ -134,7 +135,9 @@ export default function SchoolERPLanding() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className="hidden md:block px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-bold rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+              <button
+                onClick={() => router.push('/login')}
+                className="cursor-pointer hidden md:block px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-bold rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
                 Login
               </button>
 
@@ -176,7 +179,7 @@ export default function SchoolERPLanding() {
             </span>
           </h1>
           <p className="text-xl sm:text-2xl text-white/95 mb-10 max-w-3xl mx-auto leading-relaxed font-semibold drop-shadow-lg">
-            The most powerful and intuitive school management system. 
+            The most powerful and intuitive school management system.
             Join the education revolution today!
           </p>
 
@@ -255,6 +258,8 @@ export default function SchoolERPLanding() {
       <footer className="bg-gradient-to-br from-blue-900 to-blue-950 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
+
+            {/* Logo & About */}
             <div>
               <div className="flex items-center space-x-3 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
@@ -265,12 +270,67 @@ export default function SchoolERPLanding() {
                 </h1>
               </div>
               <p className="text-gray-400 leading-relaxed font-medium">
-                Making education management simple and powerful.
+                Making education management simple, colorful, and powerful.
               </p>
+            </div>
+
+            {/* Product Links */}
+            <div>
+              <h4 className="font-black text-xl mb-6 text-white">Product</h4>
+              <div className="space-y-3">
+                <a href="#features" className="block text-gray-400 hover:text-white font-medium transition-colors">Features</a>
+                <a href="#pricing" className="block text-gray-400 hover:text-white font-medium transition-colors">Pricing</a>
+                <a href="#security" className="block text-gray-400 hover:text-white font-medium transition-colors">Security</a>
+                <a href="#integrations" className="block text-gray-400 hover:text-white font-medium transition-colors">Integrations</a>
+              </div>
+            </div>
+
+            {/* Company Links */}
+            <div>
+              <h4 className="font-black text-xl mb-6 text-white">Company</h4>
+              <div className="space-y-3">
+                <a href="#about" className="block text-gray-400 hover:text-white font-medium transition-colors">About Us</a>
+                <a href="#careers" className="block text-gray-400 hover:text-white font-medium transition-colors">Careers</a>
+                <a href="#blog" className="block text-gray-400 hover:text-white font-medium transition-colors">Blog</a>
+                <a href="#contact" className="block text-gray-400 hover:text-white font-medium transition-colors">Contact</a>
+              </div>
+            </div>
+
+            {/* Support Links & Social */}
+            <div>
+              <h4 className="font-black text-xl mb-6 text-white">Support</h4>
+              <div className="space-y-3 mb-6">
+                <a href="#help" className="block text-gray-400 hover:text-white font-medium transition-colors">Help Center</a>
+                <a href="#docs" className="block text-gray-400 hover:text-white font-medium transition-colors">Documentation</a>
+                <a href="#api" className="block text-gray-400 hover:text-white font-medium transition-colors">API Reference</a>
+                <a href="#status" className="block text-gray-400 hover:text-white font-medium transition-colors">System Status</a>
+              </div>
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Users className="w-6 h-6" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Globe className="w-6 h-6" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Video className="w-6 h-6" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-blue-800 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-400 font-medium text-lg">
+            <p>© 2025 infoEIGHT. Made with 💙 for education</p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              <a href="#privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#terms" className="hover:text-white transition-colors">Terms</a>
+              <a href="#cookies" className="hover:text-white transition-colors">Cookies</a>
             </div>
           </div>
         </div>
       </footer>
+
     </div>
   );
 }
