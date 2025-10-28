@@ -45,7 +45,7 @@ const FeePermissionManager = ({ open, onClose, feeTypes, context }) => {
       payload
     );
 
-    console.log("resps -------------->", resp?.data);
+    // console.log("resps -------------->", resp?.data);
     onClose();
   };
 
@@ -234,7 +234,7 @@ const FeePermissionManager = ({ open, onClose, feeTypes, context }) => {
               <button
                 onClick={handleSave}
                 disabled={selectedFeeTypes.length === 0}
-                className={`px-8 py-2.5 rounded-xl text-white font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg ${selectedFeeTypes.length === 0
+                className={`cursor-pointer px-8 py-2.5 rounded-xl text-white font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg ${selectedFeeTypes.length === 0
                     ? "bg-gray-300 cursor-not-allowed shadow-none"
                     : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 hover:shadow-xl"
                   }`}

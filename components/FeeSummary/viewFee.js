@@ -6,10 +6,85 @@ import CreateFee from '../ui/drawer/CreateFee';
 import FeeTypeDetail from '../ui/drawer/FeeTypeDetail';
 import FeePermissionManager from '../ui/drawer/FeePermissionManager';
 import Loader from '../ui/status/Loader';
-
+import HeaderViewFee from './HeaderViewFee';
+import ViewFeeFiltersSummary from './ViewFeeFiltersSummary';
+import ViewFeeFilterPanel from './ViewFeeFilterPanel';
+import { ArrowRight, BarChart3, Calendar, Clock, Receipt, ReceiptIndianRupee, Sparkles, User2 } from 'lucide-react';
+const reportTypes = [
+  {
+    key: "datewise",
+    label: "Datewise Collection",
+    icon: <Calendar className="w-5 h-5" />,
+    gradient: "from-blue-500 to-cyan-500",
+    hoverGradient: "hover:from-blue-600 hover:to-cyan-600",
+    link: "/reports/datewise"
+  },
+  {
+    key: "standardwise",
+    label: "Standardwise",
+    icon: <BarChart3 className="w-5 h-5" />,
+    gradient: "from-purple-500 to-pink-500",
+    hoverGradient: "hover:from-purple-600 hover:to-pink-600",
+    link: "/reports/standardwise"
+  },
+  {
+    key: "periodwise",
+    label: "Periodwise",
+    icon: <Clock className="w-5 h-5" />,
+    gradient: "from-emerald-500 to-teal-500",
+    hoverGradient: "hover:from-emerald-600 hover:to-teal-600",
+    link: "/reports/periodwise"
+  },
+];
 const ViewFee = ({ }) => {
+  const [activeReport, setActiveReport] = useState('datewise');
+
+  const [staffStatus, setStudentStatus] = useState([
+    {
+      name: "Receive Daily Notification",
+
+    },
+    {
+      name: "Has Account",
+    },
+    {
+
+      name: "Allowed for Admin Accesss",
+    },
+
+  ]);
 
 
+
+  const [accountStatus, setAccountStatus] = useState([
+    {
+      name: "Active",
+
+    },
+    {
+      name: "Disabled",
+    },
+
+
+  ]);
+  const [viewMode, setViewMode] = useState('overview');
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+
+  const [filters, setFilters] = useState({
+    feeType: "",
+    joinedDate: "",
+    status: [],
+    accountStatus: [],
+    designations: [],
+    title: "",
+    name: "",
+    motherName: "",
+    fatherName: "",
+    mobile: "",
+    emergencyContact: "",
+    isSearch: false,
+  });
+  console.log('re---------', filters);
 
 
   const config = getSessionCache("dashboardConfig");
@@ -37,15 +112,55 @@ const ViewFee = ({ }) => {
 
 
   // ==================================================================================================
+  const fetchFees = async () => {
+    const pageSize = feesResponse?.limit || feesPerPage;
+
+    try {
+      const re = await getFees(
+        context.profileId,
+        context.session,
+        currentPage,
+        pageSize,
+        {
+          feeType: filters?.feeType || "",
+          standards: filters?.standards || [],
+          enabled: filters?.enabled ?? "",
+          hostelFee: filters?.hostelFee ?? "",
+          startDate: filters?.startDate || "",
+          endDate: filters?.endDate || "",
+          dueDate: filters?.dueDate || "",
+        }
+      );
+
+    } catch (error) {
+      console.error("Error fetching fees:", error);
+    }
+  };
 
   useEffect(() => {
-    // use `currentPage` and `limit`(or feesPerPage) for server pagination
-    const pageSize = feesResponse?.limit || feesPerPage;
-    getFees(context?.profileId, context?.session, undefined, undefined, currentPage, pageSize);
-  }, [context?.session, currentPage]);
+    if (!context?.profileId || !context?.session) return;
 
 
-  // console.log(fees, 'feeData=-=');
+    fetchFees();
+    setFilters((prev) => ({ ...prev, type: config?.fee_frequency[0]?.value || "" }));
+
+    setIsFilterPanelOpen(false)
+  }, [
+    context?.profileId,
+    context?.session,
+    currentPage,
+    filters?.type,
+    filters?.standards,
+    filters?.dueDate,
+    filters?.startDate,
+    filters?.endDate,
+    filters?.hostelFee,
+    filters?.enabled,
+
+
+  ]);
+
+
 
   // Extract unique standards from fees
   const standards = useMemo(() => {
@@ -104,6 +219,7 @@ const ViewFee = ({ }) => {
 
   // Clear filters
   const clearFilters = () => {
+    setFilters({})
     setSelectedStandard('');
     setSelectedType('');
     setSearchTerm('');
@@ -140,8 +256,47 @@ const ViewFee = ({ }) => {
     if (option.action === 'delete') {
       console.log('delete fee:', fee.id);
       return;
+
     }
     console.log(`${option.action} fee:`, fee.id);
+  };
+
+
+
+
+  const toggleFilterPanel = () => {
+    setIsFilterPanelOpen(!isFilterPanelOpen);
+  };
+
+
+  const getFilterCount = () => {
+    return (filters?.type ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.standards?.length)+  (filters?.enabled ? 1 : 0)+  (filters?.hostelFee ? 1 : 0)+  (filters?.dueDate ? 1 : 0)+  (filters?.startDate ? 1 : 0)+  (filters?.endDate ? 1 : 0);
+  };
+
+
+  const toggleFilter = (filterType, value, event) => {
+    // console.log('---- values ----', filterType, value, event);
+
+    if (event) {
+      event.stopPropagation();
+    }
+    setFilters(prev => {
+
+      const current = prev[filterType];
+      // If current is an array (multi-select), toggle value in the array
+      if (Array.isArray(current)) {
+        if (current.includes(value)) {
+          return { ...prev, [filterType]: current.filter(item => item !== value) };
+        } else {
+          return { ...prev, [filterType]: [...current, value] };
+        }
+      }
+      // If scalar (string/date), toggle between value and empty
+      return { ...prev, [filterType]: current === value ? '' : value };
+
+
+    });
+
   };
 
 
@@ -150,6 +305,16 @@ const ViewFee = ({ }) => {
       <Loader />
     )
   }
+
+
+
+
+
+
+
+  // console.log('filter s ', filters);
+
+
 
   return (
 
@@ -167,7 +332,7 @@ const ViewFee = ({ }) => {
 
       <button
         onClick={() => setPermissionDrawer(true)}
-        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+        className="cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
       >
         ⚙️ Set Fee Type Permissions
       </button>
@@ -192,104 +357,41 @@ const ViewFee = ({ }) => {
 
         <div className="bg-white rounded-lg shadow p-6">
           {/* Header Section */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-800">Fee Management</h2>
-            <CreateFee>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                + Add Fee
-              </button>
-            </CreateFee>
-          </div>
 
-          {/* Filters Section */}
-          <div className="grid md:grid-cols-4 gap-4">
-            {/* Search Box */}
-            <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-                Search Fee Name
-              </label>
-              <input
-                type="text"
-                id="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </div>
 
-            {/* Standard Dropdown */}
-            <div>
-              <label htmlFor="standard" className="block text-sm font-medium text-gray-700 mb-2">
-                Standard/Class
-              </label>
-              <select
-                id="standard"
-                value={selectedStandard}
-                onChange={(e) => setSelectedStandard(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              >
-                <option value="">All Standards</option>
-                {standards.map((standard) => (
-                  <option key={standard} value={standard}>
-                    {standard}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <HeaderViewFee
+            headerTitle={"View Fee"}
+            headerIcon={<ReceiptIndianRupee />}
+            toggleFilterPanel={toggleFilterPanel}
+            getFilterCount={getFilterCount}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+          />
 
-            {/* Fee Type Dropdown */}
-            <div>
-              <label htmlFor="feeType" className="block text-sm font-medium text-gray-700 mb-2">
-                Fee Type
-              </label>
-              <select
-                id="feeType"
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              >
-                <option value="">All Types</option>
-                {feeTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
 
-            {/* Clear Filters Button */}
-            <div className="flex items-end">
-              <button
-                onClick={clearFilters}
-                className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
+          <ViewFeeFiltersSummary
+            filters={filters}
+            toggleFilter={toggleFilter}
+            clearFilters={clearFilters}
+          />
 
-          {/* Active Filters */}
-          {(selectedStandard || selectedType || searchTerm) && (
-            <div className="mt-4 text-sm text-gray-600">
-              Active filters:
-              {searchTerm && (
-                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                  Search: {searchTerm}
-                </span>
-              )}
-              {selectedStandard && (
-                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                  Standard: {selectedStandard}
-                </span>
-              )}
-              {selectedType && (
-                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                  Type: {selectedType}
-                </span>
-              )}
-            </div>
-          )}
+          <ViewFeeFilterPanel
+            setFilters={setFilters}
+            filters={filters}
+            config={config}
+            isFilterPanelOpen={isFilterPanelOpen}
+            staffStatus={staffStatus}
+            accountStatus={accountStatus}
+            toggleFilter={toggleFilter}
+
+          />
+
+
+
+
+ 
+
+
         </div>
 
 
@@ -357,7 +459,7 @@ const ViewFee = ({ }) => {
                           {fee?.options?.map((option, idx) => (
                             <button
                               key={idx}
-                              className={`px-3 py-1 rounded transition ${option.action === 'delete'
+                              className={`cursor-pointer px-3 py-1 rounded transition ${option.action === 'delete'
                                 ? 'bg-red-100 text-red-700 hover:bg-red-200'
                                 : option.action === 'edit'
                                   ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
@@ -381,7 +483,7 @@ const ViewFee = ({ }) => {
             <p className="text-gray-500 text-lg">No fees found matching your filters</p>
             <button
               onClick={clearFilters}
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="cursor-pointer mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
             >
               Clear Filters
             </button>
@@ -431,7 +533,80 @@ const ViewFee = ({ }) => {
           </p>
         )}
       </div>
+       {/* Fancy Card Container */}
+              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {reportTypes.map((item) => {
+                    const isActive = activeReport === item.key;
 
+                    return (
+                      <button
+                        key={item.key}
+                        onClick={() => handleNavigation(item.key, item.link)}
+                        className={`group relative p-6 rounded-xl font-semibold text-sm
+                    transition-all duration-300 transform hover:scale-105 hover:-translate-y-1
+                    ${isActive
+                            ? `bg-gradient-to-br ${item.gradient} text-white shadow-xl`
+                            : `bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:shadow-xl border-2 border-gray-200 hover:border-transparent`
+                          }`}
+                      >
+                        {/* Glow Effect */}
+                        {isActive && (
+                          <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-xl blur-xl opacity-60 -z-10 animate-pulse`}></div>
+                        )}
+
+                        {/* Content */}
+                        <div className="flex flex-col items-center text-center space-y-3">
+                          <div className={`p-3 rounded-lg transition-all duration-300 ${isActive
+                              ? 'bg-white/20 backdrop-blur-sm'
+                              : 'bg-white border border-gray-200 group-hover:border-transparent'
+                            } ${!isActive && `group-hover:bg-gradient-to-br ${item.gradient}`}`}>
+                            <span className={`transition-all duration-300 ${isActive
+                                ? 'text-white'
+                                : 'text-gray-600 group-hover:text-white'
+                              }`}>
+                              {item.icon}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="block font-bold text-base mb-1">{item.label}</span>
+                            <span className={`text-xs flex items-center justify-center space-x-1 ${isActive ? 'text-white/80' : 'text-gray-500 group-hover:text-gray-700'
+                              }`}>
+                              <span>View Report</span>
+                              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Active Indicator */}
+                        {isActive && (
+                          <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white shadow-lg">
+                            <div className="absolute inset-0 bg-yellow-400 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+
+                        {/* Hover Arrow */}
+                        {!isActive && (
+                          <div className={`absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+                            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
+                              <ArrowRight className="w-4 h-4 text-white" />
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Description Text */}
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                  <p className="text-sm text-gray-500 flex items-center space-x-2">
+                    <span className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></span>
+                    <span>Click on any report type to view detailed analytics and insights</span>
+                  </p>
+                </div>
+              </div>
     </>
 
   );

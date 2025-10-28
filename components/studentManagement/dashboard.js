@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import { User, Book, Users, Heart, BadgePlus, List, Save, FileInput, } from 'lucide-react';
+import { User, Book, Users, Heart, BadgePlus, List, Save, FileInput, House, } from 'lucide-react';
 import Layout from '../../layouts/Layout';
 import { StudentList } from './listStudent';
 import StudentProfile from './studentProfile';
@@ -13,7 +13,8 @@ import ParentsInfoForm from './ParentInfoForm';
 import AcademicInfoForm from './AcademicInfoForm';
 import DocumentInfoForm from './DocumentInfoForm';
 import { useStudent } from '../../context/studentContext';
-
+import HouseManagement from './houseList';
+import {getHouseList} from '../../api/houses';
 
 
 const breadcrumbs = [
@@ -25,7 +26,8 @@ const breadcrumbs = [
 const tabs = [
   { id: 'list', label: 'List Students', icon: List },
   { id: 'add', label: 'Add Student', icon: BadgePlus },
-  { id: 'view', label: 'View Profile', icon: User }
+  { id: 'view', label: 'View Profile', icon: User },
+  { id: 'view-houses', label: 'Houses', icon: House }
 ];
 
 const StudentMangementDashboard = ({
@@ -36,10 +38,14 @@ const StudentMangementDashboard = ({
 
 }) => {
 
+
+
+
   const { selectedStudent, setSelectedStudent } = useStudent()
-  console.log('selectedStudent', selectedStudent);
+  // console.log('selectedStudent', selectedStudent);
 
   const [studentListData, setStudentListData] = useState([]);
+  const [houses_, setHouses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -72,6 +78,23 @@ const StudentMangementDashboard = ({
     return () => { mounted.current = false; };
   }, [cookyGuid, cookyId]);
 
+
+  const fetchHouses = async () => {
+    const repso = await getHouseList(
+      Context?.profileId,
+      Context?.session,
+    )
+      console.log('repso===============',repso?.results?.items  );
+    
+    setHouses(repso?.results?.items || []);
+  }
+
+
+  useEffect(() => {
+    fetchHouses();
+  }, []);
+
+// console.log(  houses_,"houses_");
 
 
   const classesOptions = config?.classes || [];
@@ -453,6 +476,22 @@ const StudentMangementDashboard = ({
 
             </>
           )}
+
+
+
+
+          {activeTab === 'view-houses' && (
+            <>
+              <HouseManagement
+                loading={loading}
+                setActiveTab={setActiveTab}
+                houses={houses_}
+                setSelectedStudent={setSelectedStudent}
+
+              />
+            </>
+          )}
+
         </div>
       </div>
 

@@ -96,10 +96,9 @@ export const useFees = () => {
     profileId,
     sessionId,
 
-    guid,
-    id,
     page = 1,
     limit = 10,
+    payload
 
   ) => {
     try {
@@ -107,10 +106,10 @@ export const useFees = () => {
       const data = await getFeesMutation.mutateAsync({
         profileId,
         sessionId,
-        guid,
-        id,
+
         page,
         limit,
+        payload
       });
 
       return { success: true, data };

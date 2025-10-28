@@ -34,42 +34,70 @@ export const getStudentFee = async ({
 };
 
 //========================================================================================================
-
 export const getFee = async ({
   profileId,
   sessionId,
-  guid,
-  id,
   page,
-  limit
-
+  limit,
+  payload,
 }) => {
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
 
-  let resolvedGuid = guid ?? getCookie("guid");
-  let resolvedUserId = getCookie("id");
-
-
-
-  // console.log('======== getFee ==========',
-
-  //   profileId,
-  //   sessionId,
-  //   guid,
-  //   id,
-  //   resolvedGuid,
-  //   resolvedUserId
-  // );
-
-  return axios.post(`${API_BASE_URL}/api`, {
-    "api": "fee.getList",
-    "guid": resolvedGuid,
+  // Build request body dynamically
+  const requestBody = {
+    api: "fee.getList",
+    guid: resolvedGuid,
     logged_in_user_account_id: resolvedUserId,
     user_account_id: profileId,
     client_id: sessionId,
-    "platform": "web",
+    platform: "web",
     page,
-    limit
-  });
+    limit,
+  };
+
+  // Only include "type" if feeType has a real value
+  if (payload?.feeType && payload.feeType.trim() !== "") {
+    requestBody.type = payload.feeType;
+  }
+  if (payload?.standards && payload.standards.length > 0) {
+    requestBody.standard_ids = payload.standards;
+  }
+  if (payload?.hostelFee && payload.hostelFee.trim() !== "") {
+    requestBody.is_hostel_fee = payload.hostelFee;
+  }
+  if (payload?.enabled && payload.enabled.trim() !== "") {
+    requestBody.is_disabled = payload.enabled;
+  }
+
+  if (payload?.dueDate && payload.dueDate.trim() !== "") {
+    requestBody.due_date = payload.due_date;
+  }
+
+
+
+
+
+  if (payload?.startDate && payload.startDate.trim() !== "") {
+    requestBody.start_date = payload.startDate;
+  }
+
+  if (payload?.endDate && payload.endDate.trim() !== "") {
+    requestBody.end_date = payload.endDate;
+  }
+
+
+  if (payload?.name && payload.name.trim() !== "") {
+    requestBody.name = payload.name;
+  }
+  if (payload?.serial_number && payload.serial_number.trim() !== "") {
+    requestBody.serial_number = payload.serial_number;
+  }
+
+
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
 };
 
 
@@ -193,7 +221,7 @@ export const updateFeePermission = async (
   let resolvedGuid = getCookie("guid");
   let resolvedUserId = getCookie("id");
 
-    console.log("resps -------------->", payload);
+  // console.log("resps -------------->", payload);
 
 
 
@@ -204,6 +232,8 @@ export const updateFeePermission = async (
       "logged_in_user_account_id": resolvedUserId,
       "user_account_id": profileId,
       "client_id": sessionId,
+      "id": sessionId,
+
       "platform": "WEB",
 
 

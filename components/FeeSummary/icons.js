@@ -67,7 +67,16 @@ export const categoryIcons = {
     "toys": <FaBowlRice className="text-purple-500" />
 };
 
+
+
+
 export const statusIcons = {
+    active: <FaCheckIcon className="text-green-500" />,
+    inactive: <FaTimesIcon className="text-red-500" />
+};
+
+
+export const viewFeeIcons = {
     active: <FaCheckIcon className="text-green-500" />,
     inactive: <FaTimesIcon className="text-red-500" />
 };
