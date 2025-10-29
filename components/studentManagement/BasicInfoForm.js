@@ -54,8 +54,9 @@ const BasicInfoForm = ({
               type="text"
               value={formData.name || ''}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Full Name"
+  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              placeholder="Full Name"
             />
           </div>
         </div>
@@ -71,8 +72,9 @@ const BasicInfoForm = ({
               type="text"
               value={formData.rollNo || ''}
               onChange={(e) => handleChange('rollNo', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Roll Number"
+  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              placeholder="Roll Number"
             />
           </div>
         </div>
@@ -88,8 +90,9 @@ const BasicInfoForm = ({
               type="text"
               value={formData.admissionNumber || ''}
               onChange={(e) => handleChange('admissionNumber', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Admission Number"
+  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              placeholder="Admission Number"
             />
           </div>
         </div>
@@ -104,8 +107,9 @@ const BasicInfoForm = ({
             <select
               value={formData.class || ''}
               onChange={(e) => handleChange('class', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select Class</option>
               {classes?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -123,8 +127,9 @@ const BasicInfoForm = ({
               type="text"
               value={formData.address || ''}
               onChange={(e) => handleChange('address', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Full Address"
+  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              placeholder="Full Address"
             />
           </div>
         </div>

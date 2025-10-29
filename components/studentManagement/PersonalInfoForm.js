@@ -55,8 +55,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData.house || ''}
               onChange={(e) => handleChange('house', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select House</option>
               {houses?.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
             </select>
@@ -73,8 +74,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData.feeCategory || ''}
               onChange={(e) => handleChange('feeCategory', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select Fee Category</option>
               {feeCategories?.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
@@ -91,8 +93,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData.renewalStatus || ''}
               onChange={(e) => handleChange('renewalStatus', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select Status</option>
               {renewalStatus?.map(status => (
                 <option value={status}>{status}</option>
@@ -112,8 +115,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData.nationality || ''}
               onChange={(e) => handleChange('nationality', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select nationality</option>
               {nationality?.map(nationality => (
                 <option value={nationality}>{nationality}</option>
@@ -131,8 +135,9 @@ const PersonalDetailsForm = ({
               type="date"
               value={formData.dateOfAdmission || ''}
               onChange={(e) => handleChange('dateOfAdmission', e.target.value)}
-              className="block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            />
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            />
           </div>
         </div>
 
@@ -143,8 +148,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData.category || ''}
               onChange={(e) => handleChange('category', e.target.value)}
-              className="block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select Category</option>
               {categories?.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
             </select>
@@ -158,8 +164,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData.religion || ''}
               onChange={(e) => handleChange('religion', e.target.value)}
-              className="block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select Religion</option>
               {religions?.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
@@ -171,11 +178,12 @@ const PersonalDetailsForm = ({
           <label className="block text-sm font-medium text-gray-700">Mother Tongue</label>
           <div className="mt-1 relative">
             <FaLanguage className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-             <select
+            <select
               value={formData.motherTongue || ''}
               onChange={(e) => handleChange('motherTongue', e.target.value)}
-              className="block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select language</option>
               {religions?.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
@@ -189,8 +197,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData.bpl || ''}
               onChange={(e) => handleChange('bpl', e.target.value)}
-              className="block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select</option>
               <option value="yes">Yes</option>
               <option value="no">No</option>
@@ -203,11 +212,12 @@ const PersonalDetailsForm = ({
           <label className="block text-sm font-medium text-gray-700">Blood Group</label>
           <div className="mt-1 relative">
             <Droplet className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-             <select
+            <select
               value={formData.bloodGroup || ''}
               onChange={(e) => handleChange('bloodGroup', e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select blood group</option>
               {bloodGroups?.map(b => (
                 <option value={b}>{b}</option>
@@ -224,8 +234,9 @@ const PersonalDetailsForm = ({
             type="number"
             value={formData.height || ''}
             onChange={(e) => handleChange('height', e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         <div>
@@ -234,8 +245,9 @@ const PersonalDetailsForm = ({
             type="number"
             value={formData.weight || ''}
             onChange={(e) => handleChange('weight', e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Vision */}
@@ -245,8 +257,9 @@ const PersonalDetailsForm = ({
             type="text"
             value={formData.visionLeft || ''}
             onChange={(e) => handleChange('visionLeft', e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         <div>
@@ -255,21 +268,26 @@ const PersonalDetailsForm = ({
             type="text"
             value={formData.visionRight || ''}
             onChange={(e) => handleChange('visionRight', e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Dental Hygiene */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700">Dental Hygiene</label>
+                   <div className="relative">
+
           <Smile className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           <input
             type="text"
             value={formData.dentalHygiene || ''}
             onChange={(e) => handleChange('dentalHygiene', e.target.value)}
             placeholder="Good / Poor"
-            className="mt-1 block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
+        </div>
         </div>
 
         {/* Identification Mark */}
@@ -279,8 +297,9 @@ const PersonalDetailsForm = ({
             type="text"
             value={formData.identificationMark || ''}
             onChange={(e) => handleChange('identificationMark', e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Scar on left arm, mole, etc."
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            placeholder="Scar on left arm, mole, etc."
           />
         </div>
 
@@ -295,8 +314,9 @@ const PersonalDetailsForm = ({
             <select
               value={formData[item.field] || ''}
               onChange={(e) => handleChange(item.field, e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-            >
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select</option>
               <option value="yes">Yes</option>
               <option value="no">No</option>
@@ -307,29 +327,38 @@ const PersonalDetailsForm = ({
         {/* Sports & Hobbies */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700">Favourite Sports</label>
-          <FaRunning className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            value={formData.favouriteSports || ''}
-            onChange={(e) => handleChange('favouriteSports', e.target.value)}
-            placeholder="Cricket, Football..."
-            className="mt-1 block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+          <div className="relative">
+
+            <FaRunning className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              value={formData.favouriteSports || ''}
+              onChange={(e) => handleChange('favouriteSports', e.target.value)}
+              placeholder="Cricket, Football..."
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
+          </div>
         </div>
 
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700">Hobbies</label>
-          <FaBookOpen className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            value={formData.hobbies || ''}
-            onChange={(e) => handleChange('hobbies', e.target.value)}
-            placeholder="Reading, Music..."
-            className="mt-1 block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide">
+            Hobbies
+          </label>
+          <div className="relative">
+            <FaBookOpen className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              value={formData.hobbies || ''}
+              onChange={(e) => handleChange('hobbies', e.target.value)}
+              placeholder="Reading, Music..."
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
+            />
+          </div>
         </div>
 
-      
       </form>
     </div>
   );

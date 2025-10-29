@@ -1,14 +1,34 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Save, Image as ImageIcon } from "lucide-react";
 import { addHouse } from "../../api/houses";
 
-const HouseCreate = ({ isModalOpen, setIsModalOpen, context }) => {
+const HouseEdit = ({
+  isModalOpen,
+  setIsModalOpen,
+  context,
+  selectedHouse
+}) => {
+  console.log(selectedHouse);
+
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    logo: null,
+    name: selectedHouse?.name || "",
+    description: selectedHouse?.description || "",
+    logo: selectedHouse?.logo_url || null,
   });
+
+
+
+  useEffect(() => {
+
+    setFormData({
+      name: selectedHouse?.name || "",
+      description: selectedHouse?.description || "",
+      logo: selectedHouse?.logo_url || null,
+    })
+  }, [selectedHouse])
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -153,4 +173,4 @@ const HouseCreate = ({ isModalOpen, setIsModalOpen, context }) => {
   );
 };
 
-export default HouseCreate;
+export default HouseEdit;

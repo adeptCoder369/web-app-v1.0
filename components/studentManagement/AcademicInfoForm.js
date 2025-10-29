@@ -25,8 +25,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.previousSchool || ''}
             onChange={(e) => handleChange('previousSchool', e.target.value)}
             placeholder="Enter name of previous school"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Scholarship */}
@@ -40,8 +41,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.scholarship || ''}
             onChange={(e) => handleChange('scholarship', e.target.value)}
             placeholder="Enter scholarship details"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Year of Passing */}
@@ -55,8 +57,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.yearOfPassing || ''}
             onChange={(e) => handleChange('yearOfPassing', e.target.value)}
             placeholder="Enter year of passing"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Previous Board (X) Roll No */}
@@ -70,8 +73,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.previousRollNo || ''}
             onChange={(e) => handleChange('previousRollNo', e.target.value)}
             placeholder="Enter previous board roll number"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Previous Board */}
@@ -85,8 +89,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.previousBoard || ''}
             onChange={(e) => handleChange('previousBoard', e.target.value)}
             placeholder="Enter previous board name"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Board Registration Number */}
@@ -100,8 +105,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.boardRegNo || ''}
             onChange={(e) => handleChange('boardRegNo', e.target.value)}
             placeholder="Enter registration number"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Previous Percentage */}
@@ -115,8 +121,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.previousPercentage || ''}
             onChange={(e) => handleChange('previousPercentage', e.target.value)}
             placeholder="Enter percentage"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Previous Working Days */}
@@ -130,8 +137,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.previousWorkingDays || ''}
             onChange={(e) => handleChange('previousWorkingDays', e.target.value)}
             placeholder="Enter number of days"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Permanent Education Number */}
@@ -145,8 +153,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.permanentEduNo || ''}
             onChange={(e) => handleChange('permanentEduNo', e.target.value)}
             placeholder="Enter permanent education number"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Student Remarks */}
@@ -160,8 +169,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             onChange={(e) => handleChange('studentRemarks', e.target.value)}
             placeholder="Enter remarks"
             rows={2}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
 
         {/* Distance to School */}
@@ -175,8 +185,9 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             value={formData.distanceToSchool || ''}
             onChange={(e) => handleChange('distanceToSchool', e.target.value)}
             placeholder="Enter distance in km"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          />
         </div>
       </form>
     </div>

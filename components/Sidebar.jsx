@@ -115,7 +115,7 @@ const menuItems = [
 
 
       { name: "Add Student", url: "/add-student", quickLink: true },
-      { name: "Houses", url: "/houses" },
+      { name: "Houses", url: "/dashboard/student-management?tab=houses" },
       { name: "Download Student Data", url: "/student-downloads", quickLink: true },
       { name: "Parents", url: "/student-parents" },
       { name: "Birthdays", url: "/birthdays" }

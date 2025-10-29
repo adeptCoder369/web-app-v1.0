@@ -10,6 +10,7 @@ import Loader from '../../components/ui/status/Loader';
 import FeeCollectionChart from './FeeCollectionChart';
 import UpcomingEvent from './events';
 import TodaySummary from './todaySummary';
+import QuickActions from './QuickActions';
 import { getFeeCollectionSummary, getFeeNameWiseSummary } from '../../api/fees';
 
 // ====================================================================================
@@ -32,13 +33,10 @@ const quickActions = [
     url: "/dashboard/standard-management",
     features: [
       {
-        name: "All  Standard",
+        name: "All Standard & Classes",
         url: "/dashboard/standard-management",
       },
-      {
-        name: "All  Classes",
-        url: "/dashboard/standard-management",
-      },
+
     ]
 
 
@@ -61,11 +59,15 @@ const quickActions = [
     features: [
       {
         name: "All Student",
-        url: "/dashboard/student-management",
+        url: "/dashboard/student-management?tab=list",
       },
       {
         name: "Add Students",
-        url: "/dashboard/student-management",
+        url: "/dashboard/student-management?tab=add",
+      },
+      {
+        name: "Houses",
+        url: "/dashboard/student-management?tab=houses",
       },
     ]
 
@@ -258,7 +260,7 @@ const DashboardMenus = () => {
         Context?.session,
       );
 
-      console.log('feeCollectionConfig RESP ---------',  data?.data);
+      console.log('feeCollectionConfig RESP ---------', data?.data);
 
 
       const fetched = data?.data || [];
@@ -376,55 +378,12 @@ const DashboardMenus = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
-                    <Plus className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                    {quickActions?.map((action, index) => (
-                      <button
-                        // onClick={() => router.push(action.url)}
-                        key={index}
-                        className="cursor-pointer flex flex-col items-center p-6 rounded-2xl border border-yellow-100 bg-white hover:shadow-md hover:border-blue-200 transition-all duration-300 group"
-                      >
-                        {/* Icon container */}
-                        <div
-                          className={`bg-gradient-to-br from-yellow-100 to-yellow-300 flex items-center justify-center w-20 h-20 rounded-2xl mb-4 group-hover:scale-110 group-hover:shadow-md shadow-[#d4b850] transition-all duration-300`}
-                        >
-                          {action.icon}
-                        </div>
 
-                        {/* Title */}
-                        <span className="text-sm font-semibold text-gray-800 text-center group-hover:text-blue-600 transition-colors">
-                          {action.title}
-                        </span>
 
-                        {/* Features List */}
-                        {action.features && (
-                          <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                            {action.features.map((feature, fIdx) => (
-                              <span
-                                onClick={() => router.push(feature.url)}
 
-                                key={fIdx}
-                                className="px-3 py-1.5 rounded-full text-xs font-medium
-                   bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100
-                   text-blue-700 shadow-sm
-                   hover:from-blue-200 hover:via-indigo-200 hover:to-purple-200
-                   hover:shadow-md transition-all duration-300 cursor-pointer"
-                              >
-                                {feature?.name}
-                              </span>
-                            ))}
-                          </div>
-                        )}
 
-                      </button>
-                    ))}
-                  </div>
+                <QuickActions />
 
-                </div>
                 {/* -================= Chart/Analytics -========================= */}
                 <FeeCollectionChart />
               </div>

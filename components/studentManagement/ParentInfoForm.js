@@ -88,7 +88,10 @@ const ParentsInfoForm = ({ formData, setFormData, genderOptions }) => {
                 value={parent.name}
                 onChange={(e) => handleParentChange(index, 'name', e.target.value)}
                 placeholder="Enter parent name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
+
               />
             </div>
 
@@ -101,8 +104,9 @@ const ParentsInfoForm = ({ formData, setFormData, genderOptions }) => {
               <select
                 value={parent.gender}
                 onChange={(e) => handleParentChange(index, 'gender', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-              >
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              >
                 <option value="">Select Gender</option>
                 {genderOptions.map((g, i) => (
                   <option key={i} value={g}>{g}</option>
@@ -121,11 +125,12 @@ const ParentsInfoForm = ({ formData, setFormData, genderOptions }) => {
                 value={parent.qualification}
                 onChange={(e) => handleParentChange(index, 'qualification', e.target.value)}
                 placeholder="Mention qualification"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-              />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              />
             </div>
 
-          
+
 
             {/*     Annual Income */}
             <div>
@@ -137,11 +142,12 @@ const ParentsInfoForm = ({ formData, setFormData, genderOptions }) => {
                 value={parent.annualIncome}
                 onChange={(e) => handleParentChange(index, 'annualIncome', e.target.value)}
                 placeholder="Enter annual income"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-              />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              />
             </div>
 
-     
+
 
             {/* Multiple Phones */}
             <div className="md:col-span-2">
@@ -157,8 +163,9 @@ const ParentsInfoForm = ({ formData, setFormData, genderOptions }) => {
                       value={phone}
                       onChange={(e) => handlePhoneChange(index, pIndex, e.target.value)}
                       placeholder={`Phone ${pIndex + 1}`}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    />
+ className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"                    />
                     {parent.phones.length > 1 && (
                       <button
                         type="button"

@@ -15,6 +15,7 @@ import DocumentInfoForm from './DocumentInfoForm';
 import { useStudent } from '../../context/studentContext';
 import HouseManagement from './houseList';
 import {getHouseList} from '../../api/houses';
+import { useSearchParams } from "next/navigation";
 
 
 const breadcrumbs = [
@@ -27,7 +28,7 @@ const tabs = [
   { id: 'list', label: 'List Students', icon: List },
   { id: 'add', label: 'Add Student', icon: BadgePlus },
   { id: 'view', label: 'View Profile', icon: User },
-  { id: 'view-houses', label: 'Houses', icon: House }
+  { id: 'houses', label: 'Houses', icon: House }
 ];
 
 const StudentMangementDashboard = ({
@@ -38,6 +39,7 @@ const StudentMangementDashboard = ({
 
 }) => {
 
+  const searchParams = useSearchParams();
 
 
 
@@ -271,6 +273,10 @@ const StudentMangementDashboard = ({
   };
 
 
+  useEffect(() => { 
+    const tab = searchParams.get("tab");
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
 
 
 
@@ -480,7 +486,7 @@ const StudentMangementDashboard = ({
 
 
 
-          {activeTab === 'view-houses' && (
+          {activeTab === 'houses' && (
             <>
               <HouseManagement
                 loading={loading}
