@@ -5,6 +5,9 @@ import { FaEdit } from 'react-icons/fa';
 import { getStudentDetail, patchStudentDetail } from '../../api/student';
 import PersonalDetailsViewTab from './PersonalDetailsView';
 import AcademicViewTab from './AcademicView';
+import BasicDetailViewTab from './BasicDetailView';
+import ParentInfoViewTab from './ParentDetailView';
+import DocumentsInfoViewTab from './DocumentsInfoView';
 
 const StudentProfile = ({
 
@@ -21,7 +24,7 @@ const StudentProfile = ({
 
   const [studentDetail, setStudentDetail] = useState({})
   const [isUpdated, setIsUpdated] = useState(false);
-  console.log(studentDetail?.parents, 'studentDetail =============-=-');
+  // console.log(studentDetail?.parents, 'studentDetail =============-=-');
 
   const fetchStudentDetail = async () => {
     try {
@@ -58,7 +61,7 @@ const StudentProfile = ({
 
 
 
-  const [activeTab, setActiveTab] = useState('personal');
+  const [activeTab, setActiveTab] = useState('basic');
 
 
   // ====================================================================
@@ -471,14 +474,16 @@ const StudentProfile = ({
         <div className="bg-white rounded-xl shadow-lg mb-8">
           <div className="flex space-x-1 p-1">
             {[
+              { id: 'basic', label: 'Basic Details', icon: User },
               { id: 'personal', label: 'Personal Details', icon: User },
               { id: 'parents', label: 'Parents', icon: Users },
-              { id: 'academic', label: 'Academic Info', icon: Book }
+              { id: 'academic', label: 'Academic Info', icon: Book },
+              { id: 'document', label: 'Document Info', icon: Book }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === tab.id
+                className={`cursor-pointer flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === tab.id
                   ? 'bg-blue-500 text-white shadow-md'
                   : 'text-gray-600 hover:bg-gray-50'
                   }`}
@@ -502,76 +507,30 @@ const StudentProfile = ({
               cookyId={cookyId}
               school={school}
               religions={config?.religions}
+              categories={config?.caste_categories}
               nationalities={config?.nationalities}
               bloodGroups={config?.blood_groups}
               setIsUpdated={setIsUpdated}
+              houses={config?.houses}
+              motherTongues={config?.mother_tongues}
+
+
             />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="md:col-span-2 lg:col-span-3 bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Mail className="h-5 w-5 mr-2 text-blue-600" />
-                Contact Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Email Address</p>
-                  <p className="text-gray-900">{studentDetail.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">SMS Number</p>
-                  <p className="text-gray-900">{studentDetail.smsNumber}</p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-600 mb-1 flex items-center">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    Address
-                  </p>
-                  <p className="text-gray-900">{studentDetail.address}</p>
-                </div>
-              </div>
-            </div>
 
 
           </>
         )}
 
-        {activeTab === 'parents' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {studentDetail.parents &&
-              Object.entries(studentDetail.parents)
-                .filter(([_, parent]) => parent ) // skip empty guardian or junk
-                .map(([relation, parent], index) => (
-                  <ParentCard
-                    key={index}
-                    parent={{ ...parent, relation }}
-                  />
-                ))}
-          </div>
-
+        {activeTab === "parents" && (
+          <ParentInfoViewTab
+            studentDetail={studentDetail}
+            session={session}
+            profile={profile}
+            cookyGuid={cookyGuid}
+            cookyId={cookyId}
+            school={school}
+            setIsUpdated={setIsUpdated}
+          />
         )}
 
         {activeTab === 'academic' && (
@@ -591,6 +550,48 @@ const StudentProfile = ({
 
           </>
         )}
+
+
+
+        {activeTab === 'basic' && (
+          <>
+            <BasicDetailViewTab
+              studentDetail={studentDetail}
+              session={session}
+              profile={profile}
+              cookyGuid={cookyGuid}
+              cookyId={cookyId}
+              school={school}
+              religions={config?.religions}
+              nationalities={config?.nationalities}
+              classes={config?.classes}
+
+              setIsUpdated={setIsUpdated}
+            />
+
+          </>
+        )}
+
+
+
+
+
+
+
+
+
+        {activeTab === "document" && (
+          <DocumentsInfoViewTab
+            studentDetail={studentDetail}
+            session={session}
+            profile={profile}
+            cookyGuid={cookyGuid}
+            cookyId={cookyId}
+            school={school}
+            setIsUpdated={setIsUpdated}
+          />
+        )}
+
 
 
       </div>

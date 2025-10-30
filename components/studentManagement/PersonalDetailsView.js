@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Heart, Calendar, Globe, Droplet, User, Church } from "lucide-react";
+import { Heart, Calendar, Globe, Droplet, User, Church, Mail, MapPin, Home, Languages, Phone } from "lucide-react";
 import { FaEdit } from "react-icons/fa";
 import { patchStudentDetail } from "../../api/student"; // adjust import path
 import EditableField from "./EditableField"; // assuming you export it separately
@@ -19,7 +19,10 @@ export default function PersonalDetailsViewTab({
     religions,
     nationalities,
     bloodGroups,
-    setIsUpdated
+    setIsUpdated,
+    houses,
+    motherTongues,
+    categories
 }) {
 
 
@@ -53,6 +56,71 @@ export default function PersonalDetailsViewTab({
             />
 
             <EditableField
+                label="Email"
+                value={studentDetail.email}
+                icon={Mail}
+                type="text"
+                onSave={(val) => handleSave("email", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+            <EditableField
+                label="Address"
+                value={studentDetail.address}
+                icon={MapPin}
+                type="text"
+                onSave={(val) => handleSave("address", val)}
+                setIsUpdated={setIsUpdated}
+            />
+            <EditableField
+                label="House"
+                value={houses?.find((h) => h?.id === studentDetail.house_id)?.name || ""}
+                icon={Home}
+                type="select"
+                options={houses}
+                onSave={(val) => handleSave("house_id", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+            <EditableField
+                label="Mother Tongue"
+                value={studentDetail.mother_tongue}
+                icon={Languages}
+                type="select"
+                options={motherTongues}
+
+                onSave={(val) => handleSave("mother_tongue", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+
+
+            <EditableField
+                label="Phone"
+                value={studentDetail.phone}
+                icon={Phone}
+                type="text"
+                onSave={(val) => handleSave("phone", val)}
+                setIsUpdated={setIsUpdated}
+            />
+            <EditableField
+                label="Locality"
+                value={studentDetail.locality}
+                icon={MapPin}
+                type="text"
+                onSave={(val) => handleSave("locality", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+            <EditableField
+                label="Landmark"
+                value={studentDetail.landmark}
+                icon={MapPin}
+                type="text"
+                onSave={(val) => handleSave("landmark", val)}
+                setIsUpdated={setIsUpdated}
+            />
+            <EditableField
                 label="Religion"
                 value={studentDetail.religion}
                 icon={Church}
@@ -82,6 +150,19 @@ export default function PersonalDetailsViewTab({
             />
 
             <EditableField
+                label="Is Hyper Active"
+                value={studentDetail.is_hyper_active}
+                icon={Heart}
+                type="boolean"
+                onSave={(val) => handleSave("is_hyper_active", val)}
+                setIsUpdated={setIsUpdated}
+            // isEditable={false}
+            />
+
+
+
+
+            <EditableField
                 label="Height (cm)"
                 value={studentDetail.height}
                 icon={Heart}
@@ -98,6 +179,53 @@ export default function PersonalDetailsViewTab({
                 onSave={(val) => handleSave("weight", val)}
                 setIsUpdated={setIsUpdated}
             />
+
+            <EditableField
+                label="Vision (Left)"
+                value={studentDetail.vision_left}
+                icon={Heart}
+                type="text"
+                onSave={(val) => handleSave("vision_left", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+            <EditableField
+                label="Vision (Right)"
+                value={studentDetail.vision_right}
+                icon={Heart}
+                type="text"
+                onSave={(val) => handleSave("vision_right", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+
+
+            <EditableField
+                label="Dental Hygiene"
+                value={studentDetail.dental_hygiene}
+                icon={Heart}
+                type="text"
+                onSave={(val) => handleSave("dental_hygiene", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+
+            <EditableField
+                label="Category"
+                value={studentDetail.category}
+                icon={Heart}
+                type="select"
+                options={categories}
+                onSave={(val) => handleSave("category", val)}
+                setIsUpdated={setIsUpdated}
+            />
+
+
+
+
+
+
+
         </div>
     );
 }
