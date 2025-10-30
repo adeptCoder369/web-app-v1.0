@@ -76,17 +76,36 @@ export async function getHouseDetail(profile, session, cookyGuid, cookyId, stude
 
 
 // export async function patchStudentDetail(profile, session, cookyGuid, cookyId, studentId, name) {
-export async function patchHouse(payload) {
+export async function patchHouse(
+  profileId,
+  session,
+  name,
+  description,
+  logo,
+  houseId
+) {
+  // ==================================================================================================
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
 
   let finalPayloadd = {
-    "api": "student.edit",
+    "api": "house.edit",
     "platform": "web",
 
-    ...payload,
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "WEB",
+    "name": name,
+    "description": description,
+    "logo_url": logo,
+    "id": houseId
+
 
 
   }
-  // console.log('finalPayloadd', finalPayloadd);
+  console.log('finalPayloadd', finalPayloadd);
 
   // ==================================================================================================
   const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
@@ -122,16 +141,16 @@ export const addHouse = async (
   );
 
   return axios.post(`${API_BASE_URL}/api`, {
-    "api": "student.add",
+    "api": "house.add",
     "guid": resolvedGuid,
     "logged_in_user_account_id": resolvedUserId,
     "user_account_id": profile,
     "client_id": session,
     "platform": "web",
 
-    "name":payload?.name,
+    "name": payload?.name,
     "description": payload?.description,
-    "logo_url": payload?.url
+    "logo_url": payload?.logo
 
   });
 };

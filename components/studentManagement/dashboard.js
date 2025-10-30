@@ -9,13 +9,14 @@ import { addStudent, getStudentList } from '../../api/student';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 import BasicInfoForm from './BasicInfoForm';
 import PersonalInfoForm from './PersonalInfoForm';
-import ParentsInfoForm from './ParentInfoForm';
+import FamilyInfoForm from './FamilyInfoForm';
 import AcademicInfoForm from './AcademicInfoForm';
 import DocumentInfoForm from './DocumentInfoForm';
 import { useStudent } from '../../context/studentContext';
 import HouseManagement from './houseList';
-import {getHouseList} from '../../api/houses';
+import { getHouseList } from '../../api/houses';
 import { useSearchParams } from "next/navigation";
+import ConfirmationSuccessDialogueBox from "../ui/status/ConfirmationSuccess";
 
 
 const breadcrumbs = [
@@ -48,8 +49,11 @@ const StudentMangementDashboard = ({
 
   const [studentListData, setStudentListData] = useState([]);
   const [houses_, setHouses] = useState([]);
+  const [isHouseUpdatedOrCreated, setIsHouseUpdatedOrCreated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [studentUpdated, setStudentUpdated] = useState(false);
 
 
   const config = getSessionCache("dashboardConfig");
@@ -78,7 +82,7 @@ const StudentMangementDashboard = ({
     mounted.current = true;
     load();
     return () => { mounted.current = false; };
-  }, [cookyGuid, cookyId]);
+  }, [studentUpdated]);
 
 
   const fetchHouses = async () => {
@@ -86,17 +90,16 @@ const StudentMangementDashboard = ({
       Context?.profileId,
       Context?.session,
     )
-      console.log('repso===============',repso?.results?.items  );
-    
+
     setHouses(repso?.results?.items || []);
   }
 
 
   useEffect(() => {
     fetchHouses();
-  }, []);
+  }, [isHouseUpdatedOrCreated]);
 
-// console.log(  houses_,"houses_");
+  // console.log(  isHouseUpdatedOrCreated,"isHouseUpdatedOrCreated");
 
 
   const classesOptions = config?.classes || [];
@@ -129,6 +132,7 @@ const StudentMangementDashboard = ({
     // Basic Information
     school: '',
     class: '',
+    gender: '',
     name: '',
     rollNo: '',
     phone: '',
@@ -146,14 +150,13 @@ const StudentMangementDashboard = ({
 
     // School Details
     registrationNumber: '',
-    schoolBus: '',
-    smsNumber: '',
+
 
     // Parents Information
     parents: [
       { name: '', gender: 'MALE', relation: "FATHER", qualification: '', annualIncome: '', phones: [''] },
       { name: '', gender: 'FEMALE', relation: "MOTHER", qualification: '', annualIncome: '', phones: [''] },
-      { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
+      // { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
     ]
   });
 
@@ -210,7 +213,7 @@ const StudentMangementDashboard = ({
       };
 
 
-      console.log('====== payload : ', Context, payload)
+      // console.log('====== payload : ', Context, payload)
 
       // Example: Call your addStaff API or controller function
       let res = await addStudent(
@@ -221,15 +224,15 @@ const StudentMangementDashboard = ({
 
         payload
       );
-      console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
+      // console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
       if (!res?.data?.success) {
-        console.log('====== resaxxx : ', res?.data?.results?.message)
+        // console.log('====== resaxxx : ', res?.data?.results?.message)
         setError(res?.data?.results?.message || 'Failed to save student data. Please try again.');
 
       }
       // Optionally, reset the form or go back to the list tab
       if (res?.data?.success) {
-        console.log('====== res sddddssssssssssss: ', res?.data)
+        // console.log('====== res sddddssssssssssss: ', res?.data)
 
         setFormData({
           school: '',
@@ -255,7 +258,8 @@ const StudentMangementDashboard = ({
           // ]
         });
         setCurrentFormStep('basic');
-        setActiveTab('list');
+        setActiveTab('add');
+        setSuccess(res?.data?.results?.message);
       }
 
 
@@ -273,7 +277,7 @@ const StudentMangementDashboard = ({
   };
 
 
-  useEffect(() => { 
+  useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab) setActiveTab(tab);
   }, [searchParams]);
@@ -353,6 +357,7 @@ const StudentMangementDashboard = ({
                     formData={formData}
                     setFormData={setFormData}
                     classes={classesOptions}
+                    genderOptions={genderOptions}
                   />}
                 {currentFormStep === 'personal' &&
                   <PersonalInfoForm
@@ -369,12 +374,14 @@ const StudentMangementDashboard = ({
 
                   />}
                 {currentFormStep === 'parents' &&
-                  <ParentsInfoForm
+                  <FamilyInfoForm
 
                     formData={formData}
                     setFormData={setFormData}
 
                     genderOptions={genderOptions}
+                    classes={classesOptions}
+                    handleChange={handleParentChange}
 
                   />}
                 {/* } */}
@@ -460,25 +467,28 @@ const StudentMangementDashboard = ({
             // <StudentProfile
 
             <>
-              {selectedStudent ? <StudentProfile
-                bloodGroupsOptions={bloodGroupsOptions}
-                religionsOptions={religionsOptions}
-                school={Context?.schoolId}
-                profile={Context?.profileId}
-                session={Context?.session}
-                cookyGuid={cookyGuid}
-                cookyId={cookyId}
-                studentData={selectedStudent}
-                studentId={selectedStudent?.id}
-              /> : (
-                <>
-                  <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">No Student Selected</h2>
-                    <p className="text-gray-600 mb-4">Please select a student from the list to view their profile.</p>
-                  </div>
-                </>
+              {selectedStudent ?
+                <StudentProfile
+                  bloodGroupsOptions={bloodGroupsOptions}
+                  religionsOptions={religionsOptions}
+                  school={Context?.schoolId}
+                  profile={Context?.profileId}
+                  session={Context?.session}
+                  cookyGuid={cookyGuid}
+                  cookyId={cookyId}
+                  studentData={selectedStudent}
+                  studentId={selectedStudent?.id}
+                  setStudentUpdated={setStudentUpdated}
+                  config={config}
+                /> : (
+                  <>
+                    <div className="bg-white rounded-xl shadow-md p-6 text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">No Student Selected</h2>
+                      <p className="text-gray-600 mb-4">Please select a student from the list to view their profile.</p>
+                    </div>
+                  </>
 
-              )}
+                )}
 
             </>
           )}
@@ -489,11 +499,8 @@ const StudentMangementDashboard = ({
           {activeTab === 'houses' && (
             <>
               <HouseManagement
-                loading={loading}
-                setActiveTab={setActiveTab}
                 houses={houses_}
-                setSelectedStudent={setSelectedStudent}
-
+                setIsHouseUpdatedOrCreated={setIsHouseUpdatedOrCreated}
               />
             </>
           )}
@@ -506,6 +513,18 @@ const StudentMangementDashboard = ({
           <span>{error}</span>
         </div>
       )}
+
+      {success && (
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow-md z-50">
+          <span>{success}</span>
+        </div>
+      )}
+      {/* {success && (
+        <ConfirmationSuccessDialogueBox 
+        title={'Added Student .'}
+        description={success}
+        />
+      )} */}
 
     </Layout>
   );

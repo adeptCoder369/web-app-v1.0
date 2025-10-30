@@ -122,8 +122,15 @@ export const addStudent = async (
 ) => {
 
 
-  console.log('=======--------------- payload : ', payload
-  );
+  console.log('=======--------------- payload : ', payload?.parents?.map((p) => ({
+    relation_with_student: p.relation,
+    name: p.name,
+    gender: p.gender,
+    phones: p.phones?.filter((ph) => ph && ph.trim() !== "") || [],
+    emails: p.emails?.filter((em) => em && em.trim() !== "") || [],
+    // qualification: p.qualification,
+    // annual_income: p.annualIncome
+  })));
 
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "student.add",
@@ -133,61 +140,78 @@ export const addStudent = async (
     "client_id": session,
     "platform": "web",
 
-    "school_id": "5384",
-    "name": "Test Student v 1.0",
-    "roll_number": "14",
-    "admission_number": "5693",
-    "class_id": "100009",
-    "is_new": "true",
-    "fee_category": "GENERAL",
-    "registration_number": "A/B-Testing666",
-    "aadhar_card_number": "665599665588",
+
+    "school_id": payload?.school,
+    "name": payload?.name,
+    "roll_number": payload?.rollNo,
+    "class_id": payload?.class,
+
+    "gender": payload?.gender,
+    "house_id": payload?.house,
+
+
+    "admission_number": payload?.admissionNumber,
+    // "is_new": payload?.admissionNumber,
+    // "fee_category": payload?.admissionNumber,
+    "registration_number": payload?.registrationNumber,
+    "aadhar_card_number": payload?.aadharCard,
     "emails": [
-      "well@somemail.com"
+      payload?.email,
     ],
     "phones": [
-      3212322345
+      payload?.alternatePhone,
     ],
-    "date_of_birth": "1998-01-07",
-    "gender": "MALE",
-    "house_id": "1810",
-    "student_fee_category_id": "GENERAL",
-    "renewal_status": "NEW",
-    "nationality": "INDIAN",
-    "date_of_admission": "2021-01-03",
-    "category": "GENERAL",
-    "religion": "BUDDHISM",
-    "mother_tongue": "HINDI",
-    "address": "Flat 243",
-    "locality": "Lake town",
-    "landmark": "LT Hospital",
-    "pincode": 234567,
-    "city": "NameOfTheCity",
-    "blood_group": "AB-",
-    "height": "132",
-    "weight": "42",
-    "dental_hygiene": "NORMAL",
-    "parents": [
-      {
-        "relation_with_student": "FATHER",
-        "name": "Test Student Father",
-        "gender": "MALE",
-        "phones": [
-          9870123654
-        ],
-        "emails": [
-          "blah@blah.com"
-        ]
-      },
-      {
-        "relation_with_student": "MOTHER",
-        "name": "Test Student Mother",
-        "gender": "FEMALE",
-        "phones": [],
-        "emails": []
-      }
-    ],
-    "registered_phone_for_sms": "9870123654",
-    "emergency_contact_number": "9870123654"
+    "date_of_birth": payload?.dateOfBirth,
+    "gender": payload?.gender,
+    "house_id": payload?.house,
+    // "student_fee_category_id": payload?.admissionNumber,
+    "renewal_status": payload?.renewalStatus ? payload?.renewalStatus : "NEW",
+    "nationality": payload?.nationality,
+    "date_of_admission": payload?.date_of_admission,
+    "category": payload?.category,
+    "religion": payload?.religion,
+    "mother_tongue": payload?.motherTongue,
+    "address": payload?.address,
+    "locality": payload?.locality,
+    "landmark": payload?.landmark,
+    "pincode": payload?.pincode,
+    "city": payload?.city,
+    "blood_group": payload?.bloodGroup,
+    "height": payload?.height,
+    "weight": payload?.weight,
+    "dental_hygiene": payload?.dentalHygiene,
+    "parents": payload?.parents?.map((p) => ({
+      relation_with_student: p.relation,
+      name: p.name,
+      gender: p.gender?.toUpperCase(),
+      phones: p.phones?.map(ph => ph?.toString()?.trim()).filter(Boolean) || [],
+      emails: p.emails?.filter((em) => em && em.trim() !== "") || [],
+      // qualification: p.qualification,
+      // annual_income: p.annualIncome
+    })) || [],
+
+
+    // "parents": [
+    //   {
+    //     "relation_with_student": payload?.relation_with_student,
+    //     "name": payload?.name,
+    //     "gender": payload?.gender,
+    //     "phones": [
+    //       payload?.phones,
+    //     ],
+    //     "emails": [
+    //       payload?.email,
+    //     ]
+    //   },
+    //   {
+    //     "relation_with_student": payload?.relation_with_student,
+    //     "name": payload?.name,
+    //     "gender": payload?.gender,
+    //     "phones": [],
+    //     "emails": []
+    //   }
+    // ],
+    "registered_phone_for_sms": payload?.registered_phone_for_sms,
+    "emergency_contact_number": payload?.emergency_contact_number,
   });
 };

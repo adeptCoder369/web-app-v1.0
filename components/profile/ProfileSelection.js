@@ -1,9 +1,7 @@
 "use client"
 //============================================================================
-
-
 import { useEffect, useState } from "react";
-import { Search, Calendar, ChevronDown, ChevronRight, Check, Eye, User, BookOpen, School } from "lucide-react";
+import { Search, ChevronDown, ChevronRight, User, School } from "lucide-react";
 import Footer from "../Footer";
 import { useProfile } from "../../controllers/profile";
 import { useRouter } from "next/navigation";
@@ -43,6 +41,7 @@ export default function ProfileSelection() {
   const [selectedSession, setSelectedSession] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+console.log('profileData',profileData);
 
   // Assuming profileData is your API response's results object
   const profileData_ = (profileData?.profiles || []).map(profile => ({
@@ -195,7 +194,7 @@ export default function ProfileSelection() {
 
           </div>
 
-          
+
 
           {/* Profiles Grid */}
           <div className="grid grid-cols-1 gap-6">
@@ -262,7 +261,7 @@ export default function ProfileSelection() {
                             className={`p-4 rounded-lg transition-all duration-200 ${selectedSchool?.name === school.name ? 'bg-indigo-50 border border-indigo-100' : 'bg-white border border-gray-100 hover:border-indigo-200'}`}
                           >
                             <div className="flex items-start">
-                             
+
                               <div className="flex-1">
                                 <div className="flex items-center cursor-pointer" onClick={() => handleSchoolSelect(school)}>
                                   {school?.logo ? (
@@ -275,7 +274,7 @@ export default function ProfileSelection() {
                                     <School className="h-10 w-10 text-gray-500 mr-2 flex-shrink-0" />
                                   )}
 
-                               
+
                                   <h4 className="font-medium text-gray-800">{school.name}</h4>
                                 </div>
                                 {/* Sessions */}

@@ -15,7 +15,7 @@ import HouseCreate from './houseCreateForm';
 import HouseEdit from './houseEditForm';
 import { getSessionCache } from '../../utils/sessionCache';
 
-const HouseManagement = ({ houses }) => {
+const HouseManagement = ({ houses ,setIsHouseUpdatedOrCreated}) => {
   const context = getSessionCache('dashboardContext');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,11 +26,8 @@ const HouseManagement = ({ houses }) => {
   // Simulate fetch delay
   useEffect(() => {
     setLoading(true);
-    const timeout = setTimeout(() => {
-      setHouseData(houses || []);
-      setLoading(false);
-    }, 1000); // simulate 1s delay
-    return () => clearTimeout(timeout);
+    setHouseData(houses || []);
+    setLoading(false);
   }, [houses]);
 
   const iconOptions = [
@@ -192,7 +189,7 @@ const HouseManagement = ({ houses }) => {
                       {house.name}
                     </h3>
                     <p className="text-sm text-gray-500 italic mb-4 line-clamp-1">
-                      “{house.motto || 'Motto not available'}”
+                      “{house.motto || house.description || 'Motto not available'}”
                     </p>
 
                     <div className="space-y-3 mb-4">
@@ -258,11 +255,14 @@ const HouseManagement = ({ houses }) => {
         isModalOpen={isModalOpen && !editingHouse}
         setIsModalOpen={setIsModalOpen}
         context={context}
+        setIsHouseUpdatedOrCreated={setIsHouseUpdatedOrCreated}
       />
       <HouseEdit
         isModalOpen={isModalOpen && !!editingHouse}
         setIsModalOpen={setIsModalOpen}
         selectedHouse={editingHouse}
+        context={context}
+        setIsHouseUpdatedOrCreated={setIsHouseUpdatedOrCreated}
       />
     </div>
   );
