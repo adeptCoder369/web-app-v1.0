@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { GraduationCap, Briefcase, CalendarDays } from "lucide-react";
+import { HiDocumentDuplicate } from "react-icons/hi";
 
 const AddAcademicInfo = ({ setFormData, formData }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validate = () => {
-    let newErrors= {};
+    let newErrors = {};
     if (!formData.academicQualification)
       newErrors.academicQualification = "Academic qualification is required";
     if (!formData.professionalQualification)
@@ -35,10 +36,13 @@ const AddAcademicInfo = ({ setFormData, formData }) => {
 
   return (
     <div className="w-full bg-white p-6 rounded-xl shadow-md border border-gray-200">
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto p-4"
+      >
         {/* Academic Qualification */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Academic Qualification
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -53,7 +57,9 @@ const AddAcademicInfo = ({ setFormData, formData }) => {
                 handleChange("academicQualification", e.target.value)
               }
               placeholder="Enter highest academic qualification"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.academicQualification && (
@@ -65,7 +71,7 @@ const AddAcademicInfo = ({ setFormData, formData }) => {
 
         {/* Professional Qualification */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Professional Qualification
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -80,7 +86,9 @@ const AddAcademicInfo = ({ setFormData, formData }) => {
                 handleChange("professionalQualification", e.target.value)
               }
               placeholder="Enter professional qualification"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.professionalQualification && (
@@ -92,23 +100,29 @@ const AddAcademicInfo = ({ setFormData, formData }) => {
 
         {/* Experience */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Experience (in years)
           </label>
-          <input
-            type="number"
-            name="experience"
-            value={formData.experience || ""}
-            onChange={(e) => handleChange("experience", e.target.value)}
-            placeholder="Enter total teaching/working experience"
-            min="0"
-            className="block w-full rounded-md border-gray-300 py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+          <div className="mt-1 relative">
+            <HiDocumentDuplicate className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+
+            <input
+              type="number"
+              name="experience"
+              value={formData.experience || ""}
+              onChange={(e) => handleChange("experience", e.target.value)}
+              placeholder="Enter total teaching/working experience"
+              min="0"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
+            />
+          </div>
         </div>
 
         {/* Year of Passing */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Year of Passing
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -123,7 +137,9 @@ const AddAcademicInfo = ({ setFormData, formData }) => {
               placeholder="Enter year of passing"
               min="1900"
               max={new Date().getFullYear()}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.yearOfPassing && (
@@ -132,7 +148,7 @@ const AddAcademicInfo = ({ setFormData, formData }) => {
         </div>
 
         {/* Submit */}
-        
+
       </form>
     </div>
   );

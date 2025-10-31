@@ -6,6 +6,16 @@ import { FaEdit } from 'react-icons/fa';
 import { getStaffDetails, patchStaffDetail } from '../../api/staff';
 import { getSessionCache } from '../../utils/sessionCache';
 
+import BasicDetailsViewTab from './BasicDetailsView';
+import PersonalDetailsViewTab from './PersonalDetailsView';
+import AcademicDetailsViewTab from './AcademicDetailsView';
+import DocumentDetailsViewTab from './DocumentDetailsView';
+import BankDetailsViewTab from './BankDetailsView';
+import { CiBank } from 'react-icons/ci';
+
+
+
+
 const getInitials = (name) => {
   return name
     .split(' ')
@@ -23,6 +33,7 @@ const StaffProfile = ({
   cookyGuid,
   cookyId,
   school,
+  config
 
 }) => {
 
@@ -66,7 +77,7 @@ const StaffProfile = ({
 
 
 
-  const [activeTab, setActiveTab] = useState('personal');
+  const [activeTab, setActiveTab] = useState('basic');
 
 
   // ====================================================================
@@ -112,7 +123,7 @@ const StaffProfile = ({
     setError(null); // Clear previous errors
 
     try {
-      console.log(' ==========', profile,session);
+      // console.log(' ==========',staffDetail, profile, session);
 
       // Replace with your actual API endpoint and store ID
       const response = await patchStaffDetail(
@@ -495,8 +506,11 @@ const StaffProfile = ({
         <div className="bg-white rounded-xl shadow-lg mb-8">
           <div className="flex space-x-1 p-1">
             {[
+              { id: 'basic', label: 'basic Details', icon: User },
               { id: 'personal', label: 'Personal Details', icon: User },
-              { id: 'academic', label: 'Academic Info', icon: Book }
+              { id: 'academic', label: 'Academic Info', icon: Book },
+              { id: 'document', label: 'Document Info', icon: Book },
+              { id: 'bank', label: 'Bank Info', icon: CiBank }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -513,275 +527,160 @@ const StaffProfile = ({
           </div>
         </div>
 
+        {activeTab === 'basic' && (
+
+
+          <BasicDetailsViewTab
+            staffDetail={staffDetail}
+            session={session}
+            profile={profile}
+            cookyGuid={cookyGuid}
+            cookyId={cookyId}
+            school={school}
+            titles={config?.titles}
+            gender={config?.gender_staffs}
+            designation={config?.designations}
+            classes={config?.classes}
+            // categories={config?.caste_categories}
+            // nationalities={config?.nationalities}
+            // bloodGroups={config?.blood_groups}
+            setIsUpdated={setIsUpdated}
+          // houses={config?.houses}
+          // motherTongues={config?.mother_tongues}
+
+
+          />
+
+        )}
+
         {/* Content based on active tab */}
         {activeTab === 'personal' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
 
-
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Date of Birth</p>
-
-                  {isEditingDob ? (
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="date"
-                        value={dob}
-                        onChange={(e) => setDob(e.target.value)}
-                        className="border-b border-blue-500 focus:outline-none bg-transparent px-1"
-                      />
-                      <button
-                        onClick={handleSaveDob}
-                        disabled={isSaving}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
-                      >
-                        {isSaving ? "Saving..." : "Save"}
-                      </button>
-                      <button
-                        onClick={handleCancelDob}
-                        disabled={isSaving}
-                        className="px-3 py-1 bg-gray-200 text-sm rounded-md hover:bg-gray-300"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <p className="text-lg font-semibold text-gray-900">{staffDetail?.date_of_birth || "—"}</p>
-                      <button onClick={() => setIsEditingDob(true)}>
-                        <FaEdit className="cursor-pointer h-4 w-4 text-gray-500 hover:text-gray-700" />
-                      </button>
-                    </div>
-                  )}
-
-                  {error && <p className="text-xs text-red-500">{error}</p>}
-                </div>
-              </div>
-            </div>
+          <PersonalDetailsViewTab
+            staffDetail={staffDetail}
+            session={session}
+            profile={profile}
+            cookyGuid={cookyGuid}
+            cookyId={cookyId}
+            school={school}
+            titles={config?.titles}
+            gender={config?.gender_staffs}
+            designation={config?.designations}
+            classes={config?.classes}
+            category={config?.caste_categories}
+            // categories={config?.caste_categories}
+            // nationalities={config?.nationalities}
+            bloodGroups={config?.blood_groups}
+            setIsUpdated={setIsUpdated}
+          // houses={config?.houses}
+          // motherTongues={config?.mother_tongues}
 
 
+          />
 
-
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-3">
-                {/* Icon */}
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <Heart className="h-5 w-5 text-blue-600" />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Blood Group</p>
-
-                  {isEditingBloodGroup ? (
-                    <div className="flex flex-wrap gap-2 items-center mt-1">
-                      {/* Dropdown */}
-                      <select
-                        value={bloodGroup}
-                        onChange={(e) => setBloodGroup(e.target.value)}
-                        className="border border-blue-300 rounded-md px-2 py-1 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      >
-                        <option value="">Select Blood Group</option>
-                        {bloodGroupsOptions.map((group) => (
-                          <option key={group} value={group}>
-                            {group}
-                          </option>
-                        ))}
-                      </select>
-
-                      {/* Save Button */}
-                      <button
-                        onClick={handleSaveBloodGroup}
-                        disabled={isSaving}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {isSaving ? "Saving..." : "Save"}
-                      </button>
-
-                      {/* Cancel Button */}
-                      <button
-                        onClick={handleCancelBloodGroup}
-                        disabled={isSaving}
-                        className="px-3 py-1 bg-gray-200 text-sm rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 mt-1">
-                      <p className="text-lg font-semibold text-gray-900">
-                        {bloodGroup || "—"}
-                      </p>
-                      <button onClick={() => setIsEditingBloodGroup(true)}>
-                        <FaEdit className="cursor-pointer h-4 w-4 text-gray-500 hover:text-gray-700" />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Error State */}
-                  {errorBloodGroup && <p className="text-xs text-red-500 mt-1">{errorBloodGroup}</p>}
-                </div>
-              </div>
-            </div>
-
-
-
-
-
-
-
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-3">
-                {/* Icon */}
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <Church className="h-5 w-5 text-blue-600" />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Religion</p>
-
-                  {isEditingReligion ? (
-                    <div className="flex flex-wrap gap-2 items-center mt-1">
-                      {/* Dropdown */}
-                      <select
-                        value={religion}
-                        onChange={(e) => setReligion(e.target.value)}
-                        className="border border-blue-300 rounded-md px-2 py-1 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      >
-                        <option value="">Select Religion</option>
-                        {religionsOptions.map((group) => (
-                          <option key={group} value={group}>
-                            {group}
-                          </option>
-                        ))}
-                      </select>
-
-                      {/* Save Button */}
-                      <button
-                        onClick={handleSaveReligion}
-                        disabled={isSaving}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {isSaving ? "Saving..." : "Save"}
-                      </button>
-
-                      {/* Cancel Button */}
-                      <button
-                        onClick={handleCancelReligion}
-                        disabled={isSaving}
-                        className="px-3 py-1 bg-gray-200 text-sm rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 mt-1">
-                      <p className="text-lg font-semibold text-gray-900">
-                        {religion || "—"}
-                      </p>
-                      <button onClick={() => setIsEditingReligion(true)}>
-                        <FaEdit className="cursor-pointer h-4 w-4 text-gray-500 hover:text-gray-700" />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Error State */}
-                  {errorReligion && <p className="text-xs text-red-500 mt-1">{errorReligion}</p>}
-                </div>
-              </div>
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* <InfoCard icon={Heart} title="Blood Group" value={staffDetail?.blood_group} /> */}
-            {/* <InfoCard icon={Globe} title="Religion" value={staffDetail.religion} /> */}
-            <InfoCard icon={Globe} title="Mother Tongue" value={staffDetail.mother_tongue} />
-            <InfoCard icon={Globe} title="Nationality" value={staffDetail.nationality} />
-            <InfoCard icon={Bus} title="School Bus" value={staffDetail.schoolBus} />
-
-            <div className="md:col-span-2 lg:col-span-3 bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Mail className="h-5 w-5 mr-2 text-blue-600" />
-                Contact Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Email Address</p>
-                  <p className="text-gray-900">{staffDetail.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">SMS Number</p>
-                  <p className="text-gray-900">{staffDetail.smsNumber}</p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-600 mb-1 flex items-center">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    Address
-                  </p>
-                  <p className="text-gray-900">{staffDetail.address}</p>
-                </div>
-              </div>
-            </div>
-          </div>
         )}
 
-        {activeTab === 'parents' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {staffDetail.parents && staffDetail.parents.map((parent, index) => (
-              <ParentCard key={index} parent={parent} />
-            ))}
-          </div>
+
+
+
+
+        {/* Content based on active tab */}
+        {activeTab === 'document' && (
+
+          <DocumentDetailsViewTab
+            staffDetail={staffDetail}
+            session={session}
+            profile={profile}
+            cookyGuid={cookyGuid}
+            cookyId={cookyId}
+            school={school}
+            titles={config?.titles}
+            gender={config?.gender_staffs}
+            designation={config?.designations}
+            classes={config?.classes}
+            category={config?.caste_categories}
+            // categories={config?.caste_categories}
+            // nationalities={config?.nationalities}
+            bloodGroups={config?.blood_groups}
+            setIsUpdated={setIsUpdated}
+          // houses={config?.houses}
+          // motherTongues={config?.mother_tongues}
+
+
+          />
+
+
         )}
+
+
+
+
+
+
+
 
         {activeTab === 'academic' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <InfoCard icon={Book} title="Class Assigned" value={staffDetail.class.name} />
-            <InfoCard icon={Shield} title="Roll Number" value={staffDetail.roll_number} />
-            <InfoCard icon={Award} title="Registration Number" value={staffDetail.registration_number ? staffDetail.registration_number : "n/a"} />
-            <InfoCard icon={Shield} title="Aadhar Card" value={staffDetail.aadhar_card_number} />
 
-            <div className="md:col-span-2 lg:col-span-3 bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Heart className="h-8 w-8 text-red-500 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-600">Favourite Sports</p>
-                  <p className="text-gray-500">Not specified</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Book className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-600">Hobbies</p>
-                  <p className="text-gray-500">Not specified</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Shield className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-600">Health Status</p>
-                  <p className="text-gray-500">Not specified</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AcademicDetailsViewTab
+            staffDetail={staffDetail}
+            session={session}
+            profile={profile}
+            cookyGuid={cookyGuid}
+            cookyId={cookyId}
+            school={school}
+            titles={config?.titles}
+            gender={config?.gender_staffs}
+            designation={config?.designations}
+            classes={config?.classes}
+            category={config?.caste_categories}
+            // categories={config?.caste_categories}
+            // nationalities={config?.nationalities}
+            bloodGroups={config?.blood_groups}
+            setIsUpdated={setIsUpdated}
+          // houses={config?.houses}
+          // motherTongues={config?.mother_tongues}
+
+
+          />
         )}
+
+
+
+
+
+
+
+
+        {activeTab === 'bank' && (
+
+          <BankDetailsViewTab
+            staffDetail={staffDetail}
+            session={session}
+            profile={profile}
+            cookyGuid={cookyGuid}
+            cookyId={cookyId}
+            school={school}
+            titles={config?.titles}
+            gender={config?.gender_staffs}
+            designation={config?.designations}
+            classes={config?.classes}
+            category={config?.caste_categories}
+            // categories={config?.caste_categories}
+            // nationalities={config?.nationalities}
+            bloodGroups={config?.blood_groups}
+            setIsUpdated={setIsUpdated}
+          // houses={config?.houses}
+          // motherTongues={config?.mother_tongues}
+
+
+          />
+        )}
+
+
+
+
+
       </div>
     </div>
 

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { FileText, IdCard, BadgeCheck, CalendarDays } from "lucide-react";
+import { HiDocumentDuplicate } from "react-icons/hi";
 
 const AddDocumentInfo = ({ setFormData, formData }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validate = () => {
-    let newErrors= {};
+    let newErrors = {};
     if (!formData.aadhaar) newErrors.aadhaar = "Aadhaar number is required";
     if (!formData.pan) newErrors.pan = "PAN number is required";
     if (!formData.employeeId) newErrors.employeeId = "Employee ID is required";
@@ -33,10 +34,13 @@ const AddDocumentInfo = ({ setFormData, formData }) => {
 
   return (
     <div className="w-full bg-white p-6 rounded-xl shadow-md border border-gray-200">
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto p-4"
+      >
         {/* Aadhaar Card Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Aadhaar Card Number
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -49,7 +53,10 @@ const AddDocumentInfo = ({ setFormData, formData }) => {
               value={formData.aadhaar || ""}
               onChange={(e) => handleChange("aadhaar", e.target.value)}
               placeholder="Enter Aadhaar number"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
+
             />
           </div>
           {errors.aadhaar && (
@@ -59,7 +66,7 @@ const AddDocumentInfo = ({ setFormData, formData }) => {
 
         {/* PAN Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             PAN Number
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -72,7 +79,9 @@ const AddDocumentInfo = ({ setFormData, formData }) => {
               value={formData.pan || ""}
               onChange={(e) => handleChange("pan", e.target.value)}
               placeholder="Enter PAN number"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.pan && (
@@ -82,40 +91,52 @@ const AddDocumentInfo = ({ setFormData, formData }) => {
 
         {/* Employee ID */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Employee ID
           </label>
-          <input
-            type="text"
-            name="employeeId"
-            value={formData.employeeId || ""}
-            onChange={(e) => handleChange("employeeId", e.target.value)}
-            placeholder="Enter employee ID"
-            className="block w-full rounded-md border-gray-300 py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-          {errors.employeeId && (
-            <p className="mt-1 text-sm text-red-600">{errors.employeeId}</p>
-          )}
+          <div className="mt-1 relative">
+            <HiDocumentDuplicate className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+
+            <input
+              type="text"
+              name="employeeId"
+              value={formData.employeeId || ""}
+              onChange={(e) => handleChange("employeeId", e.target.value)}
+              placeholder="Enter employee ID"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
+            />
+            {errors.employeeId && (
+              <p className="mt-1 text-sm text-red-600">{errors.employeeId}</p>
+            )}
+          </div>
         </div>
 
         {/* Special Designation */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Special Designation
           </label>
-          <input
-            type="text"
-            name="specialDesignation"
-            value={formData.specialDesignation || ""}
-            onChange={(e) => handleChange("specialDesignation", e.target.value)}
-            placeholder="Enter special designation (if any)"
-            className="block w-full rounded-md border-gray-300 py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+          <div className="mt-1 relative">
+            <HiDocumentDuplicate className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+
+            <input
+              type="text"
+              name="specialDesignation"
+              value={formData.specialDesignation || ""}
+              onChange={(e) => handleChange("specialDesignation", e.target.value)}
+              placeholder="Enter special designation (if any)"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
+            />
+          </div>
         </div>
 
         {/* Date of Retirement */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Date of Retirement
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -127,21 +148,25 @@ const AddDocumentInfo = ({ setFormData, formData }) => {
               name="retirementDate"
               value={formData.retirementDate || ""}
               onChange={(e) => handleChange("retirementDate", e.target.value)}
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
         </div>
 
         {/* Type of Appointment */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Type of Appointment
           </label>
           <select
             name="appointmentType"
             value={formData.appointmentType || ""}
             onChange={(e) => handleChange("appointmentType", e.target.value)}
-            className="block w-full rounded-md border-gray-300 py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
           >
             <option value="">Select Type</option>
             <option value="permanent">Permanent</option>

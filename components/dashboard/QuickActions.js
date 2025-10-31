@@ -109,11 +109,11 @@ const router = useRouter()
       features: [
         {
           name: "Add Staff",
-          url: "/dashboard/staff-management",
+          url: "/dashboard/staff-management?tab=add",
         },
         {
           name: "View All Staff",
-          url: "/dashboard/staff-management",
+          url: "/dashboard/staff-management?tab=list",
         },
       ]
 

@@ -71,47 +71,49 @@ export const StaffList = ({
     mobile: "",
     emergencyContact: "",
     isSearch: false,
+    appType: ""
   });
 
   const { getStaff, stadffData, isLoading } = useStaff()
 
 
- const fetchData = async () => {
-  try {
-    const rawParams = {
-      user_title_id: filters?.title || undefined,
-      is_allowed_for_admin_access: filters.status.includes("Allowed for Admin Accesss") ? true : undefined,
-      has_account: filters.status.includes("Has Account") ? true : undefined,
-      receive_daily_attendance_notification: filters.status.includes("Receive Daily Notification") ? true : undefined,
-      join_time: filters.joinedDate || undefined,
-      name: filters.name || undefined,
-      mother_name: filters.motherName || undefined,
-      father_name: filters.fatherName || undefined,
-      phone: filters.mobile || undefined,
-      emergency_contact_number: filters.emergencyContact || undefined,
-      school_designation_ids:
-      filters.designations?.length > 0 ? filters.designations : undefined,
-    };
+  const fetchData = async () => {
+    try {
+      const rawParams = {
+        user_title_id: filters?.title || undefined,
+        is_allowed_for_admin_access: filters.status.includes("Allowed for Admin Accesss") ? true : undefined,
+        has_account: filters.status.includes("Has Account") ? true : undefined,
+        receive_daily_attendance_notification: filters.status.includes("Receive Daily Notification") ? true : undefined,
+        join_time: filters.joinedDate || undefined,
+        name: filters.name || undefined,
+        mother_name: filters.motherName || undefined,
+        father_name: filters.fatherName || undefined,
+        phone: filters.mobile || undefined,
+        gender: filters.gender || undefined,
+        emergency_contact_number: filters.emergencyContact || undefined,
+        school_designation_ids: filters.designations?.length > 0 ? filters.designations : undefined,
+      };
 
-    // ✅ Remove undefined, null, empty string, or empty array values
-    const params = Object.fromEntries(
-      Object.entries(rawParams).filter(
-        ([_, v]) =>
-          v !== undefined &&
-          v !== null &&
-          v !== "" &&
-          !(Array.isArray(v) && v.length === 0)
-      )
-    );
+      // ✅ Remove undefined, null, empty string, or empty array values
+      const params = Object.fromEntries(
+        Object.entries(rawParams).filter(
+          ([_, v]) =>
+            v !== undefined &&
+            v !== null &&
+            v !== "" &&
+            !(Array.isArray(v) && v.length === 0)
+        )
+      );
 
-    // 🔹 Call API with only valid params
-    const data = await getStaff(Context?.profileId, Context?.session, params);
+      // 🔹 Call API with only valid params
+      const data = await getStaff(Context?.profileId, Context?.session, params);
 
-    setStaff(data?.data?.data?.results?.users || []);
-  } catch (err) {
-    console.error("❌ Failed to fetch staff data:", err);
-  }
-};
+      setStaff(data?.data?.data?.results?.users || []);
+      toggleFilterPanel()
+    } catch (err) {
+      console.error("❌ Failed to fetch staff data:", err);
+    }
+  };
 
 
 
@@ -129,10 +131,12 @@ export const StaffList = ({
     filters?.name,
     filters?.isSearch,
     filters?.designations?.length,
+    filters?.gender,
+    filters?.appType,
   ]);
 
 
-  // console.log('filters =============', filters);
+  console.log('filters =============', filters?.gender);
 
 
 
@@ -271,8 +275,10 @@ export const StaffList = ({
   const toggleFilterPanel = () => {
     setIsFilterPanelOpen(!isFilterPanelOpen);
   };
+
+
   const getFilterCount = () => {
-    return filters?.status?.length + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
+    return filters?.status?.length + (filters?.appType ? 1 : 0) + (filters?.gender ? 1 : 0) + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
   };
 
   const handleStandardChange = (e) => {
@@ -341,7 +347,7 @@ export const StaffList = ({
 
 
       <StaffTable
-        columns={['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action']}
+        columns={['Created By', 'Designation', 'Class & Admin Access', ' Phone', 'Action']}
         staffs={staff}
         handleClassClick={handleRowClick}
         isLoading={isLoading}

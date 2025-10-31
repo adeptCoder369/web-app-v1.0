@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
 import Loader from "../ui/status/Loader";
+import { RiAdminFill } from "react-icons/ri";
 
 const StaffTable = ({
   staffs = [],
@@ -202,7 +203,7 @@ const StaffTable = ({
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  setFilters( prev => ({ ...prev, name: e.target.value }) );
+                  setFilters(prev => ({ ...prev, name: e.target.value }));
                   setCurrentPage(1);
                 }}
                 className="pl-10 pr-4 py-2.5 w-full sm:w-64 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
@@ -285,7 +286,7 @@ const StaffTable = ({
                       {staff.image_url ? (
                         <img
                           src={staff.image_url}
-                          alt={staff.user?.name || staff.name}
+                          alt={staff.user?.full_name || staff.full_name}
                           className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -294,15 +295,15 @@ const StaffTable = ({
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm ring-2 ring-gray-100">
-                          {getInitials(staff.user?.name || staff.name)}
+                          {getInitials(staff.user?.full_name || staff.full_name)}
                         </div>
                       )}
                       <div>
                         <div className="text-sm font-semibold text-gray-900">
-                          {staff.user?.name || staff.name || "N/A"}
+                          {staff.user?.full_name || staff.full_name || "N/A"}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {staff.user?.email || "No email"}
+                          {staff.emails[0]?.email || "No email"}
                         </div>
                       </div>
                     </div>
@@ -312,14 +313,11 @@ const StaffTable = ({
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="p-2 bg-blue-50 rounded-lg">
-                        <FaBook className="text-blue-600 text-sm" />
+                        <RiAdminFill className="text-blue-600 text-sm" />
                       </div>
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {staff.subject?.name || "N/A"}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {staff.subject?.code || "No code"}
+                          {staff.designation?.name || "N/A"}
                         </div>
                       </div>
                     </div>
@@ -328,26 +326,32 @@ const StaffTable = ({
                   {/* Title & Description */}
                   <td className="px-6 py-4 max-w-xs">
                     <div className="text-sm font-semibold text-gray-900 truncate">
-                      {staff.description || "N/A"}
+                      {staff.class?.name || "N/A"}
                     </div>
-                    <div className="text-xs text-gray-500 line-clamp-2">
-                      {staff.info?.text || "No additional details"}
+                    <div className="mt-1">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+      ${staff.designation?.is_allowed_for_admin_access === '1'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                          }`}
+                      >
+                        {staff.designation?.is_allowed_for_admin_access === '1' ? 'Admin Access' : 'No Access'}
+                      </span>
                     </div>
                   </td>
 
                   {/* Timings */}
                   <td className="whitespace-nowrap px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">
-                      {staff.date || "N/A"}
-                    </div>
+
                     <div className="text-xs text-gray-500 flex items-center gap-1">
-                      <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                      {staff.time || "N/A"}
+                      {/* <span className="w-2 h-2 bg-green-400 rounded-full"></span> */}
+                      {staff.phones[0]?.phone || "N/A"}
                     </div>
                   </td>
 
                   {/* Info */}
-                  <td className="whitespace-nowrap px-6 py-4">
+                  {/* <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex flex-col gap-1">
                       <div className="text-xs text-gray-700">
                         <span className="font-medium">Students:</span> {staff.students?.length || 0}
@@ -356,10 +360,10 @@ const StaffTable = ({
                         <span className="font-medium">Platform:</span> {staff.info?.platform || "N/A"}
                       </div>
                     </div>
-                  </td>
+                  </td> */}
 
                   {/* Start/Join */}
-                  <td className="whitespace-nowrap px-6 py-4">
+                  {/* <td className="whitespace-nowrap px-6 py-4">
                     {staff.startJoinLink ? (
                       <a
                         href={staff.startJoinLink}
@@ -376,7 +380,7 @@ const StaffTable = ({
                         No Link
                       </span>
                     )}
-                  </td>
+                  </td> */}
 
                   {/* Action */}
                   <td className="whitespace-nowrap px-6 py-4">

@@ -14,6 +14,7 @@ import AddDocumentInfo from './AddDocumentInfo';
 import AddAcademicInfo from './AddAcademicInfo';
 import AddBankInfo from './AddBankInfo';
 import { set } from 'date-fns';
+import { useSearchParams } from 'next/navigation';
 
 // ===================================================================
 
@@ -34,6 +35,7 @@ const StaffMangementDashboard = ({
   school
 
 }) => {
+  const searchParams = useSearchParams();
 
   const config = getSessionCache("dashboardConfig");
   const Context = getSessionCache("dashboardContext");
@@ -152,6 +154,22 @@ const StaffMangementDashboard = ({
     { id: 'academic', label: 'Academic Info', icon: Book },
     { id: 'bank', label: 'Bank Details', icon: Banknote }
   ];
+
+
+
+
+
+
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
+
+
+
+
+
 
   // console.log('formData ==========', formData)
 
@@ -443,25 +461,27 @@ const StaffMangementDashboard = ({
             // <StaffProfile
 
             <>
-              {selectedStaff ? <StaffProfile
-                bloodGroupsOptions={bloodGroupsOptions}
-                religionsOptions={religionsOptions}
-                school={school}
-                profile={Context?.profileId}
-                session={Context?.session}
-                cookyGuid={cookyGuid}
-                cookyId={cookyId}
-                studentData={selectedStaff}
-                studentId={selectedStaff?.id}
-              /> : (
-                <>
-                  <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">No Staff Selected</h2>
-                    <p className="text-gray-600 mb-4">Please select a student from the list to view their profile.</p>
-                  </div>
-                </>
+              {selectedStaff ?
+                <StaffProfile
+                  bloodGroupsOptions={bloodGroupsOptions}
+                  religionsOptions={religionsOptions}
+                  school={school}
+                  profile={Context?.profileId}
+                  session={Context?.session}
+                  cookyGuid={cookyGuid}
+                  cookyId={cookyId}
+                  studentData={selectedStaff}
+                  studentId={selectedStaff?.id}
+                  config={config}
+                /> : (
+                  <>
+                    <div className="bg-white rounded-xl shadow-md p-6 text-center">
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">No Staff Selected</h2>
+                      <p className="text-gray-600 mb-4">Please select a student from the list to view their profile.</p>
+                    </div>
+                  </>
 
-              )}
+                )}
 
             </>
           )}

@@ -1,44 +1,6 @@
-import UserProfile from "./UserProfile";
-import Link from "next/link";
 import SchoolBadgeCard from "./ui/card/SchoolBadgeCard";
-import { TbLayoutSidebarRightCollapse, TbLayoutSidebarRightExpand } from "react-icons/tb";
-import {
-  LayoutDashboard,
-  Settings,
-  GraduationCap,
-  Users,
-  UserCheck,
-  FileText,
-  Calculator,
-  MessageSquare,
-  BookOpen,
-  CreditCard,
-  Bus,
-  CreditCard as IdCardIcon,
-  Smartphone,
-  Calendar,
-  Library,
-  FileImage,
-  School,
-  Album,
-  Headphones,
-  Video,
-  Bell,
-  ChevronDown,
-  ChevronRight,
-  Menu,
-  X,
-  Search,
-  Plus,
-  BarChart3,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  DollarSign,
-  Star,
-  Building
-} from 'lucide-react';
+import { TbLayoutSidebarRightExpand } from "react-icons/tb";
+import { ChevronDown, ChevronRight, Star, } from 'lucide-react';
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -140,38 +102,38 @@ const menuItems = [
       { name: "Subject Class Mapping", url: "/subject-mapping", quickLink: true }
     ]
   },
-  {
-    name: "REPORT CARD",
-    icon: <Image
-      src="/icons/report_card.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      {
-        name: "Subjects",
-        url: "/dashboard/report-cards",
-        quickLink: true
-      },
-      { name: "Grades", url: "/grades", quickLink: true },
-      { name: "Exams", url: "/exams", quickLink: true },
-      { name: "Enter Marks", url: "/enter-marks", quickLink: true },
-      { name: "Report Card Formats", url: "/report-formats", quickLink: true }
-    ]
-  },
-  {
-    name: "ONLINE EXAM",
-    icon: <Image
-      src="/icons/online_exam.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      { name: "View Quizzes", url: "/quizzes", quickLink: true }
-    ]
-  },
+  // {
+  //   name: "REPORT CARD",
+  //   icon: <Image
+  //     src="/icons/report_card.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     {
+  //       name: "Subjects",
+  //       url: "/dashboard/report-cards",
+  //       quickLink: true
+  //     },
+  //     { name: "Grades", url: "/grades", quickLink: true },
+  //     { name: "Exams", url: "/exams", quickLink: true },
+  //     { name: "Enter Marks", url: "/enter-marks", quickLink: true },
+  //     { name: "Report Card Formats", url: "/report-formats", quickLink: true }
+  //   ]
+  // },
+  // {
+  //   name: "ONLINE EXAM",
+  //   icon: <Image
+  //     src="/icons/online_exam.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     { name: "View Quizzes", url: "/quizzes", quickLink: true }
+  //   ]
+  // },
   {
     name: "MOBITENDANCE",
     icon: <Image
@@ -191,33 +153,33 @@ const menuItems = [
       { name: "Monthly Average", url: "/monthly-attendance" }
     ]
   },
-  {
-    name: "SMS CIRCULAR",
-    icon: <Image
-      src="/icons/sms_circular.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      { name: "View Notices", url: "/notices", quickLink: true },
-      { name: "Send SMS Circular", url: "/send-notice", quickLink: true },
-      { name: "Notice Types", url: "/notice-types" }
-    ]
-  },
-  {
-    name: "HOMEWORK MESSAGE",
-    icon: <Image
-      src="/icons/homework_message.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      { name: "View Homework", url: "/homework", quickLink: true },
-      { name: "Send Homework", url: "/send-homework", quickLink: true }
-    ]
-  },
+  // {
+  //   name: "SMS CIRCULAR",
+  //   icon: <Image
+  //     src="/icons/sms_circular.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     { name: "View Notices", url: "/notices", quickLink: true },
+  //     { name: "Send SMS Circular", url: "/send-notice", quickLink: true },
+  //     { name: "Notice Types", url: "/notice-types" }
+  //   ]
+  // },
+  // {
+  //   name: "HOMEWORK MESSAGE",
+  //   icon: <Image
+  //     src="/icons/homework_message.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     { name: "View Homework", url: "/homework", quickLink: true },
+  //     { name: "Send Homework", url: "/send-homework", quickLink: true }
+  //   ]
+  // },
   {
     name: "ONLINE FEE",
     icon: <Image
@@ -239,65 +201,65 @@ const menuItems = [
       { name: "Transport Locations", url: "/locations" }
     ]
   },
-  {
-    name: "TRANSPORT MANAGEMENT",
-    icon: <Image
-      src="/icons/gps.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      { name: "School Buses", url: "/school-buses" },
-      { name: "Transport Locations", url: "/locations" },
-      { name: "School Bus Attendance", url: "/bus-attendance" }
-    ]
-  },
-  {
-    name: "ID CARD",
-    icon: <Image
-      src="/icons/id_card.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      { name: "Download ID Card", url: "/id-card" },
-      { name: "Upload ID Card", url: "/upload-id-card" },
-      { name: "Staff ID Card", url: "/staff-id-cards" }
-    ]
-  },
-  {
-    name: "LIBRARY MANAGEMENT",
-    icon: <Image
-      src="/icons/online_exam.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      {
-        name: "View Libraries",
-        url: "/dashboard/online-library",
+  // {
+  //   name: "TRANSPORT MANAGEMENT",
+  //   icon: <Image
+  //     src="/icons/gps.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     { name: "School Buses", url: "/school-buses" },
+  //     { name: "Transport Locations", url: "/locations" },
+  //     { name: "School Bus Attendance", url: "/bus-attendance" }
+  //   ]
+  // },
+  // {
+  //   name: "ID CARD",
+  //   icon: <Image
+  //     src="/icons/id_card.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     { name: "Download ID Card", url: "/id-card" },
+  //     { name: "Upload ID Card", url: "/upload-id-card" },
+  //     { name: "Staff ID Card", url: "/staff-id-cards" }
+  //   ]
+  // },
+  // {
+  //   name: "LIBRARY MANAGEMENT",
+  //   icon: <Image
+  //     src="/icons/online_exam.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     {
+  //       name: "View Libraries",
+  //       url: "/dashboard/online-library",
 
-      },
-      { name: "View Books", url: "/books" },
-      { name: "Book Issues", url: "/book-issues" }
-    ]
-  },
-  {
-    name: "GALLERY",
-    icon: <Image
-      src="/icons/gallery.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />, subMenu: [
-      { name: "Album", url: "/album", quickLink: true },
-      { name: "Photo", url: "/photo", quickLink: true }
-    ]
-  }
+  //     },
+  //     { name: "View Books", url: "/books" },
+  //     { name: "Book Issues", url: "/book-issues" }
+  //   ]
+  // },
+  // {
+  //   name: "GALLERY",
+  //   icon: <Image
+  //     src="/icons/gallery.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />, subMenu: [
+  //     { name: "Album", url: "/album", quickLink: true },
+  //     { name: "Photo", url: "/photo", quickLink: true }
+  //   ]
+  // }
 ];
 
 // ===============================================================

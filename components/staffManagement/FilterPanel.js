@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { commonIcons, moduleIcons, staffStatusIcons } from "./icons";
+import { commonIcons, staffStatusIcons } from "./icons";
 // ===============================================================================
 const { FaCheck } = commonIcons;
 // ===============================================================================
@@ -197,7 +197,7 @@ const StaffFilterPanel = ({
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Gender</h3>
         <div className="flex flex-wrap gap-3">
-          {["Male", "Female",].map((g) => (
+          {["MALE", "FEMALE",].map((g) => (
             <label
               key={g}
               className={`flex items-center px-3 py-1.5 rounded-full border cursor-pointer transition 

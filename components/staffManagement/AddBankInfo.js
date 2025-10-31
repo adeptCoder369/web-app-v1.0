@@ -36,10 +36,15 @@ const AddBankInfo = ({ setFormData, formData }) => {
 
   return (
     <div className="w-full bg-white p-6 rounded-xl shadow-md border border-gray-200">
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto p-4"
+      >
+
         {/* Bank Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Bank</label>
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
+            Bank</label>
           <div className="mt-1 relative rounded-md shadow-sm">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Landmark className="h-5 w-5 text-gray-400" />
@@ -50,7 +55,9 @@ const AddBankInfo = ({ setFormData, formData }) => {
               value={formData.bank || ""}
               onChange={(e) => handleChange("bank", e.target.value)}
               placeholder="Enter bank name"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.bank && (
@@ -60,7 +67,7 @@ const AddBankInfo = ({ setFormData, formData }) => {
 
         {/* Account Holder Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Account Holder Name
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -73,7 +80,9 @@ const AddBankInfo = ({ setFormData, formData }) => {
               value={formData.accountHolderName || ""}
               onChange={(e) => handleChange("accountHolderName", e.target.value)}
               placeholder="Enter account holder name"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.accountHolderName && (
@@ -85,7 +94,7 @@ const AddBankInfo = ({ setFormData, formData }) => {
 
         {/* Account Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Account Number
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -98,7 +107,9 @@ const AddBankInfo = ({ setFormData, formData }) => {
               value={formData.accountNumber || ""}
               onChange={(e) => handleChange("accountNumber", e.target.value)}
               placeholder="Enter account number"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.accountNumber && (
@@ -108,7 +119,7 @@ const AddBankInfo = ({ setFormData, formData }) => {
 
         {/* IFSC Code */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             IFSC Code
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -122,7 +133,9 @@ const AddBankInfo = ({ setFormData, formData }) => {
               onChange={(e) => handleChange("ifscCode", e.target.value.toUpperCase())}
               placeholder="Enter IFSC code"
               maxLength={11}
-              className="uppercase block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.ifscCode && (
@@ -132,7 +145,7 @@ const AddBankInfo = ({ setFormData, formData }) => {
 
         {/* Branch Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
             Branch Name
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -145,7 +158,9 @@ const AddBankInfo = ({ setFormData, formData }) => {
               value={formData.branchName || ""}
               onChange={(e) => handleChange("branchName", e.target.value)}
               placeholder="Enter branch name"
-              className="block w-full rounded-md border-gray-300 pl-10 pr-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             />
           </div>
           {errors.branchName && (
@@ -154,7 +169,7 @@ const AddBankInfo = ({ setFormData, formData }) => {
         </div>
 
         {/* Submit */}
-        
+
       </form>
     </div>
   );
