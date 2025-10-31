@@ -94,7 +94,7 @@ const AddStaff = ({
               onChange={(e) => handleChange('title', e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                 transition duration-200 placeholder-gray-400 hover:border-gray-400"                placeholder="Enter full name"
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
             >
               <option value="">Select Title</option>
               {titles?.map((d: any, idx: number) => (
@@ -125,7 +125,8 @@ const AddStaff = ({
               onChange={(e) => handleChange('gender', e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                 transition duration-200 placeholder-gray-400 hover:border-gray-400"                placeholder="Enter full name"
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"
+              // placeholder="Enter full name"
             >
               <option value="">Select gender</option>
               {genderStaffs?.map((d: any, idx: number) => (
@@ -155,7 +156,7 @@ const AddStaff = ({
               onChange={(e) => handleChange('designation', e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                 transition duration-200 placeholder-gray-400 hover:border-gray-400"                placeholder="Enter full name"
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"          
             >
               <option value="">Select designation</option>
               {designations?.map((d: any, idx: number) => (
@@ -186,8 +187,9 @@ const AddStaff = ({
               onChange={(e) => handleChange('class', e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                 transition duration-200 placeholder-gray-400 hover:border-gray-400"                placeholder="Enter full name"
+                 transition duration-200 placeholder-gray-400 hover:border-gray-400"            
             >
+
               <option value="">Select class</option>
               {classes?.map((d: any, idx: number) => (
                 <option key={idx} value={d.id}>
