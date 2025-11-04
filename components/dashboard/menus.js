@@ -11,13 +11,15 @@ import FeeCollectionChart from './FeeCollectionChart';
 import UpcomingEvent from './events';
 import TodaySummary from './todaySummary';
 import QuickActions from './QuickActions';
+import DashboardStatsSection from './StatsCards';
 import { getFeeCollectionSummary, getFeeNameWiseSummary } from '../../api/fees';
 // ====================================================================================
- 
+
 const DashboardMenus = () => {
 
   const router = useRouter();
   const Context = getSessionCache("dashboardContext");
+  const config = getSessionCache("dashboardConfig");
 
 
   const [loading, setLoading] = useState(false)
@@ -107,11 +109,9 @@ const DashboardMenus = () => {
 
 
 
-
-  const getDashboardStats = (standards, staffCount, todayAttendance) => {
+  const getDashboardStats = (standards, staffCount, percentage_of_app_users, number_of_app_users) => {
     if (!standards || standards.length === 0) return [];
 
-    // 🔹 Total students across all standards & classes
     const totalStudents = standards.reduce((sum, std) => {
       return (
         sum +
@@ -119,17 +119,8 @@ const DashboardMenus = () => {
       );
     }, 0);
 
+    const totalStaff = staffCount.length;
 
-    const totalStaff = standards.reduce((sum, std) => {
-      return (
-        sum +
-        std.classes.length
-      );
-    }, 0);
-
-
-
-    // 🔹 Active classes (all sections combined)
     const activeClasses = standards.reduce(
       (sum, std) => sum + (std.classes?.length || 0),
       0
@@ -139,33 +130,45 @@ const DashboardMenus = () => {
       {
         label: "Total Students",
         value: totalStudents.toLocaleString(),
-        icon: <GraduationCap className="w-9 h-9" />,
-        color: "text-blue-600",
+        icon: GraduationCap,
+        color: "from-blue-500 to-indigo-500",
+        url: "dashboard/student-management"
       },
       {
         label: "Staff Members",
         value: totalStaff.toLocaleString(),
-        icon: <UserCheck className="w-9 h-9" />,
-        color: "text-green-600",
+        icon: UserCheck,
+        color: "from-green-500 to-emerald-500",
+        url: "dashboard/staff-management"
+
       },
       {
         label: "Active Classes",
         value: activeClasses.toLocaleString(),
-        icon: <Building className="w-9 h-9" />,
-        color: "text-purple-600",
+        icon: Building,
+        color: "from-purple-500 to-pink-500",
+        url: "dashboard/standard-management"
+
       },
       {
-        label: "App Users ",
-        value: `${dashboardData?.results?.percentage_of_app_users}%`,
-        icon: <BiMobile className="w-9 h-9" />,
-        color: "text-orange-600",
+        label: "App Users",
+        value: `${percentage_of_app_users}% (${number_of_app_users} )`,
+        icon: BiMobile,
+        color: "from-orange-500 to-amber-500",
+        url: "dashboard/erp-management"
+
       },
     ];
   };
 
-  const stats = getDashboardStats(dashboardData?.results?.standards, 89, 94);
+  const stats = getDashboardStats(
+    config?.standards,
+    config?.users,
+    config?.percentage_of_app_users,
+    config?.number_of_app_users
+  );
 
-
+  console.log('statssds', config);
 
 
 
@@ -179,7 +182,7 @@ const DashboardMenus = () => {
         <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
 
           <main className="flex-1 overflow-y-auto p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
               {stats.map((stat, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
@@ -194,8 +197,13 @@ const DashboardMenus = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
 
+
+            <main className="flex-1 overflow-y-auto p-6">
+              <DashboardStatsSection stats={stats} />
+              {/* Rest of your dashboard */}
+            </main>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
 
