@@ -1,4 +1,3 @@
-// components/inventory/InventoryTable.jsx
 import React from 'react';
 import { moduleIcons, categoryIcons, commonIcons } from './constants/icons'; // Adjust path as needed
 

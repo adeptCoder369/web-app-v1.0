@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { getEvents } from '../../../api/event';
+import { getEvents, getEventTypes } from '../../../api/event';
 import { getSessionCache } from '../../../utils/sessionCache';
 import ChartLoadingSkeleton from '../../../components/ui/status/ChartLoadingSkeleton';
 import Layout from '../../../layouts/Layout';
@@ -25,28 +25,50 @@ export default function EventInsightsDashboard() {
   const profileId = context?.profileId;
   const session = context?.session;
 
-  const [drawerOpen, setDrawerOpen] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [events, setEvents] = useState([]);
+  const [eventsType, setEventsType] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterType, setFilterType] = useState('All');
   const today = new Date();
   // =====================================================================================
+  
+  const fetchEvents = async () => {
+    setIsLoading(true);
+    try {
+      const resp = await getEvents(profileId, session);
+      const fetched = resp?.data?.results?.events || [];
+      setEvents(fetched);
+    } catch (err) {
+      console.error('Failed to fetch events:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+
+
+  const fetchEventType = async () => {
+    setIsLoading(true);
+    try {
+      const resp = await getEventTypes(profileId, session);
+      const fetched = resp?.data?.results?.event_types || [];
+      setEventsType(fetched);
+    } catch (err) {
+      console.error('Failed to fetch events:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  
+
+  
   useEffect(() => {
     if (!profileId || !session) return;
-    const fetchEvents = async () => {
-      setIsLoading(true);
-      try {
-        const resp = await getEvents(profileId, session);
-        const fetched = resp?.data?.results?.events || [];
-        setEvents(fetched);
-      } catch (err) {
-        console.error('Failed to fetch events:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchEvents();
+    fetchEventType()
   }, [profileId, session]);
 
   const enrichedEvents = useMemo(() => {
@@ -117,7 +139,7 @@ export default function EventInsightsDashboard() {
         <EventTypeDrawer
           drawerOpen={drawerOpen}
           setDrawerOpen={setDrawerOpen}
-          // selectedFee={selectedFee}
+          eventsType={eventsType}
           context={context}
         />
         {/* backdrop */}

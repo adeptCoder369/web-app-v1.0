@@ -1,14 +1,6 @@
-// components/SubjectsTabs.jsx
 import React from 'react';
-import {
-    BookOpen, Building2, Languages, Truck,
-    Home, Archive, Package, UserCheck, CreditCard,
-    Library, User, Building, Globe, ShoppingCart, BadgePlus, List,
-    LayoutDashboard
-} from 'lucide-react';
 
 const SubjectsTabs = ({ setActiveTab, activeTab, subjects }) => {
-    // Group subjects by code
     const groupedSubjects = subjects?.reduce((acc, subject) => {
         if (subject.code) {
             if (!acc[subject.code]) acc[subject.code] = [];
@@ -48,15 +40,3 @@ const SubjectsTabs = ({ setActiveTab, activeTab, subjects }) => {
 };
 
 export default SubjectsTabs;
-
-// Custom scrollbar-hide utility class for Tailwind CSS
-// This is not a standard Tailwind class. You would need to add it to your CSS file or a plugin.
-// @layer utilities {
-//   .scrollbar-hide::-webkit-scrollbar {
-//     display: none;
-//   }
-//   .scrollbar-hide {
-//     -ms-overflow-style: none; /* IE and Edge */
-//     scrollbar-width: none; /* Firefox */
-//   }
-// }

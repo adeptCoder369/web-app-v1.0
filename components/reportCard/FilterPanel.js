@@ -1,6 +1,6 @@
 // components/inventory/FilterPanel.jsx
 import React from 'react';
-import { moduleIcons, categoryIcons, commonIcons } from './constants/icons'; // Adjust path as needed
+import { moduleIcons, categoryIcons, commonIcons } from './component/constants/icons'; // Adjust path as needed
 
 const { FaCheck, FaCheckIcon, FaTimesIcon } = commonIcons;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from "next/navigation";
 
 import { FileDown } from 'lucide-react';
-import TooltipInfo from '../../ui/tooltip/TooltipInfo';
+import TooltipInfo from '../ui/tooltip/TooltipInfo';
 import { FaFilter, FaList, FaThLarge, FaPlusCircle } from 'react-icons/fa';
 import Tabs from './Tabs';
 

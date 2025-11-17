@@ -1,71 +1,52 @@
+"use client";
 import React, { useEffect, useState } from "react";
-import {
-    X,
-    Calendar,
-    Layers,
-    ReceiptIndianRupee,
-    Users,
-    Banknote,
-    Clock,
-    CheckCircle2,
-    XCircle,
-    TrendingUp,
-    GraduationCap,
-    IndianRupee,
-    DollarSign,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
 import { MdEvent } from "react-icons/md";
+import EventTypeCard from "./EventTypeCard";
+import EventTypeTab from "./EventTypeTab";
+import EventTypeEditForm from "./EventTypeEditForm";
+import EventTypeAddForm from "./EventTypeAddForm";
 
-const EventTypeDrawer = ({ drawerOpen, selectedFee, context, setDrawerOpen }) => {
-    const [feeDetailData, setFeeDetailData] = useState(null);
-    const [loading, setLoading] = useState(false);
 
-    const fetchFeeTypeDetail = async () => {
-        if (!drawerOpen || !selectedFee?.id) return;
-        setLoading(true);
-        try {
-            const res = await getFeeTypeDetail(
-                context?.profileId,
-                context?.session,
-                selectedFee?.id
-            );
-            if (res?.data?.success) {
-                setFeeDetailData(res.data.results);
-            }
-        } catch (err) {
-            console.error("Error fetching fee type detail:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+
+const EventTypeDrawer = ({ drawerOpen, setDrawerOpen, eventsType = [] }) => {
+    const [data, setData] = useState([]);
+    const [mode, setMode] = useState("view"); // view | edit | add
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     useEffect(() => {
-        // fetchFeeTypeDetail();
-    }, [drawerOpen, selectedFee]);
+        if (drawerOpen) setData(eventsType || []);
+    }, [drawerOpen, eventsType]);
 
-    const data = feeDetailData;
-    console.log(data?.standard);
+    const handleCardSelect = (event) => {
+        setSelectedEvent(event);
+        setMode("edit");
+    };
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("en-IN").format(amount || 0);
+    const handleBackToList = () => {
+        setMode("view");
+        setSelectedEvent(null);
     };
 
     return (
         <>
             {/* Drawer */}
             <div
-                className={`fixed inset-y-0 right-0 w-full md:w-[32rem] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out ${drawerOpen ? "translate-x-0" : "translate-x-full"
+                className={`fixed inset-y-0 right-0 w-full md:w-[30rem] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${drawerOpen ? "translate-x-0" : "translate-x-full"
                     }`}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-accent px-6 py-5 flex items-center justify-between text-white">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5 flex items-center justify-between text-white">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                             <MdEvent className="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold">Event Type  Details</h3>
-                            <p className="text-sm text-blue-100 mt-0.5">Complete breakdown and information</p>
+                            <h3 className="text-lg font-semibold">Event Type Details</h3>
+                            <p className="text-sm text-blue-100">
+                                A quick glance at all configured event types
+                            </p>
                         </div>
                     </div>
                     <button
@@ -76,33 +57,64 @@ const EventTypeDrawer = ({ drawerOpen, selectedFee, context, setDrawerOpen }) =>
                     </button>
                 </div>
 
-                {loading ? (
-                    <div className="flex items-center justify-center h-64">
-                        <div className="text-center">
-                            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-                            <p className="mt-4 text-gray-500 font-medium">Loading details...</p>
-                        </div>
-                    </div>
-                ) : data ? (
-                    <div className="overflow-y-auto h-[calc(100vh-88px)]">
-                     
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center h-64">
-                        <div className="text-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                                <MdEvent className="w-8 h-8 text-gray-400" />
+                {/* Tab control (only show in non-view mode) */}
+                <EventTypeTab
+                    mode={mode}
+                    onTabChange={(m) => setMode(m)}
+                />
+                {/* {mode !== "view" && (
+        )} */}
+
+                {/* Content */}
+                <div className="overflow-y-auto h-[calc(100vh-88px)] p-6 space-y-4">
+                    {mode === "view" && (
+                        <>
+                            {data.length > 0 ? (
+                                data.map((event, idx) => (
+                                    <div key={idx} onClick={() => handleCardSelect(event)}>
+
+
+                                        <EventTypeCard event={event} idx={idx} />
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+                                    <MdEvent className="w-10 h-10 mb-3" />
+                                    <p className="font-medium">No Event Types Available</p>
+                                </div>
+                            )}
+                            <div className="flex justify-center mt-4">
+                                <button
+                                    onClick={() => setMode("add")}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-md"
+                                >
+                                    + Add New Event Type
+                                </button>
                             </div>
-                            <p className="text-gray-500 font-medium">No Events Data Available</p>
-                        </div>
-                    </div>
-                )}
+                        </>
+                    )}
+
+                    {mode === "edit" && (
+                        <>
+
+                            <EventTypeEditForm
+                                eventData={selectedEvent}
+
+                                onBack={handleBackToList}
+                            />
+                        </>
+                    )}
+
+                    {mode === "add" && <EventTypeAddForm onBack={handleBackToList} />}
+                </div>
             </div>
 
             {/* Backdrop */}
             {drawerOpen && (
-                <div
+                <motion.div
                     onClick={() => setDrawerOpen(false)}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 cursor-pointer"
                 />
             )}

@@ -52,11 +52,11 @@ const DashboardMenus = () => {
 
   const fetchFeeNameWise = async () => {
     try {
-      console.log('resp ---------??');
+      // console.log('resp ---------??');
       const resp = await getFeeNameWiseSummary(Context?.profileId, Context?.session);
 
 
-      console.log('feeConfig RESP ---------', resp?.data);
+      // console.log('feeConfig RESP ---------', resp?.data);
 
       const fetched = resp?.data || [];
 
@@ -82,7 +82,7 @@ const DashboardMenus = () => {
         Context?.session,
       );
 
-      console.log('feeCollectionConfig RESP ---------', data?.data);
+      // console.log('feeCollectionConfig RESP ---------', data?.data);
 
 
       const fetched = data?.data || [];
@@ -168,7 +168,7 @@ const DashboardMenus = () => {
     config?.number_of_app_users
   );
 
-  console.log('statssds', config);
+  // console.log('statssds', config);
 
 
 

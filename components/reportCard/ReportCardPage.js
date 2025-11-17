@@ -10,13 +10,9 @@ import { getGradesList } from '../../api/grades';
 import { getExamList } from '../../api/exam';
 // ========================================================================================
 const ReportCardPage = ({
-    classes,
-    subjects,
-    exams,
+
     cookyGuid,
     cookyId,
-
-    grades
 }) => {
 
     // ========================================================================================
@@ -28,26 +24,41 @@ const ReportCardPage = ({
 
 
 
+    const [selectedStandard, setSelectedStandard] = useState();
 
     const [classData, setClassData] = useState([]);
+    const [grades, setGrades] = useState([]);
+    const [exams, setExams] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
 
     const config = getSessionCache("dashboardConfig");
     const Context = getSessionCache("dashboardContext");
+
+
     async function load() {
         setLoading(true);
         setError(null);
         try {
             const context = getSessionCache('dashboardContext') || {};
-            const classData_ = await getClassesList(context?.profileId, context?.session, cookyGuid, cookyId);
-            // console.log('payload  ==  $$$',context?.profileId, context?.session, cookyGuid, cookyId);
-            const gradesData = await getGradesList(context?.profileId, context?.session, cookyGuid, cookyId);
-            const examsData = await getExamList(context?.profileId, context?.session, cookyGuid, cookyId);
+            const classData_ = await getClassesList(context?.profileId, context?.session);
+            const gradesData = await getGradesList(context?.profileId, context?.session,);
+            const examsData = await getExamList(
+                selectedStandard,
+                context?.profileId,
+                context?.session,
+            );
+            // console.log('examsData == ', examsData?.results?.exams);
 
 
-            if (mounted) setClassData(classData_?.results?.class_rooms);
+            setGrades(gradesData?.results?.grades);
+            setExams(examsData?.results?.exams)
+
+            if (mounted) {
+                setClassData(classData_?.results?.class_rooms);
+
+            }
         } catch (err) {
             if (mounted) setError(err);
             console.error('Failed to load student list', err);
@@ -56,16 +67,12 @@ const ReportCardPage = ({
         }
     }
     let mounted = true;
+
     useEffect(() => {
 
         load();
         return () => { mounted = false; };
-    }, [cookyGuid, cookyId]); // include deps you care about
-
-
-
-            console.log('classData ---------------  $$$',classData);
-
+    }, [cookyGuid, cookyId, selectedStandard]);
 
     // ========================================================================================
     return (
@@ -80,19 +87,19 @@ const ReportCardPage = ({
                 className="p-4"
             >
                 <Breadcrumbs items={breadcrumbs} />
-               {classData ? <ReportCardExplorerView
-                    classes={classes}
-                    subjects={subjects}
+                <ReportCardExplorerView
+                    classes={config?.standards}
                     exams={exams}
                     cookyGuid={cookyGuid}
                     cookyId={cookyId}
                     grades={grades}
-
                     headerTitle='Report Cards'
                     headerIcon={<TbReportAnalytics />}
                     columns={['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action']}
                     tableType='ReportCard'
-                /> : <></>}
+                    setSelectedStandard={setSelectedStandard}
+                    selectedStandard={selectedStandard}
+                />
             </div>
         </Layout>
     );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Plus,
   Edit2,
@@ -22,9 +22,13 @@ import {
   BarChart3,
   Palette
 } from 'lucide-react';
+import { getGradesList } from '../../api/grades';
 
 const GradesManagement = ({ grades }) => {
-  console.log('grades', grades);
+
+
+console.log('grades ===',grades );
+
 
   const [selectedGradeSystem, setSelectedGradeSystem] = useState('cbse-standard');
   const [showGradeModal, setShowGradeModal] = useState(false);

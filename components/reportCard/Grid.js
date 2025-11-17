@@ -1,6 +1,6 @@
 import React from 'react';
 // import ImageCarousel from "../../../Carousel/ImageCarousel"; // Adjust path
-import { categoryIcons, commonIcons } from './constants/icons';
+import { categoryIcons, commonIcons } from './component/constants/icons';
 import { FaArrowUpRightDots } from "react-icons/fa6";
 import { BiCalendar, BiUser } from "react-icons/bi";
 import { FaDollarSign, FaEnvelope, FaPhoneAlt, FaCheckCircle, FaExclamationCircle, FaTimesCircle, FaRupeeSign } from "react-icons/fa";

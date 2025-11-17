@@ -6,7 +6,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { Calendar } from 'lucide-react';
 
 const EventCalendarView = ({ calendarEvents }) => {
-  console.log('calendarEvents',calendarEvents);
   
   const handleEventClick = (info) => {
     const { title, extendedProps, start, end } = info.event;

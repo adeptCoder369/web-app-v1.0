@@ -1,49 +1,42 @@
 import { useState, useEffect } from "react";
-// import SearchBar from "../library/component/SearchBar"; // Adjust path as needed
 import ActiveFilters from "../library/component/ActiveFilters"; // Adjust path as needed
 import FilterPanel from "../library/component/FilterPanel"; // Adjust path as needed
-// import Summary from "../library/component/Summary"; // Adjust path as needed
-// import Table from "../library/component/Table"; // Adjust path as needed
-// import OnlineClassesTable from "../library/component/Table-onlineClasses"; // Adjust path as needed
 import Grid from "../library/component/Grid"; // Adjust path as needed
 import OnlineClassesModal from "../library/component/OnlineClassesModal";
 import ProductDetailModal from "../library/component/ProductDetailModal";
-// import { BadgePlus, List, User } from "lucide-react";
-import Header from "./component/Header";
+import Header from "./Header";
 import Tabs from "../library/component/Tabs";
-// import LibraryDashboard from "../library/component/dashboard";
-// import LibrarySceneV2 from "./component/ReportCardFormat";
-import ReportCardDesigner from "./component/ReportCardDesigner";
-// import LibraryCard from "../library/component/dashboard_v2";
-// import LibraryDashboard1 from "../library/component/dashboard_v3";
-import SubjectsManagement from "./component/Subjects";
-import GradesManagement from "./component/GradesManagement";
-import ExamDashboard from "./component/ExamDashboard";
-// import { getSubjectsList } from "../../api/subjects";
+import ReportCardDesigner from "./ReportCardDesigner";
+import SubjectsManagement from "./Subjects";
+import GradesManagement from "./GradesManagement";
+import ExamManagement from "./ExamDashboard";
+import EnterMarks from "./EnterMarks";
+import { getSessionCache } from "../../utils/sessionCache";
 
 // ========================================================================================
 
 export default function ReportCardExplorerView({
     classes,
-    subjects,
     exams,
     headerTitle,
     headerIcon,
     data,
-    columns,
     tableType,
     cookyGuid,
     cookyId,
-    grades
+    grades,
+    setSelectedStandard,
+    selectedStandard
 }) {
 
 
 
 
 
+    const config = getSessionCache("dashboardConfig");
+    const context = getSessionCache("dashboardContext");
+    const standards = config?.standards
 
-
-    const [selectedStandard, setSelectedStandard] = useState();
 
     const [activeTab, setActiveTab] = useState('subjects');
 
@@ -261,19 +254,7 @@ export default function ReportCardExplorerView({
                     getAvailableCategories={getAvailableCategories}
                 />
 
-                {/* <Summary
-                    filteredCount={filteredInventory.length}
-                    totalCount={inventory.length}
-                    sort={sort}
-                    handleSort={handleSort}
-                /> */}
 
-                {/* {filteredInventory.length > 0 ? (
-                    <>
-                    </>
-                ) : (
-                    <div className="text-gray-500 text-center py-8">No items found.</div>
-                )} */}
                 {viewMode === "table" ? (
                     (() => {
                         switch (activeTab) {
@@ -283,8 +264,10 @@ export default function ReportCardExplorerView({
                                     cookyId={cookyId}
                                     selectedStandard={selectedStandard}
                                     setSelectedStandard={setSelectedStandard}
-                                    classes={classes}
+                                    classes={standards}
                                     exams={exams}
+                                    context={context}
+
 
                                 />;
                             case "grades":
@@ -294,16 +277,24 @@ export default function ReportCardExplorerView({
                             case "reportCardFormat":
                                 return <ReportCardDesigner />;
                             case "exam":
-                                return <ExamDashboard
+                                return <ExamManagement
                                     cookyGuid={cookyGuid}
                                     cookyId={cookyId}
                                     selectedStandard={selectedStandard}
                                     setSelectedStandard={setSelectedStandard}
-                                    classes={classes}
+                                    classes={standards}
                                     exams={exams}
                                 />;
 
 
+                            case "enter-marks":
+                                return <EnterMarks
+                                    context={context}
+                                    selectedStandard={selectedStandard}
+                                    setSelectedStandard={setSelectedStandard}
+                                    standards={standards}
+                                    exams={exams}
+                                />;
 
 
                             default:

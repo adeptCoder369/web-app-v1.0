@@ -1,4 +1,3 @@
-// components/inventory/InventoryTable.jsx
 import React, { useState } from 'react';
 import {
     BookOpen, Building2, Languages, Truck,

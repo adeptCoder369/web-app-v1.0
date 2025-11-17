@@ -1,6 +1,6 @@
 // components/inventory/InventorySummary.jsx
 import React from 'react';
-import { commonIcons } from './constants/icons'; // Adjust path as needed
+import { commonIcons } from './component/constants/icons'; // Adjust path as needed
 
 const { FaArrowsAltV } = commonIcons;
 

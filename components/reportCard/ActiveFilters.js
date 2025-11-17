@@ -1,6 +1,6 @@
 // components/inventory/ActiveFilters.jsx
 import React from 'react';
-import { moduleIcons, categoryIcons, statusIcons, commonIcons } from './constants/icons'; // Adjust path as needed
+import { moduleIcons, categoryIcons, statusIcons, commonIcons } from './component/constants/icons'; // Adjust path as needed
 
 const { FaTimes } = commonIcons;
 
