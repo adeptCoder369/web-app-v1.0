@@ -31,4 +31,5 @@ Automation
 Insights
 Smart reporting
 Communication improvements
+
 The integration of the LLMs feature will be clear when we will have the Production ERP 

@@ -13,14 +13,13 @@ export const StaffList = ({
   setActiveTab,
   setSelectedStaff
 
-}) => {
+}) => { 
 
 
   const Context = getSessionCache("dashboardContext");
 
 
   const [staff, setStaff] = useState([]);
-  // const [selectedStaff, setSelectedStaff] = useState(null);
 
   const [selectedData, setSelectedData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,7 +108,7 @@ export const StaffList = ({
       const data = await getStaff(Context?.profileId, Context?.session, params);
 
       setStaff(data?.data?.data?.results?.users || []);
-      toggleFilterPanel()
+      setIsFilterPanelOpen(false)
     } catch (err) {
       console.error("❌ Failed to fetch staff data:", err);
     }
@@ -136,7 +135,7 @@ export const StaffList = ({
   ]);
 
 
-  console.log('filters =============', filters?.gender);
+  // console.log('filters =============', filters?.gender);
 
 
 
@@ -278,7 +277,7 @@ export const StaffList = ({
 
 
   const getFilterCount = () => {
-    return filters?.status?.length + (filters?.appType ? 1 : 0) + (filters?.gender ? 1 : 0) + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
+    return filters?.status?.length +filters?.designations?.length + (filters?.appType ? 1 : 0) + (filters?.gender ? 1 : 0) + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
   };
 
   const handleStandardChange = (e) => {

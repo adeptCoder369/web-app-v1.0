@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from "react";
+import { UserMinus, Shield, FileSignature } from 'lucide-react';
+
 import {
   FaBook,
   FaExternalLinkAlt,
@@ -11,8 +13,11 @@ import {
   FaSearch
 } from "react-icons/fa";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
-import Loader from "../ui/status/Loader";
 import { RiAdminFill } from "react-icons/ri";
+import ConfirmationDialogueBox from "../ui/status/Confirmation";
+import EditClassPermissionsModal from "./EditClassPermissionsModal";
+import SignatureUploadModal from "./UploadSignature";
+
 
 const StaffTable = ({
   staffs = [],
@@ -25,12 +30,44 @@ const StaffTable = ({
 
 
 }) => {
+
+
+  const menuItems = [
+    {
+      label: "Remove From Client",
+      action: () => console.log("Remove From Client", staffs),
+      icon: UserMinus,
+      variant: "danger"
+    },
+    {
+      label: "Edit Class Permissions",
+      action: () => console.log("Edit Class Permissions", staffs),
+      icon: Shield,
+      variant: "default"
+    },
+    {
+      label: "Upload Signature",
+      action: () => console.log("Upload Signature", staffs),
+      icon: FileSignature,
+      variant: "default"
+    }
+  ];
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
+  const [signatureUrl, setSignatureUrl] = useState(false);
+
+
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+  const [openActionMenu, setOpenActionMenu] = useState(null);
+  const [removeFromClient, setRemoveFromClient] = useState(null);
+  const [editPermissionStaff, setEditPermissionStaff] = useState(null);
+  const [selectedClasses, setSelectedClasses] = useState([]);
+  const [uploadingKey, setUploadingKey] = useState([]);
 
+  // console.log('openActionMenu', removeFromClient)
   // Helper functions
   function formatDateTime(dateStr, timeStr) {
     if (!dateStr || !timeStr) return "N/A";
@@ -181,6 +218,46 @@ const StaffTable = ({
     return rangeWithDots;
   };
 
+
+
+  const handleMenuItemClick = (item, staff) => {
+    // Close dropdown first
+    setOpenActionMenu(null);
+
+    // Switch logic instead of random states everywhere
+    switch (item.label) {
+      case "Remove From Client":
+        setRemoveFromClient(staff); // now you know *which* staff to remove
+        break;
+
+      case "Edit Class Permissions":
+        setEditPermissionStaff(staff);
+        setSelectedClasses(staff.assigned_classes || []);
+        break;
+
+      case "Upload Signature":
+        setSignatureUrl(staff)
+        console.log("Open signature uploader for:", staff);
+        break;
+
+      default:
+        console.log("Unhandled action:", item.label);
+    }
+
+    // Still fire whatever custom internal action you added
+    if (item.action) item.action(staff);
+  };
+
+
+  const handleToggleClass = (classId) => {
+    setSelectedClasses(prev =>
+      prev.includes(classId)
+        ? prev.filter(id => id !== classId)
+        : [...prev, classId]
+    );
+  };
+
+
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
       {/* Header with Search and Export */}
@@ -278,11 +355,13 @@ const StaffTable = ({
                 <tr
                   key={staff.id || index}
                   className="hover:bg-gray-50 transition-colors cursor-pointer group"
-                  onClick={() => handleClassClick(staff)}
                 >
                   {/* Created By */}
                   <td className="whitespace-nowrap px-6 py-4">
-                    <div className="flex items-center gap-3">
+                    <div
+                      onClick={() => handleClassClick(staff)}
+
+                      className="flex items-center gap-3">
                       {staff.image_url ? (
                         <img
                           src={staff.image_url}
@@ -383,7 +462,7 @@ const StaffTable = ({
                   </td> */}
 
                   {/* Action */}
-                  <td className="whitespace-nowrap px-6 py-4">
+                  {/* <td className="whitespace-nowrap px-6 py-4">
                     <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-medium hover:bg-indigo-200 transition-colors">
                       {staff.action === "view_details" && "Details"}
                       {staff.action === "edit_class" && "Edit"}
@@ -392,7 +471,80 @@ const StaffTable = ({
                       {!staff.action && "Action"}
                       <MoreHorizontal className="w-3 h-3" />
                     </button>
+                  </td> */}
+
+                  <td className="relative whitespace-nowrap px-6 py-4">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenActionMenu(openActionMenu === staff.id ? null : staff.id);
+                      }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-medium hover:bg-indigo-200 transition-colors"
+                    >
+                      {staff.action === "view_details" && "Details"}
+                      {staff.action === "edit_class" && "Edit"}
+                      {staff.action === "manage_class" && "Manage"}
+                      {staff.action === "view_recording" && "Recording"}
+                      {!staff.action && "Action"}
+                      <MoreHorizontal className="w-3 h-3" />
+                    </button>
+
                   </td>
+                  {openActionMenu === staff.id && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setOpenActionMenu(null)}
+                      />
+
+                      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-1">
+
+                        {openActionMenu === staff.id && (
+                          <>
+                            {/* Backdrop */}
+                            <div
+                              className="fixed inset-0 z-10"
+                              onClick={() => setOpenActionMenu(null)}
+                            />
+
+                            {/* Dropdown Menu */}
+                            <div className="absolute right-0 mt-3c bg-white border border-slate-200/60 rounded-xl shadow-2xl z-20 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                              {menuItems.map((item, i) => {
+                                const Icon = item.icon;
+                                return (
+                                  <button
+                                    key={i}
+                                    className={`text-left px-4 py-2.5 text-sm  w-58 fon 
+                      transition-all duration-150 flex items-c 
+                      ${item.variant === 'danger'
+                                        ? 'text-red-600 hover: er:text-red-700'
+                                        : 'text-slate-700 hove '
+                                      }
+                      ${i !== menuItems.length - 1 ? '' : ''}
+                    `}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMenuItemClick(item, staff);
+                                    }}
+
+                                  >
+                                    <Icon className="w-4 h-4 opacity-70 mr-2" />
+                                    <span>{item.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                  {/* <StaffActionMenu
+                  openActionMenu={openActionMenu}
+                  setOpenActionMenu={setOpenActionMenu}
+                  /> */}
+
                 </tr>
               ))
             )}
@@ -484,6 +636,43 @@ const StaffTable = ({
           </div>
         </div>
       )}
+
+
+      {removeFromClient && (
+        <ConfirmationDialogueBox
+          title="Remove From Client!"
+          description={`Are you sure you want to remove ${removeFromClient.full_name}?`}
+          onCancel={() => setRemoveFromClient(null)}
+        />
+      )}
+
+
+      <EditClassPermissionsModal
+        open={!!editPermissionStaff}
+        staff={editPermissionStaff}
+        classes={[]} // supply your list of classes
+        selectedClasses={selectedClasses}
+        onToggleClass={handleToggleClass}
+        onClose={() => setEditPermissionStaff(null)}
+        onSave={() => {
+          console.log("Saving:", editPermissionStaff, selectedClasses);
+          setEditPermissionStaff(null);
+        }}
+      />
+      <SignatureUploadModal
+        open={signatureUrl}
+        key="dfjk"
+        onClose={() => setIsModalOpen(false)}
+        label="Principal Signature"
+        uploadingKey={uploadingKey}
+        // fileUrl={signatureUrl}
+        onUpload={async (file) => {
+          // your upload logic
+        }}
+      />
+
+
+
     </div>
   );
 };

@@ -9,7 +9,7 @@ const ConfirmationDialogueBox = ({ onConfirm, onCancel, title, description }) =>
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className="max-w-sm w-full p-8 bg-white rounded-3xl shadow-lg text-center"
+                className="max-w-md w-full p-8 bg-white rounded-3xl shadow-lg text-center"
             >
                 <div className="flex justify-center mb-6">
                     <FaExclamationTriangle size={80} className="text-[#ffff] bg-warning rounded-full p-2" />

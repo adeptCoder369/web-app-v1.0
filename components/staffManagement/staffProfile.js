@@ -506,7 +506,7 @@ const StaffProfile = ({
         <div className="bg-white rounded-xl shadow-lg mb-8">
           <div className="flex space-x-1 p-1">
             {[
-              { id: 'basic', label: 'basic Details', icon: User },
+              { id: 'basic', label: 'Basic Details', icon: User },
               { id: 'personal', label: 'Personal Details', icon: User },
               { id: 'academic', label: 'Academic Info', icon: Book },
               { id: 'document', label: 'Document Info', icon: Book },

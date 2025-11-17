@@ -4,12 +4,14 @@ import { useFees } from '../../controllers/fees';
 import { getSessionCache } from '../../utils/sessionCache';
 import CreateFee from '../ui/drawer/CreateFee';
 import FeeTypeDetail from '../ui/drawer/FeeTypeDetail';
-import FeePermissionManager from '../ui/drawer/FeePermissionManager';
+import FeePermissionManager from './FeePermissionManager';
+import MarkFeeForStudents from './MarkFeeForStudents';
 import Loader from '../ui/status/Loader';
 import HeaderViewFee from './HeaderViewFee';
 import ViewFeeFiltersSummary from './ViewFeeFiltersSummary';
 import ViewFeeFilterPanel from './ViewFeeFilterPanel';
 import { ArrowRight, BarChart3, Calendar, Clock, Receipt, ReceiptIndianRupee, Sparkles, User2 } from 'lucide-react';
+
 const reportTypes = [
   {
     key: "datewise",
@@ -84,12 +86,12 @@ const ViewFee = ({ }) => {
     emergencyContact: "",
     isSearch: false,
   });
-  console.log('re---------', filters);
 
 
   const config = getSessionCache("dashboardConfig");
   const context = getSessionCache("dashboardContext");
   const [permissionDrawer, setPermissionDrawer] = useState(false);
+  const [markFeeForStudents, setMarkFeeForStudents] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStandard, setSelectedStandard] = useState('');
@@ -250,6 +252,7 @@ const ViewFee = ({ }) => {
       return;
     }
     if (option.action === 'edit') {
+      setMarkFeeForStudents(true)
       console.log('edit fee:', fee.id);
       return;
     }
@@ -270,7 +273,7 @@ const ViewFee = ({ }) => {
 
 
   const getFilterCount = () => {
-    return (filters?.type ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.standards?.length)+  (filters?.enabled ? 1 : 0)+  (filters?.hostelFee ? 1 : 0)+  (filters?.dueDate ? 1 : 0)+  (filters?.startDate ? 1 : 0)+  (filters?.endDate ? 1 : 0);
+    return (filters?.type ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.standards?.length) + (filters?.enabled ? 1 : 0) + (filters?.hostelFee ? 1 : 0) + (filters?.dueDate ? 1 : 0) + (filters?.startDate ? 1 : 0) + (filters?.endDate ? 1 : 0);
   };
 
 
@@ -329,6 +332,16 @@ const ViewFee = ({ }) => {
         context={context}
 
       />
+
+      <MarkFeeForStudents
+        open={markFeeForStudents}
+        onClose={() => setPermissionDrawer(false)}
+        feeTypes={currentFees}
+        context={context}
+
+      />
+
+
 
       <button
         onClick={() => setPermissionDrawer(true)}
@@ -389,7 +402,7 @@ const ViewFee = ({ }) => {
 
 
 
- 
+
 
 
         </div>
@@ -533,80 +546,80 @@ const ViewFee = ({ }) => {
           </p>
         )}
       </div>
-       {/* Fancy Card Container */}
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {reportTypes.map((item) => {
-                    const isActive = activeReport === item.key;
+      {/* Fancy Card Container */}
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {reportTypes.map((item) => {
+            const isActive = activeReport === item.key;
 
-                    return (
-                      <button
-                        key={item.key}
-                        onClick={() => handleNavigation(item.key, item.link)}
-                        className={`group relative p-6 rounded-xl font-semibold text-sm
+            return (
+              <button
+                key={item.key}
+                onClick={() => handleNavigation(item.key, item.link)}
+                className={`group relative p-6 rounded-xl font-semibold text-sm
                     transition-all duration-300 transform hover:scale-105 hover:-translate-y-1
                     ${isActive
-                            ? `bg-gradient-to-br ${item.gradient} text-white shadow-xl`
-                            : `bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:shadow-xl border-2 border-gray-200 hover:border-transparent`
-                          }`}
-                      >
-                        {/* Glow Effect */}
-                        {isActive && (
-                          <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-xl blur-xl opacity-60 -z-10 animate-pulse`}></div>
-                        )}
+                    ? `bg-gradient-to-br ${item.gradient} text-white shadow-xl`
+                    : `bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:shadow-xl border-2 border-gray-200 hover:border-transparent`
+                  }`}
+              >
+                {/* Glow Effect */}
+                {isActive && (
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-xl blur-xl opacity-60 -z-10 animate-pulse`}></div>
+                )}
 
-                        {/* Content */}
-                        <div className="flex flex-col items-center text-center space-y-3">
-                          <div className={`p-3 rounded-lg transition-all duration-300 ${isActive
-                              ? 'bg-white/20 backdrop-blur-sm'
-                              : 'bg-white border border-gray-200 group-hover:border-transparent'
-                            } ${!isActive && `group-hover:bg-gradient-to-br ${item.gradient}`}`}>
-                            <span className={`transition-all duration-300 ${isActive
-                                ? 'text-white'
-                                : 'text-gray-600 group-hover:text-white'
-                              }`}>
-                              {item.icon}
-                            </span>
-                          </div>
+                {/* Content */}
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className={`p-3 rounded-lg transition-all duration-300 ${isActive
+                    ? 'bg-white/20 backdrop-blur-sm'
+                    : 'bg-white border border-gray-200 group-hover:border-transparent'
+                    } ${!isActive && `group-hover:bg-gradient-to-br ${item.gradient}`}`}>
+                    <span className={`transition-all duration-300 ${isActive
+                      ? 'text-white'
+                      : 'text-gray-600 group-hover:text-white'
+                      }`}>
+                      {item.icon}
+                    </span>
+                  </div>
 
-                          <div>
-                            <span className="block font-bold text-base mb-1">{item.label}</span>
-                            <span className={`text-xs flex items-center justify-center space-x-1 ${isActive ? 'text-white/80' : 'text-gray-500 group-hover:text-gray-700'
-                              }`}>
-                              <span>View Report</span>
-                              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Active Indicator */}
-                        {isActive && (
-                          <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white shadow-lg">
-                            <div className="absolute inset-0 bg-yellow-400 rounded-full animate-ping"></div>
-                          </div>
-                        )}
-
-                        {/* Hover Arrow */}
-                        {!isActive && (
-                          <div className={`absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
-                            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
-                              <ArrowRight className="w-4 h-4 text-white" />
-                            </div>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
+                  <div>
+                    <span className="block font-bold text-base mb-1">{item.label}</span>
+                    <span className={`text-xs flex items-center justify-center space-x-1 ${isActive ? 'text-white/80' : 'text-gray-500 group-hover:text-gray-700'
+                      }`}>
+                      <span>View Report</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
                 </div>
 
-                {/* Description Text */}
-                <div className="mt-8 pt-6 border-t border-gray-100">
-                  <p className="text-sm text-gray-500 flex items-center space-x-2">
-                    <span className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></span>
-                    <span>Click on any report type to view detailed analytics and insights</span>
-                  </p>
-                </div>
-              </div>
+                {/* Active Indicator */}
+                {isActive && (
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white shadow-lg">
+                    <div className="absolute inset-0 bg-yellow-400 rounded-full animate-ping"></div>
+                  </div>
+                )}
+
+                {/* Hover Arrow */}
+                {!isActive && (
+                  <div className={`absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Description Text */}
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <p className="text-sm text-gray-500 flex items-center space-x-2">
+            <span className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></span>
+            <span>Click on any report type to view detailed analytics and insights</span>
+          </p>
+        </div>
+      </div>
     </>
 
   );

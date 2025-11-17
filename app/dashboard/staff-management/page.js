@@ -11,7 +11,6 @@ const breadcrumbs = [
   { label: "Manage Staff" },
 ];
 // ===================================================================
-
 export default async function StudentProfile({ params }) {
   // =============================================================
   const resolvedParams = await params;
@@ -20,26 +19,19 @@ export default async function StudentProfile({ params }) {
   const cookyId = cookieStore.get('id').value
   // -----------------------------------------------------------
   const standardListData = await getStudentList(resolvedParams.profile, resolvedParams.session, cookyGuid, cookyId)
-
   // =============================================================
   return (
     <Layout>
-
-
       <div
-       className="min-h-[calc(100vh-100px)] p-6 space-y-6"
-         style={{
+        className="min-h-[calc(100vh-100px)] p-6 space-y-6"
+        style={{
           backgroundImage: "url('/bg/appbackground@2x.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
-       >
-
+      >
         <Breadcrumbs items={breadcrumbs} />
-
-
-
         <StaffMangementDashboard
           students={standardListData.results.items}
           profile={resolvedParams.profile}
@@ -52,5 +44,4 @@ export default async function StudentProfile({ params }) {
     </Layout>
   );
 };
-
 // =============================================================
