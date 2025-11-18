@@ -87,9 +87,11 @@ const ViewFee = ({ }) => {
     isSearch: false,
   });
 
-
+  // ================================================================
   const config = getSessionCache("dashboardConfig");
   const context = getSessionCache("dashboardContext");
+  // ================================================================
+
   const [permissionDrawer, setPermissionDrawer] = useState(false);
   const [markFeeForStudents, setMarkFeeForStudents] = useState(false);
 
@@ -252,7 +254,7 @@ const ViewFee = ({ }) => {
       return;
     }
     if (option.action === 'edit') {
-      setMarkFeeForStudents(true)
+      // setMarkFeeForStudents(true)
       console.log('edit fee:', fee.id);
       return;
     }
@@ -264,6 +266,18 @@ const ViewFee = ({ }) => {
     console.log(`${option.action} fee:`, fee.id);
   };
 
+
+
+  const handlePayFee = (option, fee) => {
+    // console.log(`${option.action} fee:`, fee);
+
+    if (option.action === 'pay') {
+      setSelectedFee(fee);
+      setMarkFeeForStudents(true);
+      return;
+    }
+
+  };
 
 
 
@@ -335,9 +349,10 @@ const ViewFee = ({ }) => {
 
       <MarkFeeForStudents
         open={markFeeForStudents}
-        onClose={() => setPermissionDrawer(false)}
+        onClose={() => setMarkFeeForStudents(false)}
         feeTypes={currentFees}
-        context={context}
+        config={config}
+        selectedFee={selectedFee}
 
       />
 
@@ -348,6 +363,13 @@ const ViewFee = ({ }) => {
         className="cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
       >
         ⚙️ Set Fee Type Permissions
+      </button>
+
+      <button
+        onClick={() => setMarkFeeForStudents(true)}
+        className="ml-4 cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+      >
+        Mark Fee For Students
       </button>
       <FeeTypeDetail
         drawerOpen={drawerOpen}
@@ -469,20 +491,39 @@ const ViewFee = ({ }) => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div className="flex gap-2">
-                          {fee?.options?.map((option, idx) => (
-                            <button
-                              key={idx}
-                              className={`cursor-pointer px-3 py-1 rounded transition ${option.action === 'delete'
-                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                : option.action === 'edit'
-                                  ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                              onClick={() => handleActionClick(option, fee)} // <-- changed
-                            >
-                              {option.label}
-                            </button>
+                          {[
+                            ...fee?.options,
+                            { label: "Pay Fee", action: "pay" },
+                            { label: "Download Structure", action: "download" }
+                          ].map((option, idx) => (
+                            <>
+                              <button
+                                key={idx}
+                                className={`cursor-pointer px-3 py-1 rounded transition
+          ${option.action === 'delete'
+                                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                    : option.action === 'edit'
+                                      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                      : option.action === 'pay'
+                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                        : option.action === 'download'
+                                          ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  }`}
+                                onClick={() => {
+                                  if (option.action === 'pay') return handlePayFee(option,fee);
+                                  if (option.action === 'download') return handleDownloadStructure(fee);
+                                  return handleActionClick(option, fee);
+                                }}
+                              >
+                                {option.label}
+                              </button>
+
+
+                            </>
+
                           ))}
+
                         </div>
                       </td>
                     </tr>

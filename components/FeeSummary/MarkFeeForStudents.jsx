@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, CheckCircle, Ban, Settings, Sparkles, ReceiptIndianRupee } from 'lucide-react';
 import { updateFeePermission } from '../../api/fees';
+import { FaUserGraduate } from 'react-icons/fa';
 
 const permissionLabels = {
   is_online_payment_allowed: "Online Payment",
@@ -10,7 +11,14 @@ const permissionLabels = {
   show_break_up_on_receipt: "Show Break-up on Receipt"
 };
 
-const MarkFeeForStudents = ({ open, onClose, feeTypes, context }) => {
+const MarkFeeForStudents = ({
+  open,
+  onClose,
+  feeTypes,
+  config,
+  selectedFee
+}) => {
+  console.log('selectedStandard=======>>', selectedFee, config?.standards);
 
   const [selectedFeeTypes, setSelectedFeeTypes] = useState([]);
   const [permissions, setPermissions] = useState({
@@ -20,6 +28,35 @@ const MarkFeeForStudents = ({ open, onClose, feeTypes, context }) => {
     is_adjustment_amount_applicable: "0",
     show_break_up_on_receipt: "0",
   });
+
+
+
+  const [paymentDate, setPaymentDate] = useState("");
+  const [paymentMode, setPaymentMode] = useState("");
+  const [selectedBus, setSelectedBus] = useState("");
+  const [locations, setLocations] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [remark, setRemark] = useState("");
+  const [setAmount, setSetAmount] = useState("");
+  const transportFee = selectedFee?.include_transport_fee ? selectedFee?.transport_fee_multiplier || 0 : 0;
+
+  const paymentModes = [
+    { value: "cash", label: "Cash" },
+    { value: "online", label: "Online" },
+    { value: "cheque", label: "Cheque" },
+    { value: "dd", label: "Demand Draft" }
+  ];
+
+
+  const buses = [
+    { value: "cash", label: "Cash" },
+    { value: "online", label: "Online" },
+    { value: "cheque", label: "Cheque" },
+    { value: "dd", label: "Demand Draft" }
+  ];
+
+
 
   const togglePermission = (key) => {
     setPermissions((prev) => ({
@@ -56,7 +93,7 @@ const MarkFeeForStudents = ({ open, onClose, feeTypes, context }) => {
       {/* Enhanced Backdrop with Animation */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/40 z-40 animate-in fade-in duration-300"
+        className="cursor-pointer fixed inset-0 bg-black/40 z-40 animate-in fade-in duration-300"
       ></div>
 
       {/* Enhanced Drawer with Gradient Border */}
@@ -75,99 +112,111 @@ const MarkFeeForStudents = ({ open, onClose, feeTypes, context }) => {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Mark fee 
+                    Mark fee
                   </h2>
                   <p className="text-xs text-gray-500 mt-0.5">Manage fee type settings</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl hover:bg-red-50 transition-all duration-200 group"
+                className="cursor-pointer p-2 rounded-xl hover:bg-red-50 transition-all duration-200 group"
               >
                 <X className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" />
               </button>
             </div>
 
-            {/* Enhanced Fee Type Selection */}
+            {/* Enhanced Student Selection */}
             <div className="mb-8">
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                <Sparkles className="w-4 h-4 text-indigo-500" />
-                Select Fee Types
+                <FaUserGraduate className="w-4 h-4 text-indigo-500" />
+                Select Students
               </label>
 
-              {/* Enhanced Container */}
-              <div className="border-2 border-indigo-100 rounded-2xl p-3 max-h-72 overflow-y-auto bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
-                {feeTypes.map((fee) => {
-                  const isSelected = selectedFeeTypes.includes(fee.id);
+              {(() => {
+                const stdId = selectedFee?.standard?.id;
+                const standard = config?.standards?.find(s => s.id == stdId);
 
+                if (!standard) {
                   return (
-                    <div
-                      key={fee.id}
-                      className={`flex justify-between items-center p-4 mb-2 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.01]
-                      ${isSelected
-                          ? "bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 shadow-md"
-                          : "hover:bg-gray-50 border-2 border-transparent hover:border-gray-200"
-                        }`}
-                      onClick={() => {
-                        if (isSelected) {
-                          setSelectedFeeTypes(selectedFeeTypes.filter((id) => id !== fee.id));
-                        } else {
-                          setSelectedFeeTypes([...selectedFeeTypes, fee.id]);
-                        }
-                      }}
-                    >
-                      <div className="flex flex-col flex-1">
-                        <span className="font-semibold text-gray-800">{fee.name}</span>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
-                            ₹{fee.amount}
-                          </span>
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                            {fee.due_date?.text || "N/A"}
-                          </span>
-                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
-                            {fee.type}
-                          </span>
+                    <p className="text-xs text-red-500">
+                      No standard found for ID {stdId}
+                    </p>
+                  );
+                }
+
+                return (
+                  <div className="border-2 border-indigo-100 rounded-2xl p-3 max-h-72 overflow-y-auto bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
+                    {standard.classes?.map(cls => (
+                      <div key={cls.id} className="mb-4">
+                        {/* Class Name */}
+                        <p className="font-semibold text-gray-800 mb-2">
+                          {cls.name}
+                        </p>
+
+                        {/* Students */}
+                        <div className="flex flex-col gap-2 ml-3">
+                          {cls.students?.map(stu => {
+                            const isSelected = selectedFeeTypes.includes(stu.id);
+
+                            return (
+                              <div
+                                key={stu.id}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setSelectedFeeTypes(prev =>
+                                      prev.filter(id => id !== stu.id)
+                                    );
+                                  } else {
+                                    setSelectedFeeTypes(prev => [...prev, stu.id]);
+                                  }
+                                }}
+                                className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${isSelected
+                                  ? "bg-indigo-50 border-indigo-300"
+                                  : "bg-white border-gray-200 hover:bg-gray-50 hover:border-indigo-200"
+                                  }`}
+                              >
+                                <span className="text-sm font-medium text-gray-700">
+                                  {stu.name}
+                                </span>
+
+                                {isSelected ? (
+                                  <CheckCircle className="w-5 h-5 text-indigo-600" />
+                                ) : (
+                                  <span className="w-5 h-5 border-2 border-gray-300 rounded-full"></span>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
+                    ))}
+                  </div>
+                );
+              })()}
 
-                      {/* Enhanced Checkbox */}
-                      <div className="flex-shrink-0 ml-3">
-                        {isSelected ? (
-                          <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg transform scale-110 transition-transform">
-                            <CheckCircle className="w-5 h-5 text-white" />
-                          </div>
-                        ) : (
-                          <span className="w-7 h-7 border-2 border-gray-300 rounded-full block hover:border-indigo-400 transition-colors"></span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                <span className="inline-block w-1.5 h-1.5 bg-indigo-400 rounded-full"></span>
-                Select multiple fee types to apply the same permissions
-              </p>
-
-              {/* Enhanced Selected Tags */}
+              {/* Selected Tags */}
               {selectedFeeTypes.length > 0 && (
                 <div className="mt-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
-                  <p className="text-xs font-semibold text-indigo-700 mb-2">Selected ({selectedFeeTypes.length})</p>
+                  <p className="text-xs font-semibold text-indigo-700 mb-2">
+                    Selected ({selectedFeeTypes.length})
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {selectedFeeTypes.map((id) => {
-                      const fee = feeTypes.find((f) => f.id === id);
+                      // find student from all classes
+                      const stdId = selectedFee?.standard?.id;
+                      const standard = config?.standards?.find(s => s.id == stdId);
+                      const student = standard?.classes?.flatMap(c => c.students)?.find(stu => stu.id === id);
+
                       return (
                         <span
                           key={id}
                           className="bg-white border border-indigo-200 text-indigo-700 px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm hover:shadow-md transition-shadow"
                         >
-                          {fee?.name}
+                          {student?.name || "Student"}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedFeeTypes(selectedFeeTypes.filter((fid) => fid !== id));
+                              setSelectedFeeTypes(prev => prev.filter(fid => fid !== id));
                             }}
                             className="text-indigo-400 hover:text-red-500 hover:bg-red-50 rounded-full w-4 h-4 flex items-center justify-center transition-colors"
                           >
@@ -181,53 +230,177 @@ const MarkFeeForStudents = ({ open, onClose, feeTypes, context }) => {
               )}
             </div>
 
-            {/* Enhanced Permissions Section */}
-            <div className="mb-6">
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                <Settings className="w-4 h-4 text-purple-500" />
-                Permission Settings
-              </label>
-              <div className="space-y-3">
-                {Object.keys(permissionLabels).map((key) => (
-                  <div
-                    key={key}
-                    onClick={() => togglePermission(key)}
-                    className={`group flex items-center justify-between px-5 py-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 transform hover:scale-[1.01] ${permissions[key] === '1'
-                      ? "bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-300 shadow-md"
-                      : "hover:bg-gray-50 border-gray-200 hover:border-indigo-200"
-                      }`}
-                  >
-                    <span className={`font-semibold transition-colors ${permissions[key] === '1' ? 'text-emerald-700' : 'text-gray-700'
-                      }`}>
-                      {permissionLabels[key]}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {permissions[key] === '1' ? (
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full">
-                            Enabled
-                          </span>
-                          <CheckCircle className="w-6 h-6 text-emerald-500" />
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                            Disabled
-                          </span>
-                          <Ban className="w-6 h-6 text-gray-400 group-hover:text-gray-500 transition-colors" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+
+
+
+            {/* Additional Fields */}
+            <div className="mb-10 mt-6 space-y-6">
+
+              {/* Payment Date */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                  Payment Date
+                </label>
+                <input
+                  type="date"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                />
+              </div>
+
+              {/* Mode Of Payment */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                  Mode Of Payment
+                </label>
+                <select
+                  value={paymentMode}
+                  onChange={(e) => setPaymentMode(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                >
+                  <option value="">Select Mode</option>
+                  {paymentModes.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Bus */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                  Bus
+                </label>
+                <select
+                  value={selectedBus}
+                  onChange={(e) => {
+                    const busId = e.target.value;
+                    setSelectedBus(busId);
+                    const busObj = buses.find(b => b.id == busId);
+                    setLocations(busObj?.locations || []);
+                    setSelectedLocation("");
+                  }}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                >
+                  <option value="">Select Bus</option>
+                  {buses.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Location (depends on Bus) */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                  Location
+                </label>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  disabled={!selectedBus}
+                  className={`w-full border rounded-xl px-4 py-2.5 text-sm bg-white transition 
+        ${selectedBus ? "border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"}
+      `}
+                >
+                  <option value="">Select Location</option>
+                  {locations.map((loc) => (
+                    <option key={loc.id} value={loc.id}>
+                      {loc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Bank Name */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                  Bank Name
+                </label>
+                <select
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                >
+                  <option value="">Select Bank</option>
+                  {config?.banks.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Remark */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                  Remark
+                </label>
+                <textarea
+                  value={remark}
+                  onChange={(e) => setRemark(e.target.value)}
+                  rows={3}
+                  placeholder="Add any notes..."
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                ></textarea>
               </div>
             </div>
+
+
+            {/* Summary Footer */}
+            <div className="mt-10 rounded-2xl p-5 bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 shadow">
+              <h3 className="text-sm font-bold text-indigo-700 mb-4">
+                Fee Summary
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+
+                <div className="bg-white rounded-xl p-4 border border-indigo-100 shadow-sm">
+                  <p className="text-xs text-gray-500">Fee Details</p>
+                  <p className="text-lg font-semibold text-gray-800">
+                    ₹{selectedFee?.amount || 0}
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border border-purple-100 shadow-sm">
+                  <p className="text-xs text-gray-500">Transport Fee</p>
+                  <p className="text-lg font-semibold text-gray-800">
+                    ₹{transportFee || 0}
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border border-indigo-100 shadow-sm">
+                  <p className="text-xs text-gray-500">Total Amount</p>
+                  <p className="text-lg font-semibold text-indigo-700">
+                    ₹{(Number(selectedFee?.amount || 0) + Number(transportFee || 0)).toFixed(2)}
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 border border-purple-100 shadow-sm">
+                  <p className="text-xs text-gray-500">Set Amount</p>
+                  <input
+                    type="number"
+                    value={setAmount}
+                    onChange={(e) => setSetAmount(e.target.value)}
+                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  />
+                </div>
+
+              </div>
+            </div>
+
+
+
 
             {/* Enhanced Footer Buttons */}
             <div className="flex justify-end gap-3 pt-4 border-t border-indigo-100">
               <button
                 onClick={onClose}
-                className="px-6 py-2.5 border-2 border-gray-300 rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-medium text-gray-700"
+                className="cursor-pointer px-6 py-2.5 border-2 border-gray-300 rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-medium text-gray-700"
               >
                 Cancel
               </button>
@@ -239,7 +412,7 @@ const MarkFeeForStudents = ({ open, onClose, feeTypes, context }) => {
                   : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 hover:shadow-xl"
                   }`}
               >
-                Save Permissions
+                Pay Now
               </button>
             </div>
           </div>
