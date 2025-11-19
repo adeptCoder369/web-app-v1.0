@@ -17,6 +17,7 @@ import { RiAdminFill } from "react-icons/ri";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
 import EditClassPermissionsModal from "./EditClassPermissionsModal";
 import SignatureUploadModal from "./UploadSignature";
+import { removeFromClientApi } from "../../api/staff";
 
 
 const StaffTable = ({
@@ -26,7 +27,8 @@ const StaffTable = ({
   isLoading,
 
   setFilters,
-  filters
+  filters,
+  context
 
 
 }) => {
@@ -34,7 +36,7 @@ const StaffTable = ({
 
 
 
-  
+
 
   const menuItems = [
     {
@@ -56,10 +58,11 @@ const StaffTable = ({
       variant: "default"
     }
   ];
-
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [signatureUrl, setSignatureUrl] = useState(false);
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
 
 
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -69,6 +72,7 @@ const StaffTable = ({
   const [removeFromClient, setRemoveFromClient] = useState(null);
   const [editPermissionStaff, setEditPermissionStaff] = useState(null);
   const [selectedClasses, setSelectedClasses] = useState([]);
+  const [selectedStaff, setSelectedStaff] = useState([]);
   const [uploadingKey, setUploadingKey] = useState([]);
 
   // console.log('openActionMenu', removeFromClient)
@@ -241,7 +245,8 @@ const StaffTable = ({
 
       case "Upload Signature":
         setSignatureUrl(staff)
-        console.log("Open signature uploader for:", staff);
+        setSelectedStaff(staff)
+        // console.log("Open signature uploader for:", staff);
         break;
 
       default:
@@ -260,6 +265,53 @@ const StaffTable = ({
         : [...prev, classId]
     );
   };
+
+
+  const handleRemoveFromClient = async () => {
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const finalPayload = {
+        api: "user.removeFromClient",
+        user_account_id: context?.profileId,
+        client_id: context?.session,
+        platform: "web",
+        "id": selectedStaff?.id
+
+      };
+
+      const response = await removeFromClientApi(finalPayload);
+      console.log("response ===========", response);
+
+      if (response?.success) {
+        setSuccess("Removed from client successfully.");
+        setRemoveFromClient(false)
+      } else {
+        setError("Failed to remove from client.");
+      }
+
+
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong.");
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   return (
@@ -512,32 +564,44 @@ const StaffTable = ({
                             />
 
                             {/* Dropdown Menu */}
-                            <div className="absolute right-0 mt-3c bg-white border border-slate-200/60 rounded-xl shadow-2xl z-20 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div
+                              className="
+    absolute right-0 mt-2 w-48 
+    sm:w-48 
+    w-[calc(100vw-2rem)]
+    max-w-xs 
+    bg-white border border-slate-200/60 
+    rounded-xl shadow-2xl z-20 py-2 
+    animate-in fade-in slide-in-from-top-2 duration-200
+  "
+                              style={{
+                                left: openActionMenu ? "auto" : "auto",
+                              }}
+                            >
                               {menuItems.map((item, i) => {
                                 const Icon = item.icon;
                                 return (
                                   <button
                                     key={i}
-                                    className={`text-left px-4 py-2.5 text-sm  w-58 fon 
-                      transition-all duration-150 flex items-c 
-                      ${item.variant === 'danger'
-                                        ? 'text-red-600 hover: er:text-red-700'
-                                        : 'text-slate-700 hove '
+                                    className={`
+          text-left px-4 py-2.5 text-sm w-full flex items-center gap-2
+          ${item.variant === "danger"
+                                        ? "text-red-600 hover:bg-red-50"
+                                        : "text-slate-700 hover:bg-slate-100"
                                       }
-                      ${i !== menuItems.length - 1 ? '' : ''}
-                    `}
+        `}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleMenuItemClick(item, staff);
                                     }}
-
                                   >
-                                    <Icon className="w-4 h-4 opacity-70 mr-2" />
+                                    <Icon className="w-4 h-4 opacity-70" />
                                     <span>{item.label}</span>
                                   </button>
                                 );
                               })}
                             </div>
+
                           </>
                         )}
                       </div>
@@ -647,6 +711,7 @@ const StaffTable = ({
           title="Remove From Client!"
           description={`Are you sure you want to remove ${removeFromClient.full_name}?`}
           onCancel={() => setRemoveFromClient(null)}
+          onConfirm={handleRemoveFromClient}
         />
       )}
 
@@ -664,11 +729,13 @@ const StaffTable = ({
         }}
       />
       <SignatureUploadModal
+        selectedStaff={selectedStaff}
         open={signatureUrl}
         key="dfjk"
         onClose={() => setIsModalOpen(false)}
-        label="Principal Signature"
+        label="Upload Signature"
         uploadingKey={uploadingKey}
+        setSignatureUrl={setSignatureUrl}
         // fileUrl={signatureUrl}
         onUpload={async (file) => {
           // your upload logic

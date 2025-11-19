@@ -13,7 +13,7 @@ export const StaffList = ({
   setActiveTab,
   setSelectedStaff
 
-}) => { 
+}) => {
 
 
   const Context = getSessionCache("dashboardContext");
@@ -277,7 +277,7 @@ export const StaffList = ({
 
 
   const getFilterCount = () => {
-    return filters?.status?.length +filters?.designations?.length + (filters?.appType ? 1 : 0) + (filters?.gender ? 1 : 0) + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
+    return filters?.status?.length + filters?.designations?.length + (filters?.appType ? 1 : 0) + (filters?.gender ? 1 : 0) + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
   };
 
   const handleStandardChange = (e) => {
@@ -350,7 +350,7 @@ export const StaffList = ({
         staffs={staff}
         handleClassClick={handleRowClick}
         isLoading={isLoading}
-
+        context={Context}
 
         setFilters={setFilters}
         filters={filters}

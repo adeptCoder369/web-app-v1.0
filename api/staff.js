@@ -145,3 +145,63 @@ export async function patchStaffDetail(payload) {
     throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
   }
 }
+
+
+
+
+//========================================================================================================
+export async function uploadStaffSignature(payload) {
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+  let finalPayloadd = {
+    "api": "user.uploadSignature",
+    logged_in_user_account_id: resolvedUserId,
+    "guid": resolvedGuid,
+    "platform": "web",
+    ...payload,
+  }
+  // console.log('finalPayloadd', finalPayloadd);
+
+  // ==================================================================================================
+  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
+  // ==================================================================================================
+
+  try {
+    const response = await axios.post(`${API_BASE_URL_}/api`, finalPayloadd);
+
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
+  }
+}
+
+
+
+//========================================================================================================
+export async function removeFromClientApi(finalPayload) {
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+  let finalPayloadd = {
+    logged_in_user_account_id: resolvedUserId,
+    guid: resolvedGuid,
+    ...finalPayload
+
+  }
+  // console.log('finalPayloadd', finalPayloadd);
+
+  // ==================================================================================================
+  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
+  // ==================================================================================================
+
+  try {
+    const response = await axios.post(`${API_BASE_URL_}/api`, finalPayloadd);
+
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
+  }
+}
