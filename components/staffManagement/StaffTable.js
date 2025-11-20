@@ -1,15 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { UserMinus, Shield, FileSignature } from 'lucide-react';
-
 import {
-  FaBook,
-  FaExternalLinkAlt,
   FaDownload,
   FaFileExcel,
   FaFileCsv,
   FaChevronLeft,
   FaChevronRight,
-  FaFilter,
   FaSearch
 } from "react-icons/fa";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
@@ -17,27 +13,24 @@ import { RiAdminFill } from "react-icons/ri";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
 import EditClassPermissionsModal from "./EditClassPermissionsModal";
 import SignatureUploadModal from "./UploadSignature";
-import { removeFromClientApi } from "../../api/staff";
+import { editClassPermissionsApi, getPermittedClasses, removeFromClientApi } from "../../api/staff";
 
-
+// ============================================================================
 const StaffTable = ({
   staffs = [],
   handleClassClick = () => { },
   columns = ['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action'],
   isLoading,
-
   setFilters,
-  filters,
-  context
-
-
+  context,
+  setIsPermittedClassPermissionUpdated
 }) => {
 
 
 
 
 
-
+  // ============================================================================
   const menuItems = [
     {
       label: "Remove From Client",
@@ -47,7 +40,7 @@ const StaffTable = ({
     },
     {
       label: "Edit Class Permissions",
-      action: () => console.log("Edit Class Permissions", staffs),
+      // action: () => console.log("Edit Class Permissions", staffs),
       icon: Shield,
       variant: "default"
     },
@@ -58,13 +51,11 @@ const StaffTable = ({
       variant: "default"
     }
   ];
-  // Pagination states
+  // ============================================================================
   const [currentPage, setCurrentPage] = useState(1);
   const [signatureUrl, setSignatureUrl] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-
-
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
@@ -75,41 +66,37 @@ const StaffTable = ({
   const [selectedStaff, setSelectedStaff] = useState([]);
   const [uploadingKey, setUploadingKey] = useState([]);
 
-  // console.log('openActionMenu', removeFromClient)
-  // Helper functions
-  function formatDateTime(dateStr, timeStr) {
-    if (!dateStr || !timeStr) return "N/A";
 
+  const [userPermittedClassesLoader, setUserPermittedClassesLoader] = useState(false);
+  const [userPermittedClasses, setUserPermittedClasses] = useState(false);
+
+  const getUserPermittedClasses = async () => {
+    setUserPermittedClassesLoader(true);
     try {
-      const dateTimeString = `${dateStr}T${timeStr.split(' ')[0]}:00Z`;
-      const date = new Date(dateTimeString);
+      const resp = await getPermittedClasses(context?.profileId, context?.session, selectedStaff?.id);
 
-      if (isNaN(date.getTime())) {
-        return "Invalid Date/Time";
-      }
-
-      const day = date.getDate();
-      const month = date.toLocaleString("en-US", { month: "short" }).toLowerCase();
-      const year = date.getFullYear();
-      const hours = date.getHours().toString().padStart(2, "0");
-      const minutes = date.getMinutes().toString().padStart(2, "0");
-
-      return `${day}${getDaySuffix(day)} ${month}, ${year} @ ${hours}:${minutes}`;
-    } catch (error) {
-      console.error("Error formatting date/time:", error);
-      return "N/A";
+      const fetched = resp?.results?.classes || [];
+      setUserPermittedClasses(fetched);
+    } catch (err) {
+      console.error('Failed to fetch events:', err);
+    } finally {
+      setUserPermittedClassesLoader(false);
     }
-  }
+  };
 
-  function getDaySuffix(day) {
-    if (day > 3 && day < 21) return "th";
-    switch (day % 10) {
-      case 1: return "st";
-      case 2: return "nd";
-      case 3: return "rd";
-      default: return "th";
-    }
-  }
+
+
+
+
+  useEffect(() => {
+    // if (!context?.profileId || !context?.session) return;
+    getUserPermittedClasses();
+  }, [selectedStaff]);
+
+
+
+
+
 
   const getInitials = (name) => {
     if (!name) return "";
@@ -240,7 +227,8 @@ const StaffTable = ({
 
       case "Edit Class Permissions":
         setEditPermissionStaff(staff);
-        setSelectedClasses(staff.assigned_classes || []);
+        // setSelectedClasses(staff.assigned_classes || []);
+        setSelectedStaff(staff)
         break;
 
       case "Upload Signature":
@@ -299,6 +287,34 @@ const StaffTable = ({
   };
 
 
+  const handleUpdatePermittedClassePermissions = async (permittedClasses) => {
+    setError(null);
+    setSuccess(null);
+    console.log('permittedClasses__', permittedClasses);
+
+    try {
+
+      const response = await editClassPermissionsApi(context?.profileId, context?.session, selectedStaff?.id, permittedClasses?.map(cls => cls?.id));
+
+      console.log("response ===========", response);
+
+      if (response?.success) {
+        setSuccess("Permission changed successfully.");
+      } else {
+        setError("Failed to remove from client.");
+      }
+
+
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong.");
+    } finally {
+
+      setUserPermittedClasses(false)
+      setIsPermittedClassPermissionUpdated(prev => !prev);
+
+    }
+  };
 
 
 
@@ -307,12 +323,7 @@ const StaffTable = ({
 
 
 
-
-
-
-
-
-
+  // ============================================================================  const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -485,50 +496,7 @@ const StaffTable = ({
                     </div>
                   </td>
 
-                  {/* Info */}
-                  {/* <td className="whitespace-nowrap px-6 py-4">
-                    <div className="flex flex-col gap-1">
-                      <div className="text-xs text-gray-700">
-                        <span className="font-medium">Students:</span> {staff.students?.length || 0}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        <span className="font-medium">Platform:</span> {staff.info?.platform || "N/A"}
-                      </div>
-                    </div>
-                  </td> */}
-
-                  {/* Start/Join */}
-                  {/* <td className="whitespace-nowrap px-6 py-4">
-                    {staff.startJoinLink ? (
-                      <a
-                        href={staff.startJoinLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-green-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg group-hover:scale-105"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Join Class
-                        <FaExternalLinkAlt className="text-xs" />
-                      </a>
-                    ) : (
-                      <span className="inline-flex items-center bg-gray-100 text-gray-500 text-sm font-medium py-2 px-4 rounded-lg">
-                        No Link
-                      </span>
-                    )}
-                  </td> */}
-
-                  {/* Action */}
-                  {/* <td className="whitespace-nowrap px-6 py-4">
-                    <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-medium hover:bg-indigo-200 transition-colors">
-                      {staff.action === "view_details" && "Details"}
-                      {staff.action === "edit_class" && "Edit"}
-                      {staff.action === "manage_class" && "Manage"}
-                      {staff.action === "view_recording" && "Recording"}
-                      {!staff.action && "Action"}
-                      <MoreHorizontal className="w-3 h-3" />
-                    </button>
-                  </td> */}
-
+          
                   <td className="relative whitespace-nowrap px-6 py-4">
                     <button
                       onClick={(e) => {
@@ -553,8 +521,20 @@ const StaffTable = ({
                         onClick={() => setOpenActionMenu(null)}
                       />
 
-                      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-20 py-1">
-
+                      <div
+                        className="
+    absolute mt-2 
+    w-48 
+    bg-white border border-slate-200/60 
+    rounded-xl shadow-2xl z-20 py-2 
+    animate-in fade-in slide-in-from-top-2 duration-200
+  "
+                        style={{
+                          // Align to right by default, but shift left if needed
+                          right: 0,
+                          maxWidth: 'calc(100vw - 2rem)',
+                        }}
+                      >
                         {openActionMenu === staff.id && (
                           <>
                             {/* Backdrop */}
@@ -566,16 +546,17 @@ const StaffTable = ({
                             {/* Dropdown Menu */}
                             <div
                               className="
-    absolute right-0 mt-2 w-48 
-    sm:w-48 
-    w-[calc(100vw-2rem)]
-    max-w-xs 
-    bg-white border border-slate-200/60 
-    rounded-xl shadow-2xl z-20 py-2 
-    animate-in fade-in slide-in-from-top-2 duration-200
-  "
+        absolute right-0 mt-2 
+        w-48 
+        bg-white border border-slate-200/60 
+        rounded-xl shadow-2xl z-20 py-2 
+        animate-in fade-in slide-in-from-top-2 duration-200
+      "
                               style={{
-                                left: openActionMenu ? "auto" : "auto",
+                                // Prevent dropdown from going off-screen on the right
+                                right: 0,
+                                // On mobile, ensure it doesn't overflow viewport
+                                maxWidth: 'calc(100vw - 2rem)',
                               }}
                             >
                               {menuItems.map((item, i) => {
@@ -584,24 +565,24 @@ const StaffTable = ({
                                   <button
                                     key={i}
                                     className={`
-          text-left px-4 py-2.5 text-sm w-full flex items-center gap-2
-          ${item.variant === "danger"
+              text-left px-4 py-2.5 text-sm w-full flex items-center gap-2
+              transition-colors duration-150
+              ${item.variant === "danger"
                                         ? "text-red-600 hover:bg-red-50"
                                         : "text-slate-700 hover:bg-slate-100"
                                       }
-        `}
+            `}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleMenuItemClick(item, staff);
                                     }}
                                   >
-                                    <Icon className="w-4 h-4 opacity-70" />
-                                    <span>{item.label}</span>
+                                    <Icon className="w-4 h-4 opacity-70 flex-shrink-0" />
+                                    <span className="whitespace-nowrap">{item.label}</span>
                                   </button>
                                 );
                               })}
                             </div>
-
                           </>
                         )}
                       </div>
@@ -716,18 +697,17 @@ const StaffTable = ({
       )}
 
 
-      <EditClassPermissionsModal
-        open={!!editPermissionStaff}
+      {userPermittedClasses ? <EditClassPermissionsModal
+        isOpen={editPermissionStaff}
         staff={editPermissionStaff}
+        permittedClasses={userPermittedClasses}
         classes={[]} // supply your list of classes
         selectedClasses={selectedClasses}
         onToggleClass={handleToggleClass}
         onClose={() => setEditPermissionStaff(null)}
-        onSave={() => {
-          console.log("Saving:", editPermissionStaff, selectedClasses);
-          setEditPermissionStaff(null);
-        }}
-      />
+        onSave={handleUpdatePermittedClassePermissions}
+        success={success}
+      /> : null}
       <SignatureUploadModal
         selectedStaff={selectedStaff}
         open={signatureUrl}
@@ -743,7 +723,11 @@ const StaffTable = ({
       />
 
 
-
+      {success && (
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow-md z-50">
+          <span>{success}</span>
+        </div>
+      )}
     </div>
   );
 };

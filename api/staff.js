@@ -205,3 +205,76 @@ export async function removeFromClientApi(finalPayload) {
     throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
   }
 }
+
+
+//========================================================================================================
+export async function getPermittedClasses(profileId, sessionId, selectedStaff) {
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+  let finalPayloadd = {
+
+    "api": "user.getPermittedClasses",
+    "guid": resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    "platform": "web",
+
+    id: selectedStaff
+
+
+  }
+  // console.log('finalPayloadd', finalPayloadd);
+
+  // ==================================================================================================
+  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
+  // ==================================================================================================
+
+  try {
+    const response = await axios.post(`${API_BASE_URL_}/api`, finalPayloadd);
+
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
+  }
+}
+
+
+
+
+//========================================================================================================
+export async function editClassPermissionsApi(profileId, sessionId, selectedStaff, permittedClasses) {
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+  let finalPayloadd = {
+
+    "api": "user.editClassPermissions",
+    "guid": resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    "platform": "web",
+
+    id: selectedStaff,
+    class_ids: permittedClasses
+
+
+  }
+  // console.log('finalPayloadd', finalPayloadd);
+
+  // ==================================================================================================
+  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
+  // ==================================================================================================
+
+  try {
+    const response = await axios.post(`${API_BASE_URL_}/api`, finalPayloadd);
+
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
+  }
+}

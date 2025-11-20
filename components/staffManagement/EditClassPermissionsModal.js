@@ -1,132 +1,249 @@
-import React from "react";
-import { getSessionCache } from "../../utils/sessionCache";
-import { ChevronDown } from "lucide-react";
+import React, { useState, useMemo, useEffect } from 'react';
+import { Check, X } from 'lucide-react';
 
 export default function EditClassPermissionsModal({
   isOpen,
-  setIsOpen,
+  permittedClasses = [],
   staff,
-  classes = [],
-  selectedClass = [],
   onToggleClass,
   onClose,
-  onSave
+  onSave,
+  
 }) {
+  if (!isOpen) return null;
+
+  // Session cache reader
+  const getSessionCache = (key) => {
+    try {
+      return JSON.parse(sessionStorage.getItem(key));
+    } catch {
+      return null;
+    }
+  };
 
   const config = getSessionCache("dashboardConfig");
+  const standards = config?.standards || [];
 
-  const getSelectedClassName = () => {
-    for (const std of config?.standards) {
-      const cls = std.classes?.find((c) => {
+  // Normalize permittedClasses → Set of ID strings
+  const normalizeToSet = (arr) =>
+    new Set(
+      arr.map(item => {
+        if (item && typeof item === "object") return String(item.id);
+        return String(item);
+      })
+    );
 
-        // console.log(c.id, selectedClass,'clscls');
-        return (
-          c.id == selectedClass?.class_id
-        )
-      });
+  const normalizedInitialIds = normalizeToSet(permittedClasses);
 
-      if (cls) {
-        return `${std.name} - ${cls.name}${cls.section_name ? ` (${cls.section_name})` : ""}`;
-      }
-    }
-    return "Select a class";
+  // LOCAL STATE
+  const [selectedIds, setSelectedIds] = useState(normalizedInitialIds);
+
+  // IMPORTANT: Keep state in sync when permittedClasses changes
+  useEffect(() => {
+    setSelectedIds(normalizeToSet(permittedClasses));
+  }, [permittedClasses]);
+
+  // Toggle one class
+  const toggleClass = (classId) => {
+    classId = String(classId);
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      newSet.has(classId) ? newSet.delete(classId) : newSet.add(classId);
+      return newSet;
+    });
   };
-  if (!open || !staff) return null;
+
+  // Select all
+  const selectAll = () => {
+    const all = standards.flatMap(std =>
+      (std.classes || []).map(c => String(c.id))
+    );
+    setSelectedIds(new Set(all));
+  };
+
+  // Deselect all
+  const deselectAll = () => {
+    setSelectedIds(new Set());
+  };
+
+  // All classes
+  const allClasses = useMemo(() => {
+    return standards.flatMap(std => std.classes || []);
+  }, [standards]);
+
+  const selectedClasses = useMemo(() => {
+    return allClasses.filter(c => selectedIds.has(String(c.id)));
+  }, [selectedIds, allClasses]);
+
+  // Save
+  const handleSave = () => {
+    const result = Array.from(selectedIds).map(id => {
+      const c = allClasses.find(cls => String(cls.id) === id);
+      return { id: c.id, name: c.name };
+    });
+
+
+    onSave?.(result);
+  };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6">
+    <div className="fixed inset-0 backdrop-blur bg-black/5 flex items-center justify-center z-50 p-4">
+      <div className="border border-accent ring-2 bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
 
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Edit Class Permissions
-          </h2>
+        {/* Header */}
+        <div className=" bg-gradient-to-br from-blue-900 to-blue-950 px-6 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-1">
+              Edit Class Permissions
+            </h1>
+            <p className="text-blue-100 text-sm">
+              {staff?.name
+                ? `Managing permissions for ${staff.name}`
+                : 'Select classes to permit'}
+            </p>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-sm"
+            className="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors"
           >
-            ✕
+            <X className="w-6 h-6" />
           </button>
         </div>
 
-        <p className="text-sm text-gray-600 mb-4">
-          Updating permissions for <span className="font-medium">{staff.full_name}</span>
-        </p>
+        {/* Controls */}
+        <div className="px-6 py-4 bg-gray-50 border-b flex items-center justify-between flex-shrink-0">
+          <div className="text-sm text-gray-600">
+            <span className="font-semibold text-gray-900">
+              {selectedIds.size}
+            </span> of {allClasses.length} classes selected
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={selectAll}
+              className="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              Select All
+            </button>
+            <button
+              onClick={deselectAll}
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              Deselect All
+            </button>
+          </div>
+        </div>
 
-        <div className="border rounded-lg p-4 max-h-64 overflow-y-auto">
-          {config?.standards?.length === 0 ? (
-            <p className="text-sm text-gray-500">No classes found.</p>
-          ) : (
-            <>
-              <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Select Class
-                </label>
-                <div className="relative">
-                  <select
-                    // value={selectedClassValue}
-                    // onChange={(e) => {
-                    //   const value = e.target.value;
-                    //   setSelectedClassValue(value);
-                    //   setSelectedClass(JSON.parse(value));
-                    // }}
-                    onFocus={() => setIsOpen(true)}
-                    onBlur={() => setIsOpen(false)}
-                    className="w-full px-4 py-3 pr-10 border-2 border-gray-200 rounded-xl 
-    text-gray-900 font-medium bg-white cursor-pointer
-    transition-all duration-200 ease-in-out
-    hover:border-indigo-300 hover:shadow-sm
-    focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500
-    appearance-none"
-                  >
-                    <option value="">Select a class</option>
-
-                    {config?.standards?.map((std) => (
-                      <optgroup key={std.id} label={std.name}>
-                        {std.classes?.map((cls) => (
-                          <option
-                            key={cls.id}
-                            value={JSON.stringify({
-                              standard_id: std.id,
-                              class_id: cls.id
-                            })}
-                          >
-                            {cls.name} {cls.section_name ? `(${cls.section_name})` : ""}
-                          </option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
-
-                  <ChevronDown
-                    className={`absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""
-                      }`}
-                  />
-                </div>
-                {selectedClass && (
-                  <div className="mt-4 p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
-                    <p className="text-xs text-gray-600 mb-1">Selected:</p>
-                    <p className="font-semibold text-indigo-700">{getSelectedClassName()}</p>
-                  </div>
-                )}
+        {/* Scrollable Section */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6">
+            {standards.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                No standards available
               </div>
-            </>
+            ) : (
+              <div className="space-y-6">
+                {standards.map(standard => {
+                  const classes = standard.classes || [];
+                  if (classes.length === 0) return null;
+
+                  return (
+                    <div key={standard.id} className="space-y-3">
+                      <div className="flex items-center gap-3 mb-3">
+                        <h2 className="text-lg font-bold text-gray-900">
+                          Standard {standard.name}
+                        </h2>
+                        <span className="text-sm text-gray-500">
+                          ({classes.length} {classes.length === 1 ? "class" : "classes"})
+                        </span>
+                      </div>
+
+                      {classes.map(classItem => {
+                        const idStr = String(classItem.id);
+                        const isSelected = selectedIds.has(idStr);
+
+                        return (
+                          <div
+                            key={idStr}
+                            onClick={() => toggleClass(idStr)}
+                            className={`
+                              relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all
+                              ${isSelected
+                                ? 'border-blue-500 bg-blue-50 shadow-md'
+                                : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm'}
+                            `}
+                          >
+                            <div className="flex-shrink-0 mr-4">
+                              <div
+                                className={`
+                                  w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors
+                                  ${isSelected
+                                    ? 'bg-blue-600 border-blue-600'
+                                    : 'border-gray-300 bg-white'}
+                                `}
+                              >
+                                {isSelected && (
+                                  <Check className="w-4 h-4 text-white" />
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex-grow">
+                              <div className="flex items-center gap-3">
+                                <h3 className="text-base font-semibold text-gray-900">
+                                  {classItem.name}
+                                </h3>
+                              </div>
+                            </div>
+
+                            {isSelected && (
+                              <div className="flex-shrink-0 ml-4">
+                                <span className="inline-flex items-center px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">
+                                  Selected
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {selectedIds.size > 0 && (
+            <div className="px-6 py-4 bg-gray-50 border-t">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                Selected Classes ({selectedIds.size}):
+              </h3>
+
+              <div className="flex flex-wrap gap-2">
+                {selectedClasses.map(c => (
+                  <span
+                    key={c.id}
+                    className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+                  >
+                    {c.name}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-3 mt-5">
+        <div className="px-6 py-4 bg-white border-t flex justify-end gap-3 flex-shrink-0">
           <button
-            className="px-4 py-2 rounded-lg text-sm bg-gray-200 hover:bg-gray-300"
             onClick={onClose}
+            className="px-6 py-2.5 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
           >
             Cancel
           </button>
-
           <button
-            className="px-4 py-2 rounded-lg text-sm bg-indigo-600 text-white hover:bg-indigo-700"
-            onClick={onSave}
+            onClick={handleSave}
+            className="bg-gradient-to-br from-blue-900 to-blue-950 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
           >
-            Save
+            Save Selection
           </button>
         </div>
       </div>

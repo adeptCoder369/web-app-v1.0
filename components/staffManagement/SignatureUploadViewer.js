@@ -17,7 +17,6 @@ export default function SignatureUploadViewer({
   setIsUpdated,
   setShow
 }) {
-  console.log(staffDetail, 'staffDetail');
 
   // ===============================================================================
 

@@ -27,6 +27,7 @@ export const StaffList = ({
   const [openMenu, setOpenMenu] = useState(null);
   const [viewMode, setViewMode] = useState('overview');
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [isPermittedClassPermissionUpdated, setIsPermittedClassPermissionUpdated] = useState(false);
   const [staffStatus, setStudentStatus] = useState([
     {
       name: "Receive Daily Notification",
@@ -132,6 +133,7 @@ export const StaffList = ({
     filters?.designations?.length,
     filters?.gender,
     filters?.appType,
+    isPermittedClassPermissionUpdated
   ]);
 
 
@@ -351,10 +353,9 @@ export const StaffList = ({
         handleClassClick={handleRowClick}
         isLoading={isLoading}
         context={Context}
-
         setFilters={setFilters}
         filters={filters}
-
+        setIsPermittedClassPermissionUpdated={setIsPermittedClassPermissionUpdated}
       />
 
     </>
