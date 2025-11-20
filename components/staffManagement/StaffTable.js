@@ -1,4 +1,742 @@
-import React, { useState, useMemo, useEffect } from "react";
+// import React, { useState, useMemo, useEffect } from "react";
+// import { UserMinus, Shield, FileSignature } from 'lucide-react';
+// import {
+//   FaDownload,
+//   FaFileExcel,
+//   FaFileCsv,
+//   FaChevronLeft,
+//   FaChevronRight,
+//   FaSearch
+// } from "react-icons/fa";
+// import { ChevronDown, MoreHorizontal } from "lucide-react";
+// import { RiAdminFill } from "react-icons/ri";
+// import ConfirmationDialogueBox from "../ui/status/Confirmation";
+// import EditClassPermissionsModal from "./EditClassPermissionsModal";
+// import SignatureUploadModal from "./UploadSignature";
+// import { editClassPermissionsApi, getPermittedClasses, removeFromClientApi } from "../../api/staff";
+
+// // ============================================================================
+// const StaffTable = ({
+//   staffs = [],
+//   handleClassClick = () => { },
+//   columns = ['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action'],
+//   isLoading,
+//   setFilters,
+//   context,
+//   setIsPermittedClassPermissionUpdated
+// }) => {
+
+
+
+
+
+//   // ============================================================================
+//   const menuItems = [
+//     {
+//       label: "Remove From Client",
+//       action: () => console.log("Remove From Client", staffs),
+//       icon: UserMinus,
+//       variant: "danger"
+//     },
+//     {
+//       label: "Edit Class Permissions",
+//       // action: () => console.log("Edit Class Permissions", staffs),
+//       icon: Shield,
+//       variant: "default"
+//     },
+//     {
+//       label: "Upload Signature",
+//       action: () => console.log("Upload Signature", staffs),
+//       icon: FileSignature,
+//       variant: "default"
+//     }
+//   ];
+//   // ============================================================================
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [signatureUrl, setSignatureUrl] = useState(false);
+//   const [error, setError] = useState(false);
+//   const [success, setSuccess] = useState(false);
+//   const [itemsPerPage, setItemsPerPage] = useState(10);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+//   const [openActionMenu, setOpenActionMenu] = useState(null);
+//   const [removeFromClient, setRemoveFromClient] = useState(null);
+//   const [editPermissionStaff, setEditPermissionStaff] = useState(null);
+//   const [selectedClasses, setSelectedClasses] = useState([]);
+//   const [selectedStaff, setSelectedStaff] = useState([]);
+//   const [uploadingKey, setUploadingKey] = useState([]);
+
+
+//   const [userPermittedClassesLoader, setUserPermittedClassesLoader] = useState(false);
+//   const [userPermittedClasses, setUserPermittedClasses] = useState(false);
+
+//   const getUserPermittedClasses = async () => {
+//     setUserPermittedClassesLoader(true);
+//     try {
+//       const resp = await getPermittedClasses(context?.profileId, context?.session, selectedStaff?.id);
+
+//       const fetched = resp?.results?.classes || [];
+//       setUserPermittedClasses(fetched);
+//     } catch (err) {
+//       console.error('Failed to fetch events:', err);
+//     } finally {
+//       setUserPermittedClassesLoader(false);
+//     }
+//   };
+
+
+
+
+
+//   useEffect(() => {
+//     // if (!context?.profileId || !context?.session) return;
+//     getUserPermittedClasses();
+//   }, [selectedStaff]);
+
+
+
+
+
+
+//   const getInitials = (name) => {
+//     if (!name) return "";
+//     const parts = name.split(" ");
+//     if (parts.length === 1) {
+//       return parts[0].charAt(0).toUpperCase();
+//     }
+//     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+//   };
+
+//   // Filter and paginate data
+//   const filteredData = useMemo(() => {
+//     return staffs?.filter(staff =>
+//       staff?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       staff?.subject?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       staff.description?.toLowerCase().includes(searchTerm.toLowerCase())
+//     );
+//   }, [staffs, searchTerm]);
+
+//   const paginatedData = useMemo(() => {
+//     const startIndex = (currentPage - 1) * itemsPerPage;
+//     return filteredData.slice(startIndex, startIndex + itemsPerPage);
+//   }, [filteredData, currentPage, itemsPerPage]);
+
+//   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+//   // Export functions
+//   const convertToCSV = (data) => {
+//     const headers = ['Name', 'Subject', 'Description', 'Date', 'Time', 'Total Students', 'Platform'];
+//     const csvContent = [
+//       headers.join(','),
+//       ...data.map(row => [
+//         `"${row.name || 'N/A'}"`,
+//         `"${row.subject?.name || 'N/A'}"`,
+//         `"${row.description || 'N/A'}"`,
+//         `"${row.date || 'N/A'}"`,
+//         `"${row.time || 'N/A'}"`,
+//         `"${row.students?.length || 0}"`,
+//         `"${row.info?.platform || 'N/A'}"`
+//       ].join(','))
+//     ].join('\n');
+
+//     return csvContent;
+//   };
+
+//   const downloadCSV = () => {
+//     const csvContent = convertToCSV(filteredData);
+//     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+//     const link = document.createElement('a');
+//     link.href = URL.createObjectURL(blob);
+//     link.download = `staff_data_${new Date().toISOString().split('T')[0]}.csv`;
+//     link.click();
+//     setExportDropdownOpen(false);
+//   };
+
+//   const downloadExcel = () => {
+//     // For Excel export, we'll create a simple HTML table format that Excel can read
+//     const headers = ['Name', 'Subject', 'Description', 'Date', 'Time', 'Total Students', 'Platform'];
+//     let htmlContent = '<table><tr>';
+//     headers.forEach(header => {
+//       htmlContent += `<th>${header}</th>`;
+//     });
+//     htmlContent += '</tr>';
+
+//     filteredData.forEach(row => {
+//       htmlContent += '<tr>';
+//       htmlContent += `<td>${row.name || 'N/A'}</td>`;
+//       htmlContent += `<td>${row.subject?.name || 'N/A'}</td>`;
+//       htmlContent += `<td>${row.description || 'N/A'}</td>`;
+//       htmlContent += `<td>${row.date || 'N/A'}</td>`;
+//       htmlContent += `<td>${row.time || 'N/A'}</td>`;
+//       htmlContent += `<td>${row.students?.length || 0}</td>`;
+//       htmlContent += `<td>${row.info?.platform || 'N/A'}</td>`;
+//       htmlContent += '</tr>';
+//     });
+//     htmlContent += '</table>';
+
+//     const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
+//     const link = document.createElement('a');
+//     link.href = URL.createObjectURL(blob);
+//     link.download = `staff_data_${new Date().toISOString().split('T')[0]}.xlsx`;
+//     link.click();
+//     setExportDropdownOpen(false);
+//   };
+
+//   // Pagination handlers
+//   const goToPage = (page) => {
+//     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+//   };
+
+//   const getPageNumbers = () => {
+//     const delta = 2;
+//     const range = [];
+//     const rangeWithDots = [];
+
+//     for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+//       range.push(i);
+//     }
+
+//     if (currentPage - delta > 2) {
+//       rangeWithDots.push(1, '...');
+//     } else {
+//       rangeWithDots.push(1);
+//     }
+
+//     rangeWithDots.push(...range);
+
+//     if (currentPage + delta < totalPages - 1) {
+//       rangeWithDots.push('...', totalPages);
+//     } else if (totalPages > 1) {
+//       rangeWithDots.push(totalPages);
+//     }
+
+//     return rangeWithDots;
+//   };
+
+
+
+//   const handleMenuItemClick = (item, staff) => {
+//     // Close dropdown first
+//     setOpenActionMenu(null);
+
+//     // Switch logic instead of random states everywhere
+//     switch (item.label) {
+//       case "Remove From Client":
+//         setRemoveFromClient(staff); // now you know *which* staff to remove
+//         break;
+
+//       case "Edit Class Permissions":
+//         setEditPermissionStaff(staff);
+//         // setSelectedClasses(staff.assigned_classes || []);
+//         setSelectedStaff(staff)
+//         break;
+
+//       case "Upload Signature":
+//         setSignatureUrl(staff)
+//         setSelectedStaff(staff)
+//         // console.log("Open signature uploader for:", staff);
+//         break;
+
+//       default:
+//         console.log("Unhandled action:", item.label);
+//     }
+
+//     // Still fire whatever custom internal action you added
+//     if (item.action) item.action(staff);
+//   };
+
+
+//   const handleToggleClass = (classId) => {
+//     setSelectedClasses(prev =>
+//       prev.includes(classId)
+//         ? prev.filter(id => id !== classId)
+//         : [...prev, classId]
+//     );
+//   };
+
+
+//   const handleRemoveFromClient = async () => {
+//     setError(null);
+//     setSuccess(null);
+
+//     try {
+//       const finalPayload = {
+//         api: "user.removeFromClient",
+//         user_account_id: context?.profileId,
+//         client_id: context?.session,
+//         platform: "web",
+//         "id": selectedStaff?.id
+
+//       };
+
+//       const response = await removeFromClientApi(finalPayload);
+//       console.log("response ===========", response);
+
+//       if (response?.success) {
+//         setSuccess("Removed from client successfully.");
+//         setRemoveFromClient(false)
+//       } else {
+//         setError("Failed to remove from client.");
+//       }
+
+
+//     } catch (err) {
+//       console.error(err);
+//       setError("Something went wrong.");
+//     }
+//   };
+
+
+//   const handleUpdatePermittedClassePermissions = async (permittedClasses) => {
+//     setError(null);
+//     setSuccess(null);
+//     console.log('permittedClasses__', permittedClasses);
+
+//     try {
+
+//       const response = await editClassPermissionsApi(context?.profileId, context?.session, selectedStaff?.id, permittedClasses?.map(cls => cls?.id));
+
+//       console.log("response ===========", response);
+
+//       if (response?.success) {
+//         setSuccess("Permission changed successfully.");
+//       } else {
+//         setError("Failed to remove from client.");
+//       }
+
+
+//     } catch (err) {
+//       console.error(err);
+//       setError("Something went wrong.");
+//     } finally {
+
+//       setUserPermittedClasses(false)
+//       setIsPermittedClassPermissionUpdated(prev => !prev);
+
+//     }
+//   };
+
+
+
+
+
+
+
+
+//   // ============================================================================  const [currentPage, setCurrentPage] = useState(1);
+
+//   return (
+//     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+//       {/* Header with Search and Export */}
+//       <div className="p-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+//         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+//           <div>
+//             {/* <h3 className="text-xl font-bold text-gray-900">Staff Management</h3> */}
+//             <p className="text-sm text-gray-600 mt-1">
+//               Showing {paginatedData.length} of {filteredData.length} records
+//             </p>
+//           </div>
+
+//           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+//             {/* Search */}
+//             <div className="relative">
+//               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
+//               <input
+//                 type="text"
+//                 placeholder="Search by staff name"
+//                 value={searchTerm}
+//                 onChange={(e) => {
+//                   setSearchTerm(e.target.value);
+//                   setFilters(prev => ({ ...prev, name: e.target.value }));
+//                   setCurrentPage(1);
+//                 }}
+//                 className="pl-10 pr-4 py-2.5 w-full sm:w-64 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//               />
+//             </div>
+
+//             {/* Export Dropdown */}
+//             <div className="relative">
+//               <button
+//                 onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
+//                 className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+//               >
+//                 <FaDownload className="text-sm" />
+//                 <span className="font-medium">Export</span>
+//                 <ChevronDown className={`w-4 h-4 transition-transform ${exportDropdownOpen ? 'rotate-180' : ''}`} />
+//               </button>
+
+//               {exportDropdownOpen && (
+//                 <>
+//                   <div className="fixed inset-0 z-40" onClick={() => setExportDropdownOpen(false)} />
+//                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
+//                     <button
+//                       onClick={downloadCSV}
+//                       className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+//                     >
+//                       <FaFileCsv className="text-green-600" />
+//                       <span>Export as CSV</span>
+//                     </button>
+//                     <button
+//                       onClick={downloadExcel}
+//                       className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+//                     >
+//                       <FaFileExcel className="text-green-700" />
+//                       <span>Export as Excel</span>
+//                     </button>
+//                   </div>
+//                 </>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Table */}
+//       {isLoading ? <div className="overflow-x-auto">
+//         <table className="min-w-full divide-y divide-gray-200">
+//           <thead className="bg-gray-50">
+//             <tr>
+//               {columns.map((head, i) => (
+//                 <th
+//                   key={i}
+//                   className="whitespace-nowrap px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+//                 >
+//                   {head}
+//                 </th>
+//               ))}
+//             </tr>
+//           </thead>
+//           <tbody className="divide-y divide-gray-200 bg-white">
+//             {paginatedData.length === 0 ? (
+//               <tr>
+//                 <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
+//                   <div className="flex flex-col items-center gap-2">
+//                     <FaSearch className="text-3xl text-gray-300" />
+//                     <p className="text-lg font-medium">No records found</p>
+//                     <p className="text-sm">Try adjusting your search criteria</p>
+//                   </div>
+//                 </td>
+//               </tr>
+//             ) : (
+//               paginatedData.map((staff, index) => (
+//                 <tr
+//                   key={staff.id || index}
+//                   className="hover:bg-gray-50 transition-colors cursor-pointer group"
+//                 >
+//                   {/* Created By */}
+//                   <td className="whitespace-nowrap px-6 py-4">
+//                     <div
+//                       onClick={() => handleClassClick(staff)}
+
+//                       className="flex items-center gap-3">
+//                       {staff.image_url ? (
+//                         <img
+//                           src={staff.image_url}
+//                           alt={staff.user?.full_name || staff.full_name}
+//                           className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100"
+//                           onError={(e) => {
+//                             e.target.onerror = null;
+//                             e.target.src = `https://placehold.co/40x40/E0E0E0/757575?text=${getInitials(staff.user?.name || staff.name)}`;
+//                           }}
+//                         />
+//                       ) : (
+//                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm ring-2 ring-gray-100">
+//                           {getInitials(staff.user?.full_name || staff.full_name)}
+//                         </div>
+//                       )}
+//                       <div>
+//                         <div className="text-sm font-semibold text-gray-900">
+//                           {staff.user?.full_name || staff.full_name || "N/A"}
+//                         </div>
+//                         <div className="text-xs text-gray-500">
+//                           {staff.emails[0]?.email || "No email"}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </td>
+
+//                   {/* Subject */}
+//                   <td className="px-6 py-4">
+//                     <div className="flex items-center gap-2">
+//                       <div className="p-2 bg-blue-50 rounded-lg">
+//                         <RiAdminFill className="text-blue-600 text-sm" />
+//                       </div>
+//                       <div>
+//                         <div className="text-sm font-medium text-gray-900">
+//                           {staff.designation?.name || "N/A"}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </td>
+
+//                   {/* Title & Description */}
+//                   <td className="px-6 py-4 max-w-xs">
+//                     <div className="text-sm font-semibold text-gray-900 truncate">
+//                       {staff.class?.name || "N/A"}
+//                     </div>
+//                     <div className="mt-1">
+//                       <span
+//                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+//       ${staff.designation?.is_allowed_for_admin_access === '1'
+//                             ? 'bg-green-100 text-green-800'
+//                             : 'bg-red-100 text-red-800'
+//                           }`}
+//                       >
+//                         {staff.designation?.is_allowed_for_admin_access === '1' ? 'Admin Access' : 'No Access'}
+//                       </span>
+//                     </div>
+//                   </td>
+
+//                   {/* Timings */}
+//                   <td className="whitespace-nowrap px-6 py-4">
+
+//                     <div className="text-xs text-gray-500 flex items-center gap-1">
+//                       {/* <span className="w-2 h-2 bg-green-400 rounded-full"></span> */}
+//                       {staff.phones[0]?.phone || "N/A"}
+//                     </div>
+//                   </td>
+
+          
+//                   <td className="relative whitespace-nowrap px-6 py-4">
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         setOpenActionMenu(openActionMenu === staff.id ? null : staff.id);
+//                       }}
+//                       className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-medium hover:bg-indigo-200 transition-colors"
+//                     >
+//                       {staff.action === "view_details" && "Details"}
+//                       {staff.action === "edit_class" && "Edit"}
+//                       {staff.action === "manage_class" && "Manage"}
+//                       {staff.action === "view_recording" && "Recording"}
+//                       {!staff.action && "Action"}
+//                       <MoreHorizontal className="w-3 h-3" />
+//                     </button>
+
+//                   </td>
+//                   {openActionMenu === staff.id && (
+//                     <>
+//                       <div
+//                         className="fixed inset-0 z-10"
+//                         onClick={() => setOpenActionMenu(null)}
+//                       />
+
+//                       <div
+//                         className="
+//     absolute mt-2 
+//     w-48 
+//     bg-white border border-slate-200/60 
+//     rounded-xl shadow-2xl z-20 py-2 
+//     animate-in fade-in slide-in-from-top-2 duration-200
+//   "
+//                         style={{
+//                           // Align to right by default, but shift left if needed
+//                           right: 0,
+//                           maxWidth: 'calc(100vw - 2rem)',
+//                         }}
+//                       >
+//                         {openActionMenu === staff.id && (
+//                           <>
+//                             {/* Backdrop */}
+//                             <div
+//                               className="fixed inset-0 z-10"
+//                               onClick={() => setOpenActionMenu(null)}
+//                             />
+
+//                             {/* Dropdown Menu */}
+//                             <div
+//                               className="
+//         absolute right-0 mt-2 
+//         w-48 
+//         bg-white border border-slate-200/60 
+//         rounded-xl shadow-2xl z-20 py-2 
+//         animate-in fade-in slide-in-from-top-2 duration-200
+//       "
+//                               style={{
+//                                 // Prevent dropdown from going off-screen on the right
+//                                 right: 0,
+//                                 // On mobile, ensure it doesn't overflow viewport
+//                                 maxWidth: 'calc(100vw - 2rem)',
+//                               }}
+//                             >
+//                               {menuItems.map((item, i) => {
+//                                 const Icon = item.icon;
+//                                 return (
+//                                   <button
+//                                     key={i}
+//                                     className={`
+//               text-left px-4 py-2.5 text-sm w-full flex items-center gap-2
+//               transition-colors duration-150
+//               ${item.variant === "danger"
+//                                         ? "text-red-600 hover:bg-red-50"
+//                                         : "text-slate-700 hover:bg-slate-100"
+//                                       }
+//             `}
+//                                     onClick={(e) => {
+//                                       e.stopPropagation();
+//                                       handleMenuItemClick(item, staff);
+//                                     }}
+//                                   >
+//                                     <Icon className="w-4 h-4 opacity-70 flex-shrink-0" />
+//                                     <span className="whitespace-nowrap">{item.label}</span>
+//                                   </button>
+//                                 );
+//                               })}
+//                             </div>
+//                           </>
+//                         )}
+//                       </div>
+//                     </>
+//                   )}
+
+//                   {/* <StaffActionMenu
+//                   openActionMenu={openActionMenu}
+//                   setOpenActionMenu={setOpenActionMenu}
+//                   /> */}
+
+//                 </tr>
+//               ))
+//             )}
+//           </tbody>
+//         </table>
+//       </div> : (
+//         <>
+//           <div className="flex justify-center items-center">
+//             <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
+//               <img
+//                 src="/logo/logo.png"
+//                 alt="Loading"
+//                 className="w-6 h-6 animate-spin"
+//               />
+//               <span className="text-gray-700 text-sm font-medium">
+//                 Loading...
+//               </span>
+//             </div>
+//           </div>
+//         </>
+
+//       )}
+
+//       {/* Pagination */}
+//       {totalPages > 1 && (
+//         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+//           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+//             {/* Items per page */}
+//             <div className="flex items-center gap-2 text-sm text-gray-600">
+//               <span>Show</span>
+//               <select
+//                 value={itemsPerPage}
+//                 onChange={(e) => {
+//                   setItemsPerPage(Number(e.target.value));
+//                   setCurrentPage(1);
+//                 }}
+//                 className="border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//               >
+//                 <option value={5}>5</option>
+//                 <option value={10}>10</option>
+//                 <option value={25}>25</option>
+//                 <option value={50}>50</option>
+//                 <option value={100}>100</option>
+//               </select>
+//               <span>entries</span>
+//             </div>
+
+//             {/* Page navigation */}
+//             <div className="flex items-center gap-2">
+//               <button
+//                 onClick={() => goToPage(currentPage - 1)}
+//                 disabled={currentPage === 1}
+//                 className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+//               >
+//                 <FaChevronLeft className="w-4 h-4" />
+//               </button>
+
+//               <div className="flex items-center gap-1">
+//                 {getPageNumbers().map((page, index) => (
+//                   <button
+//                     key={index}
+//                     onClick={() => typeof page === 'number' ? goToPage(page) : null}
+//                     disabled={page === '...'}
+//                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${page === currentPage
+//                       ? 'bg-blue-600 text-white shadow-md'
+//                       : page === '...'
+//                         ? 'text-gray-400 cursor-default'
+//                         : 'text-gray-600 hover:bg-gray-100'
+//                       }`}
+//                   >
+//                     {page}
+//                   </button>
+//                 ))}
+//               </div>
+
+//               <button
+//                 onClick={() => goToPage(currentPage + 1)}
+//                 disabled={currentPage === totalPages}
+//                 className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+//               >
+//                 <FaChevronRight className="w-4 h-4" />
+//               </button>
+//             </div>
+
+//             {/* Page info */}
+//             <div className="text-sm text-gray-600">
+//               Page {currentPage} of {totalPages}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+
+//       {removeFromClient && (
+//         <ConfirmationDialogueBox
+//           title="Remove From Client!"
+//           description={`Are you sure you want to remove ${removeFromClient.full_name}?`}
+//           onCancel={() => setRemoveFromClient(null)}
+//           onConfirm={handleRemoveFromClient}
+//         />
+//       )}
+
+
+//       {userPermittedClasses ? <EditClassPermissionsModal
+//         isOpen={editPermissionStaff}
+//         staff={editPermissionStaff}
+//         permittedClasses={userPermittedClasses}
+//         classes={[]} // supply your list of classes
+//         selectedClasses={selectedClasses}
+//         onToggleClass={handleToggleClass}
+//         onClose={() => setEditPermissionStaff(null)}
+//         onSave={handleUpdatePermittedClassePermissions}
+//         success={success}
+//       /> : null}
+//       <SignatureUploadModal
+//         selectedStaff={selectedStaff}
+//         open={signatureUrl}
+//         key="dfjk"
+//         onClose={() => setIsModalOpen(false)}
+//         label="Upload Signature"
+//         uploadingKey={uploadingKey}
+//         setSignatureUrl={setSignatureUrl}
+//         // fileUrl={signatureUrl}
+//         onUpload={async (file) => {
+//           // your upload logic
+//         }}
+//       />
+
+
+//       {success && (
+//         <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow-md z-50">
+//           <span>{success}</span>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default StaffTable;
+
+
+
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { UserMinus, Shield, FileSignature } from 'lucide-react';
 import {
   FaDownload,
@@ -19,34 +757,27 @@ import { editClassPermissionsApi, getPermittedClasses, removeFromClientApi } fro
 const StaffTable = ({
   staffs = [],
   handleClassClick = () => { },
-  columns = ['Created By', 'Subject', 'Title & Description', 'Timings', 'Info', 'Start/join', 'Action'],
+  columns = ['Created By', 'Designation', 'Class & Access', 'Contact', 'Action'],
   isLoading,
   setFilters,
   context,
   setIsPermittedClassPermissionUpdated
 }) => {
 
-
-
-
-
   // ============================================================================
   const menuItems = [
     {
       label: "Remove From Client",
-      action: () => console.log("Remove From Client", staffs),
       icon: UserMinus,
       variant: "danger"
     },
     {
       label: "Edit Class Permissions",
-      // action: () => console.log("Edit Class Permissions", staffs),
       icon: Shield,
       variant: "default"
     },
     {
       label: "Upload Signature",
-      action: () => console.log("Upload Signature", staffs),
       icon: FileSignature,
       variant: "default"
     }
@@ -63,39 +794,46 @@ const StaffTable = ({
   const [removeFromClient, setRemoveFromClient] = useState(null);
   const [editPermissionStaff, setEditPermissionStaff] = useState(null);
   const [selectedClasses, setSelectedClasses] = useState([]);
-  const [selectedStaff, setSelectedStaff] = useState([]);
-  const [uploadingKey, setUploadingKey] = useState([]);
-
+  const [selectedStaff, setSelectedStaff] = useState(null);
 
   const [userPermittedClassesLoader, setUserPermittedClassesLoader] = useState(false);
-  const [userPermittedClasses, setUserPermittedClasses] = useState(false);
+  const [userPermittedClasses, setUserPermittedClasses] = useState(null);
+
+  // Ref to detect clicks outside the action menu
+  const actionMenuRef = useRef(null);
 
   const getUserPermittedClasses = async () => {
+    if (!selectedStaff?.id) return;
     setUserPermittedClassesLoader(true);
     try {
       const resp = await getPermittedClasses(context?.profileId, context?.session, selectedStaff?.id);
-
       const fetched = resp?.results?.classes || [];
+      // Set the initial selected classes based on the fetched permitted classes
+      setSelectedClasses(fetched.filter(cls => cls.is_permitted).map(cls => cls.id));
       setUserPermittedClasses(fetched);
     } catch (err) {
-      console.error('Failed to fetch events:', err);
+      console.error('Failed to fetch permitted classes:', err);
     } finally {
       setUserPermittedClassesLoader(false);
     }
   };
 
-
-
-
-
   useEffect(() => {
-    // if (!context?.profileId || !context?.session) return;
     getUserPermittedClasses();
   }, [selectedStaff]);
 
-
-
-
+  // Click outside handler for the action menu
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (actionMenuRef.current && !actionMenuRef.current.contains(event.target) && openActionMenu !== null) {
+        setOpenActionMenu(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openActionMenu]);
 
 
   const getInitials = (name) => {
@@ -110,10 +848,10 @@ const StaffTable = ({
   // Filter and paginate data
   const filteredData = useMemo(() => {
     return staffs?.filter(staff =>
-      staff?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      staff?.subject?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      staff.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+      staff?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      staff?.designation?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      staff?.emails?.[0]?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
   }, [staffs, searchTerm]);
 
   const paginatedData = useMemo(() => {
@@ -123,22 +861,20 @@ const StaffTable = ({
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  // Export functions
+  // Export functions (kept for completeness, original logic remains)
   const convertToCSV = (data) => {
-    const headers = ['Name', 'Subject', 'Description', 'Date', 'Time', 'Total Students', 'Platform'];
+    // Simplified export headers to match staff data structure
+    const headers = ['Full Name', 'Designation', 'Email', 'Phone', 'Admin Access'];
     const csvContent = [
       headers.join(','),
       ...data.map(row => [
-        `"${row.name || 'N/A'}"`,
-        `"${row.subject?.name || 'N/A'}"`,
-        `"${row.description || 'N/A'}"`,
-        `"${row.date || 'N/A'}"`,
-        `"${row.time || 'N/A'}"`,
-        `"${row.students?.length || 0}"`,
-        `"${row.info?.platform || 'N/A'}"`
+        `"${row.full_name || 'N/A'}"`,
+        `"${row.designation?.name || 'N/A'}"`,
+        `"${row.emails?.[0]?.email || 'N/A'}"`,
+        `"${row.phones?.[0]?.phone || 'N/A'}"`,
+        `"${row.designation?.is_allowed_for_admin_access === '1' ? 'Yes' : 'No'}"`
       ].join(','))
     ].join('\n');
-
     return csvContent;
   };
 
@@ -153,8 +889,8 @@ const StaffTable = ({
   };
 
   const downloadExcel = () => {
-    // For Excel export, we'll create a simple HTML table format that Excel can read
-    const headers = ['Name', 'Subject', 'Description', 'Date', 'Time', 'Total Students', 'Platform'];
+    // Simplified Excel export for demonstration
+    const headers = ['Full Name', 'Designation', 'Email', 'Phone', 'Admin Access'];
     let htmlContent = '<table><tr>';
     headers.forEach(header => {
       htmlContent += `<th>${header}</th>`;
@@ -163,13 +899,11 @@ const StaffTable = ({
 
     filteredData.forEach(row => {
       htmlContent += '<tr>';
-      htmlContent += `<td>${row.name || 'N/A'}</td>`;
-      htmlContent += `<td>${row.subject?.name || 'N/A'}</td>`;
-      htmlContent += `<td>${row.description || 'N/A'}</td>`;
-      htmlContent += `<td>${row.date || 'N/A'}</td>`;
-      htmlContent += `<td>${row.time || 'N/A'}</td>`;
-      htmlContent += `<td>${row.students?.length || 0}</td>`;
-      htmlContent += `<td>${row.info?.platform || 'N/A'}</td>`;
+      htmlContent += `<td>${row.full_name || 'N/A'}</td>`;
+      htmlContent += `<td>${row.designation?.name || 'N/A'}</td>`;
+      htmlContent += `<td>${row.emails?.[0]?.email || 'N/A'}</td>`;
+      htmlContent += `<td>${row.phones?.[0]?.phone || 'N/A'}</td>`;
+      htmlContent += `<td>${row.designation?.is_allowed_for_admin_access === '1' ? 'Yes' : 'No'}</td>`;
       htmlContent += '</tr>';
     });
     htmlContent += '</table>';
@@ -192,13 +926,14 @@ const StaffTable = ({
     const range = [];
     const rangeWithDots = [];
 
+    // Logic to calculate page numbers... (kept from original code)
     for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
       range.push(i);
     }
 
     if (currentPage - delta > 2) {
       rangeWithDots.push(1, '...');
-    } else {
+    } else if (totalPages > 0) { // Push 1 only if there are pages
       rangeWithDots.push(1);
     }
 
@@ -206,58 +941,53 @@ const StaffTable = ({
 
     if (currentPage + delta < totalPages - 1) {
       rangeWithDots.push('...', totalPages);
-    } else if (totalPages > 1) {
+    } else if (totalPages > 1 && totalPages !== 1 && (rangeWithDots.length === 0 || rangeWithDots[rangeWithDots.length - 1] !== totalPages)) {
+      // Add totalPages only if not already present and totalPages > 1
       rangeWithDots.push(totalPages);
     }
 
-    return rangeWithDots;
+    // Filter out potential duplicates or dots when totalPages is small
+    const finalPages = [];
+    rangeWithDots.forEach((p) => {
+      if (p !== '...' && finalPages.includes(p)) return;
+      if (p === '...' && (finalPages[finalPages.length - 1] === '...' || finalPages.length === 0)) return;
+      if (typeof p === 'number' && p <= 0) return;
+      if (typeof p === 'number' && p > totalPages) return;
+      finalPages.push(p);
+    });
+
+    return finalPages.filter((p, i) => typeof p === 'number' || (i > 0 && typeof finalPages[i - 1] === 'number' && typeof finalPages[i + 1] === 'number'));
   };
-
-
 
   const handleMenuItemClick = (item, staff) => {
     // Close dropdown first
     setOpenActionMenu(null);
+    setSelectedStaff(staff);
 
-    // Switch logic instead of random states everywhere
     switch (item.label) {
       case "Remove From Client":
-        setRemoveFromClient(staff); // now you know *which* staff to remove
+        setRemoveFromClient(staff);
         break;
 
       case "Edit Class Permissions":
         setEditPermissionStaff(staff);
-        // setSelectedClasses(staff.assigned_classes || []);
-        setSelectedStaff(staff)
+        // Getting permitted classes is handled by the useEffect after setSelectedStaff
         break;
 
       case "Upload Signature":
-        setSignatureUrl(staff)
-        setSelectedStaff(staff)
-        // console.log("Open signature uploader for:", staff);
+        setSignatureUrl(staff);
         break;
 
       default:
         console.log("Unhandled action:", item.label);
     }
-
-    // Still fire whatever custom internal action you added
-    if (item.action) item.action(staff);
-  };
-
-
-  const handleToggleClass = (classId) => {
-    setSelectedClasses(prev =>
-      prev.includes(classId)
-        ? prev.filter(id => id !== classId)
-        : [...prev, classId]
-    );
   };
 
 
   const handleRemoveFromClient = async () => {
     setError(null);
     setSuccess(null);
+    if (!removeFromClient) return;
 
     try {
       const finalPayload = {
@@ -265,21 +995,18 @@ const StaffTable = ({
         user_account_id: context?.profileId,
         client_id: context?.session,
         platform: "web",
-        "id": selectedStaff?.id
-
+        "id": removeFromClient?.id // Use removeFromClient for the ID
       };
 
       const response = await removeFromClientApi(finalPayload);
-      console.log("response ===========", response);
 
       if (response?.success) {
-        setSuccess("Removed from client successfully.");
-        setRemoveFromClient(false)
+        setSuccess(`Removed ${removeFromClient.full_name} from client successfully.`);
+        setRemoveFromClient(null);
+        // You might want to refresh the staff list here
       } else {
         setError("Failed to remove from client.");
       }
-
-
     } catch (err) {
       console.error(err);
       setError("Something went wrong.");
@@ -287,78 +1014,75 @@ const StaffTable = ({
   };
 
 
-  const handleUpdatePermittedClassePermissions = async (permittedClasses) => {
+  const handleUpdatePermittedClassePermissions = async (updatedClasses) => {
     setError(null);
     setSuccess(null);
-    console.log('permittedClasses__', permittedClasses);
-
+    
     try {
-
-      const response = await editClassPermissionsApi(context?.profileId, context?.session, selectedStaff?.id, permittedClasses?.map(cls => cls?.id));
-
-      console.log("response ===========", response);
-
+      const permittedClassIds =updatedClasses?.map(cls => cls?.id)
+      
+      console.error(permittedClassIds);
+      const response = await editClassPermissionsApi(
+        context?.profileId,
+        context?.session,
+        selectedStaff?.id,
+        permittedClassIds
+      );
+      
+      console.error(response,'response==================');
       if (response?.success) {
-        setSuccess("Permission changed successfully.");
+        setSuccess(`Permissions for ${selectedStaff.full_name} updated successfully.`);
       } else {
-        setError("Failed to remove from client.");
+        setError("Failed to update class permissions.");
       }
-
 
     } catch (err) {
       console.error(err);
-      setError("Something went wrong.");
+      setError("Something went wrong during update.");
     } finally {
-
-      setUserPermittedClasses(false)
+      // Close the modal and trigger a refresh of the main table if needed
+      // setEditPermissionStaff(null);
+      setUserPermittedClasses(false);
+      // setSelectedStaff(null);
+      
       setIsPermittedClassPermissionUpdated(prev => !prev);
-
     }
   };
 
-
-
-
-
-
-
-
-  // ============================================================================  const [currentPage, setCurrentPage] = useState(1);
-
+  // ============================================================================ 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
       {/* Header with Search and Export */}
-      <div className="p-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+      <div className="p-4 sm:p-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            {/* <h3 className="text-xl font-bold text-gray-900">Staff Management</h3> */}
             <p className="text-sm text-gray-600 mt-1">
-              Showing {paginatedData.length} of {filteredData.length} records
+              Showing **{paginatedData.length}** of **{filteredData.length}** records
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             {/* Search */}
-            <div className="relative">
+            <div className="relative w-full sm:w-64">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
               <input
                 type="text"
-                placeholder="Search by staff name"
+                placeholder="Search by name, designation, or email"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setFilters(prev => ({ ...prev, name: e.target.value }));
                   setCurrentPage(1);
                 }}
-                className="pl-10 pr-4 py-2.5 w-full sm:w-64 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="pl-10 pr-4 py-2.5 w-full border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
               />
             </div>
 
             {/* Export Dropdown */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <button
                 onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 w-full bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
               >
                 <FaDownload className="text-sm" />
                 <span className="font-medium">Export</span>
@@ -368,17 +1092,17 @@ const StaffTable = ({
               {exportDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setExportDropdownOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden origin-top-right animate-in fade-in zoom-in-95">
                     <button
                       onClick={downloadCSV}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
                     >
                       <FaFileCsv className="text-green-600" />
                       <span>Export as CSV</span>
                     </button>
                     <button
                       onClick={downloadExcel}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
                     >
                       <FaFileExcel className="text-green-700" />
                       <span>Export as Excel</span>
@@ -391,173 +1115,145 @@ const StaffTable = ({
         </div>
       </div>
 
-      {/* Table */}
-      {isLoading ? <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {columns.map((head, i) => (
-                <th
-                  key={i}
-                  className="whitespace-nowrap px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                >
-                  {head}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {paginatedData.length === 0 ? (
+      {/* Table - Added overflow-x-auto to the wrapper */}
+      <div className="overflow-x-auto w-full">
+        {paginatedData.length === 0 ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
+              {/* Note: Replaced static image with an illustrative loading icon for better UX */}
+              <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span className="text-gray-700 text-sm font-medium">Loading Staff Data...</span>
+            </div>
+          </div>
+        ) : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
-                  <div className="flex flex-col items-center gap-2">
-                    <FaSearch className="text-3xl text-gray-300" />
-                    <p className="text-lg font-medium">No records found</p>
-                    <p className="text-sm">Try adjusting your search criteria</p>
-                  </div>
-                </td>
+                {columns.map((head, i) => (
+                  <th
+                    key={i}
+                    className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider last:text-right"
+                  >
+                    {head}
+                  </th>
+                ))}
               </tr>
-            ) : (
-              paginatedData.map((staff, index) => (
-                <tr
-                  key={staff.id || index}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer group"
-                >
-                  {/* Created By */}
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <div
-                      onClick={() => handleClassClick(staff)}
-
-                      className="flex items-center gap-3">
-                      {staff.image_url ? (
-                        <img
-                          src={staff.image_url}
-                          alt={staff.user?.full_name || staff.full_name}
-                          className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `https://placehold.co/40x40/E0E0E0/757575?text=${getInitials(staff.user?.name || staff.name)}`;
-                          }}
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm ring-2 ring-gray-100">
-                          {getInitials(staff.user?.full_name || staff.full_name)}
-                        </div>
-                      )}
-                      <div>
-                        <div className="text-sm font-semibold text-gray-900">
-                          {staff.user?.full_name || staff.full_name || "N/A"}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {staff.emails[0]?.email || "No email"}
-                        </div>
-                      </div>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {paginatedData.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
+                    <div className="flex flex-col items-center gap-2">
+                      <FaSearch className="text-3xl text-gray-300" />
+                      <p className="text-lg font-medium">No staff records found</p>
+                      <p className="text-sm">Try adjusting your search criteria</p>
                     </div>
                   </td>
-
-                  {/* Subject */}
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-blue-50 rounded-lg">
-                        <RiAdminFill className="text-blue-600 text-sm" />
+                </tr>
+              ) : (
+                paginatedData.map((staff, index) => (
+                  <tr
+                    key={staff.id || index}
+                    className="hover:bg-gray-50 transition-colors group"
+                  >
+                    {/* Created By - Staff Name/Email */}
+                    <td className="whitespace-nowrap px-4 py-4 min-w-[200px]">
+                      <div
+                        onClick={() => handleClassClick(staff)}
+                        className="flex items-center gap-3 cursor-pointer"
+                      >
+                        {staff.image_url ? (
+                          <img
+                            src={staff.image_url}
+                            alt={staff.full_name}
+                            className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = `https://placehold.co/40x40/E0E0E0/757575?text=${getInitials(staff.full_name)}`;
+                            }}
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm ring-2 ring-gray-100">
+                            {getInitials(staff.full_name)}
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900">
+                            {staff.full_name || "N/A"}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {staff.emails?.[0]?.email || "No email"}
+                          </div>
+                        </div>
                       </div>
-                      <div>
+                    </td>
+
+                    {/* Designation */}
+                    <td className="px-4 py-4 min-w-[150px]">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-blue-50 rounded-lg">
+                          <RiAdminFill className="text-blue-600 text-sm" />
+                        </div>
                         <div className="text-sm font-medium text-gray-900">
                           {staff.designation?.name || "N/A"}
                         </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Title & Description */}
-                  <td className="px-6 py-4 max-w-xs">
-                    <div className="text-sm font-semibold text-gray-900 truncate">
-                      {staff.class?.name || "N/A"}
-                    </div>
-                    <div className="mt-1">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-      ${staff.designation?.is_allowed_for_admin_access === '1'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                          }`}
-                      >
-                        {staff.designation?.is_allowed_for_admin_access === '1' ? 'Admin Access' : 'No Access'}
-                      </span>
-                    </div>
-                  </td>
+                    {/* Class & Admin Access */}
+                    <td className="px-4 py-4 max-w-xs min-w-[200px]">
+                      <div className="text-sm font-semibold text-gray-900 truncate">
+                        {staff.class?.name || "N/A Class"}
+                      </div>
+                      <div className="mt-1">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                              ${staff.designation?.is_allowed_for_admin_access === '1'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                            }`}
+                        >
+                          {staff.designation?.is_allowed_for_admin_access === '1' ? 'Admin Access' : 'No Access'}
+                        </span>
+                      </div>
+                    </td>
 
-                  {/* Timings */}
-                  <td className="whitespace-nowrap px-6 py-4">
+                    {/* Contact (Phone) */}
+                    <td className="whitespace-nowrap px-4 py-4 min-w-[120px]">
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        {staff.phones?.[0]?.phone || "N/A"}
+                      </div>
+                    </td>
 
-                    <div className="text-xs text-gray-500 flex items-center gap-1">
-                      {/* <span className="w-2 h-2 bg-green-400 rounded-full"></span> */}
-                      {staff.phones[0]?.phone || "N/A"}
-                    </div>
-                  </td>
+                    {/* Action Menu (Responsive Positioning) */}
+                    <td className="relative whitespace-nowrap px-4 py-4 text-right min-w-[100px]">
+                      <div ref={openActionMenu === staff.id ? actionMenuRef : null} className="inline-block">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Toggle the menu for the specific staff member
+                            setOpenActionMenu(openActionMenu === staff.id ? null : staff.id);
+                          }}
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
+                        >
+                          <MoreHorizontal className="w-5 h-5" />
+                        </button>
 
-          
-                  <td className="relative whitespace-nowrap px-6 py-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenActionMenu(openActionMenu === staff.id ? null : staff.id);
-                      }}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-medium hover:bg-indigo-200 transition-colors"
-                    >
-                      {staff.action === "view_details" && "Details"}
-                      {staff.action === "edit_class" && "Edit"}
-                      {staff.action === "manage_class" && "Manage"}
-                      {staff.action === "view_recording" && "Recording"}
-                      {!staff.action && "Action"}
-                      <MoreHorizontal className="w-3 h-3" />
-                    </button>
-
-                  </td>
-                  {openActionMenu === staff.id && (
-                    <>
-                      <div
-                        className="fixed inset-0 z-10"
-                        onClick={() => setOpenActionMenu(null)}
-                      />
-
-                      <div
-                        className="
-    absolute mt-2 
-    w-48 
-    bg-white border border-slate-200/60 
-    rounded-xl shadow-2xl z-20 py-2 
-    animate-in fade-in slide-in-from-top-2 duration-200
-  "
-                        style={{
-                          // Align to right by default, but shift left if needed
-                          right: 0,
-                          maxWidth: 'calc(100vw - 2rem)',
-                        }}
-                      >
                         {openActionMenu === staff.id && (
                           <>
-                            {/* Backdrop */}
-                            <div
-                              className="fixed inset-0 z-10"
-                              onClick={() => setOpenActionMenu(null)}
-                            />
-
-                            {/* Dropdown Menu */}
+                            {/* Dropdown Menu - POSITIONED ABSOLUTELY AND RESPONSIVELY */}
                             <div
                               className="
-        absolute right-0 mt-2 
-        w-48 
-        bg-white border border-slate-200/60 
-        rounded-xl shadow-2xl z-20 py-2 
-        animate-in fade-in slide-in-from-top-2 duration-200
-      "
-                              style={{
-                                // Prevent dropdown from going off-screen on the right
-                                right: 0,
-                                // On mobile, ensure it doesn't overflow viewport
-                                maxWidth: 'calc(100vw - 2rem)',
-                              }}
+                                absolute right-4 md:right-0 mt-2 
+                                w-48 
+                                bg-white border border-slate-200/60 
+                                rounded-xl shadow-2xl z-20 py-2 
+                                origin-top-right animate-in fade-in zoom-in-95
+                                whitespace-normal
+                              "
                             >
                               {menuItems.map((item, i) => {
                                 const Icon = item.icon;
@@ -565,13 +1261,13 @@ const StaffTable = ({
                                   <button
                                     key={i}
                                     className={`
-              text-left px-4 py-2.5 text-sm w-full flex items-center gap-2
-              transition-colors duration-150
-              ${item.variant === "danger"
+                                      text-left px-4 py-2.5 text-sm w-full flex items-center gap-2
+                                      transition-colors duration-150
+                                      ${item.variant === "danger"
                                         ? "text-red-600 hover:bg-red-50"
                                         : "text-slate-700 hover:bg-slate-100"
                                       }
-            `}
+                                  `}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleMenuItemClick(item, staff);
@@ -586,40 +1282,18 @@ const StaffTable = ({
                           </>
                         )}
                       </div>
-                    </>
-                  )}
-
-                  {/* <StaffActionMenu
-                  openActionMenu={openActionMenu}
-                  setOpenActionMenu={setOpenActionMenu}
-                  /> */}
-
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div> : (
-        <>
-          <div className="flex justify-center items-center">
-            <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
-              <img
-                src="/logo/logo.png"
-                alt="Loading"
-                className="w-6 h-6 animate-spin"
-              />
-              <span className="text-gray-700 text-sm font-medium">
-                Loading...
-              </span>
-            </div>
-          </div>
-        </>
-
-      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div className="p-4 sm:px-6 sm:py-4 bg-gray-50 border-t border-gray-200">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             {/* Items per page */}
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -630,7 +1304,7 @@ const StaffTable = ({
                   setItemsPerPage(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -671,7 +1345,7 @@ const StaffTable = ({
 
               <button
                 onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || totalPages === 0}
                 className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 <FaChevronRight className="w-4 h-4" />
@@ -680,52 +1354,62 @@ const StaffTable = ({
 
             {/* Page info */}
             <div className="text-sm text-gray-600">
-              Page {currentPage} of {totalPages}
+              Page **{currentPage}** of **{totalPages || 1}**
             </div>
           </div>
         </div>
       )}
 
 
+      {/* Modals/Dialogs */}
       {removeFromClient && (
         <ConfirmationDialogueBox
-          title="Remove From Client!"
-          description={`Are you sure you want to remove ${removeFromClient.full_name}?`}
+          title="Remove Staff From Client"
+          description={`Are you sure you want to remove **${removeFromClient.full_name}**? This action cannot be undone.`}
           onCancel={() => setRemoveFromClient(null)}
           onConfirm={handleRemoveFromClient}
         />
       )}
 
+      {/* Conditional rendering for EditClassPermissionsModal to prevent unnecessary re-renders */}
+      {editPermissionStaff && userPermittedClasses ? (
+        <EditClassPermissionsModal
+          isOpen={!!editPermissionStaff}
+          staff={editPermissionStaff}
+          permittedClasses={userPermittedClasses}
+          classes={[]} // Supply your list of all available classes here
+          selectedClasses={selectedClasses}
+          onToggleClass={setSelectedClasses} // Simplified setter for selected classes
+          onClose={() => setEditPermissionStaff(null)}
+          onSave={handleUpdatePermittedClassePermissions}
+          isLoading={isLoading}
+        />
+      ) : null}
 
-      {userPermittedClasses ? <EditClassPermissionsModal
-        isOpen={editPermissionStaff}
-        staff={editPermissionStaff}
-        permittedClasses={userPermittedClasses}
-        classes={[]} // supply your list of classes
-        selectedClasses={selectedClasses}
-        onToggleClass={handleToggleClass}
-        onClose={() => setEditPermissionStaff(null)}
-        onSave={handleUpdatePermittedClassePermissions}
-        success={success}
-      /> : null}
       <SignatureUploadModal
         selectedStaff={selectedStaff}
-        open={signatureUrl}
-        key="dfjk"
-        onClose={() => setIsModalOpen(false)}
-        label="Upload Signature"
-        uploadingKey={uploadingKey}
-        setSignatureUrl={setSignatureUrl}
-        // fileUrl={signatureUrl}
+        open={!!signatureUrl}
+        onClose={() => setSignatureUrl(false)}
+        label={`Upload Signature for ${selectedStaff?.full_name || 'Staff'}`}
+        // Removed `key="dfjk"` and `uploadingKey` as they were unused or not standard
+        // fileUrl={signatureUrl} // Pass staff's current signature URL here if available
         onUpload={async (file) => {
-          // your upload logic
+          console.log("Simulating signature upload for:", selectedStaff.full_name, file);
+          // Actual upload logic goes here
         }}
       />
 
 
+      {/* Success/Error Notifications */}
       {success && (
-        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow-md z-50">
-          <span>{success}</span>
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{success}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{error}</span>
         </div>
       )}
     </div>
