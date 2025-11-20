@@ -66,13 +66,13 @@ export async function addClass(profileId, sessionId, standardId, selectedTeacher
 
 
 
-export async function editClass(profileId, sessionId, standardId, selectedTeacher, section,selectedClass) {
+export async function editClass(profileId, sessionId, standardId, selectedTeacher, section, selectedClass) {
   //========================================================================================================
   const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
 
   let resolvedGuid = getCookie("guid");
   let resolvedUserId = getCookie("id");
-  console.log('resolvedGuid ---:', profileId, sessionId, standardId, selectedTeacher, section,selectedClass);
+  console.log('resolvedGuid ---:', profileId, sessionId, standardId, selectedTeacher, section, selectedClass);
   //========================================================================================================
   try {
     const response = await axios.post(`${API_BASE_URL_}/api`, {
@@ -101,6 +101,59 @@ export async function editClass(profileId, sessionId, standardId, selectedTeache
     });
     // console.log(' response.data;:',  response);
 
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
+  }
+}
+//========================================================================================================
+
+
+
+export async function arrangeRollNosApi(profileId, sessionId, classId) {
+  //========================================================================================================
+  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+  //========================================================================================================
+  try {
+    const response = await axios.post(`${API_BASE_URL_}/api`, {
+      "api": "classRoom.arrangeRollNos",
+      "guid": resolvedGuid,
+      "logged_in_user_account_id": resolvedUserId,
+      "user_account_id": profileId,
+      "client_id": sessionId,
+      "platform": "web",
+      "id": classId
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('API call error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to fetch dashboard data. Please try again.');
+  }
+}
+//========================================================================================================
+export async function removeAllStudentApi(profileId, sessionId, classId) {
+  //========================================================================================================
+  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+  //========================================================================================================
+  try {
+    const response = await axios.post(`${API_BASE_URL_}/api`, {
+      "api": "classRoom.removeAllStudents",
+      "guid": resolvedGuid,
+      "logged_in_user_account_id": resolvedUserId,
+      "user_account_id": profileId,
+      "client_id": sessionId,
+      "platform": "web",
+      "id": classId
+    });
+    
     return response.data;
   } catch (error) {
     console.error('API call error:', error);

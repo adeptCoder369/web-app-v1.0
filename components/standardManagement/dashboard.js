@@ -14,7 +14,6 @@ import {
     Eye,
     PieChart,
     School,
-    Menu,
     Download,
 
 
@@ -22,7 +21,7 @@ import {
 import { getSessionCache } from '../../utils/sessionCache';
 import StudentsModal from '../ui/tables/modernTable/component/StudentsModal';
 import { FaDownload, FaFileCsv, FaFileExcel, FaSortAlphaDown } from 'react-icons/fa';
-import { addClass, editClass } from '../../api/classes';
+import { addClass, arrangeRollNosApi, editClass, removeAllStudentApi } from '../../api/classes';
 import TooltipInfo from '../ui/tooltip/TooltipInfo';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 import { AddStandardModal } from './AddStandardClassModal'
@@ -32,6 +31,7 @@ import { QuickStats } from './QuickStats'
 import ConfirmationDialogueBox from '../ui/status/Confirmation';
 import { useRouter } from 'next/navigation';
 import { useStudent } from '../../context/studentContext';
+import SuccessStatus from '../ui/status/Success';
 
 // ==========================================================================================
 const breadcrumbs = [
@@ -89,6 +89,12 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
     // const [config, setConfig] = useState([]);
     const [selectedClassId, setSelectedClassId] = useState(null);
     const [section, setSection] = useState('');
+
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [apiResponse, setApiResponse] = useState('');
+
+    const [removeAllStudent, setRemoveAllStudent] = useState('');
+
     const standards = config?.standards || []
     const teachers = config?.users?.filter(
         (user) => user?.designation?.role?.is_teaching_staff === '1'
@@ -266,6 +272,8 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
 
     const handleConfirmationArrangeRole = async (classData) => {
+        setSelectedClass(classData)
+
         setConfirmArrangeRole(true)
 
 
@@ -276,6 +284,70 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
         setSelectedStudent(data)
         // Current page
         router.push('/dashboard/student-management');
+    };
+
+    const handleArrangeRollNoByName = async () => {
+        setLoading(true);
+
+        try {
+            const res = await arrangeRollNosApi(
+                context?.profileId,
+                context?.session,
+                selectedClass?.id,
+            );
+
+            if (res?.success) {
+                setConfirmArrangeRole(false);
+                setShowSuccess(true);
+                setApiResponse({
+                    userName: selectedClass?.name,
+                    message: res?.results?.message
+                });
+                setShowEditModal(false);
+                setSelectedItem(null);
+                setStateChanged(prev => !prev);
+            }
+        } catch (err) {
+            console.error("arrangeRollNosApi failed:", err);
+        } finally {
+            // the cleanup crew
+            setLoading(false);
+
+            // fade out success indicator after a moment
+            setTimeout(() => {
+                setShowSuccess(false);
+            }, 1500);
+        }
+    };
+
+
+
+    const handleRemoveAllStudent = async () => {
+        // setLoading(true);
+
+        try {
+            const res = await removeAllStudentApi(
+                context?.profileId,
+                context?.session,
+                selectedClass?.id,
+            );
+            console.log('---- res ----', res);
+
+            if (res?.success) {
+                setRemoveAllStudent(res?.results?.message)
+                setApiResponse({ message: res?.results?.message })
+            }
+        } catch (err) {
+            console.error("arrangeRollNosApi failed:", err);
+        } finally {
+            // the cleanup crew
+            setLoading(false);
+            setConfirmDelete(false)
+            // fade out success indicator after a moment
+            setTimeout(() => {
+                setShowSuccess(false);
+            }, 1500);
+        }
     };
 
     // ==================================================================
@@ -520,7 +592,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
                                                         </div>
                                                     </div>
-{/* 
+                                                    {/* 
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-sm text-gray-600">Exams: {standardData?.fees?.length}</span>
@@ -1072,7 +1144,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                 <ConfirmationDialogueBox
                     title="Remove All Students?"
                     description={`Are you sure you want to delete all students from the ${selectedClass?.name}?`}
-                    // onConfirm={handleLeadConversion}
+                    onConfirm={handleRemoveAllStudent}
                     onCancel={() => setConfirmDelete(false)} // Close modal if canceled
                 />
             )}
@@ -1080,10 +1152,37 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                 <ConfirmationDialogueBox
                     title="Arrange Roll No. By Names?"
                     description={`Are you sure you want to arrange the roll number by name ?`}
-                    // onConfirm={handleLeadConversion}
+                    onConfirm={handleArrangeRollNoByName}
                     onCancel={() => setConfirmArrangeRole(false)} // Close modal if canceled
                 />
             )}
+
+
+
+
+
+
+
+
+
+
+            {/* Status notifications */}
+            {showSuccess && (
+                <SuccessStatus message={apiResponse?.message} />
+            )}
+
+
+
+
+            {removeAllStudent && (
+                <SuccessStatus message={apiResponse?.message} />
+            )}
+
+
+
+
+
+
         </>
     );
 };
