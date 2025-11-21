@@ -13,7 +13,7 @@ const StandardsClassesManagement = ({ }) => {
         <>
             <Layout
                 stateChanged={reloadKey}
-            // reloadKey={reloadKey}
+            // reloadKey={reloadKey} 
             >
                 <StandardsClassesManagementDashboard 
                 setReloadKey={setReloadKey}

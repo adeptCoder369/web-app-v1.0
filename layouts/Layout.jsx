@@ -91,7 +91,10 @@ export default function Layout({ children, dashboardData, stateChanged }) {
       console.log('changed on stateChanged  --------------');
       load(newSession);   // ✅ reload only after updates
     }
-  }, [selectedSession?.clientId, stateChanged]);
+  }, [
+    selectedSession?.clientId,
+    stateChanged
+  ]);
 
 
   const reloadDashboard = async () => {
@@ -145,7 +148,7 @@ export default function Layout({ children, dashboardData, stateChanged }) {
           ) : (
             React.Children.map(children, child =>
               React.isValidElement(child)
-    ? React.cloneElement(child, { dashboardConfig, reloadDashboard })
+                ? React.cloneElement(child, { dashboardConfig, reloadDashboard })
                 : child
             )
           )}

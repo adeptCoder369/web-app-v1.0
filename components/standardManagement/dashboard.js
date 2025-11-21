@@ -20,19 +20,17 @@ import {
 } from 'lucide-react';
 import { getSessionCache } from '../../utils/sessionCache';
 import StudentsModal from '../ui/tables/modernTable/component/StudentsModal';
-import { FaDownload, FaFileCsv, FaFileExcel, FaSortAlphaDown } from 'react-icons/fa';
+import { FaDownload, FaFileExcel, FaSortAlphaDown } from 'react-icons/fa';
 import { addClass, arrangeRollNosApi, editClass, removeAllStudentApi } from '../../api/classes';
 import TooltipInfo from '../ui/tooltip/TooltipInfo';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 import { AddStandardModal } from './AddStandardClassModal'
 import { EditClassModal } from './EditClassModal'
 import { QuickStats } from './QuickStats'
-
 import ConfirmationDialogueBox from '../ui/status/Confirmation';
 import { useRouter } from 'next/navigation';
 import { useStudent } from '../../context/studentContext';
 import SuccessStatus from '../ui/status/Success';
-
 // ==========================================================================================
 const breadcrumbs = [
     { label: "Home", href: "/" },
@@ -40,38 +38,26 @@ const breadcrumbs = [
     { label: "Manage Standards & Classes" },
 ];
 // ==========================================================================================
-
-
 const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard, setReloadKey }) => {
-
+    // ---------------------------------------------------------
     const router = useRouter()
-
     const { selectedStudent, setSelectedStudent } = useStudent()
-
-
-
-
-    const [showModal, setShowModal] = useState(false);
-
-    const [confirmDelete, setConfirmDelete] = useState(false)
-    const [confirmArrangeRole, setConfirmArrangeRole] = useState(false)
-
-    const [openDropdownId, setOpenDropdownId] = useState(null);
-    const [subOpenId, setSubOpenId] = useState(null);
-    useEffect(() => {
-        if (!dashboardConfig) {
-            reloadDashboard(); // forces Layout to fetch fresh config
-        }
-    }, []);
     const context = getSessionCache("dashboardContext");
     const config = getSessionCache("dashboardConfig");
+    // ---------------------------------------------------------
+    const [showModal, setShowModal] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [confirmArrangeRole, setConfirmArrangeRole] = useState(false)
+    const [openDropdownId, setOpenDropdownId] = useState(null);
+    const [subOpenId, setSubOpenId] = useState(null);
 
-
-    // const totalClasses = standard.reduce((sum, std) => sum + (std.classes?.length || 0), 0);
+    useEffect(() => {
+        if (!dashboardConfig) {
+            reloadDashboard()
+        }
+    }, []);
     // ==================================================================
     const [stateChanged, setStateChanged] = useState(false);
-    // const [reloadKey, setReloadKey] = useState(0);
-
     const [loading, setLoading] = useState(false);
     const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
     const [selectedStandard, setSelectedStandard] = useState('all');
@@ -83,16 +69,11 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
     const [modalType, setModalType] = useState('standard'); // 'standard' or 'class'
     const [selectedItem, setSelectedItem] = useState(null);
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
-
-
     const [selectedClass, setSelectedClass] = useState(null);
-    // const [config, setConfig] = useState([]);
     const [selectedClassId, setSelectedClassId] = useState(null);
     const [section, setSection] = useState('');
-
     const [showSuccess, setShowSuccess] = useState(false);
     const [apiResponse, setApiResponse] = useState('');
-
     const [removeAllStudent, setRemoveAllStudent] = useState('');
 
     const standards = config?.standards || []
@@ -233,7 +214,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
         setSelectedItem(null);
 
         if (res?.success) {
-            setStateChanged(prev => !prev); // 🔄 flip boolean to trigger Layout reload
+            setReloadKey(k => k + 1); // reliable signal
         }
     };
 
@@ -608,7 +589,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                             </div>
 
                                             {/* Classes Table */}
-                                            {expandedStandards.has(standardData.id) && (
+                                            {expandedStandards?.has(standardData.id) && (
                                                 <div className="bg-accent overflow-x-auto">
                                                     <table className="min-w-full divide-y divide-gray-200">
                                                         <thead className="bg-gray-50">
@@ -1093,6 +1074,8 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                         {/* Add Modal */}
                         {showAddModal && (
                             <AddStandardModal
+                                setSelectedTeacher={setSelectedTeacher}
+                                setSection={setSection}
                                 modalType={modalType}
                                 teachers={teachers}
                                 handleAddClass={handleAddClass}

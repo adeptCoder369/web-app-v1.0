@@ -5,7 +5,9 @@ export const AddStandardModal = ({
     loading,
     setShowAddModal,
     section,
-    teachers
+    teachers,
+    setSection,
+    setSelectedTeacher
 }) => {
 
 
