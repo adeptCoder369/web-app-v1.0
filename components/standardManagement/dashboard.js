@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useMemo, useEffect } from 'react';
+
 import {
     Users,
     Plus,
@@ -18,6 +19,7 @@ import {
 
 
 } from 'lucide-react';
+
 import { getSessionCache } from '../../utils/sessionCache';
 import StudentsModal from '../ui/tables/modernTable/component/StudentsModal';
 import { FaDownload, FaFileExcel, FaSortAlphaDown } from 'react-icons/fa';
@@ -31,12 +33,15 @@ import ConfirmationDialogueBox from '../ui/status/Confirmation';
 import { useRouter } from 'next/navigation';
 import { useStudent } from '../../context/studentContext';
 import SuccessStatus from '../ui/status/Success';
+import { getCookie } from "cookies-next";
+
 // ==========================================================================================
 const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
     { label: "Manage Standards & Classes" },
 ];
+
 // ==========================================================================================
 const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard, setReloadKey }) => {
     // ---------------------------------------------------------
@@ -329,6 +334,139 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                 setShowSuccess(false);
             }, 1500);
         }
+    };
+
+
+
+
+
+
+    const getPortalParams = () => {
+        let resolvedGuid = getCookie("guid");
+        let resolvedUserId = getCookie("id");
+
+
+        return {
+            client_id: context?.session,
+            guid: resolvedGuid,
+            logged_in_user_account_id: resolvedUserId,
+            user_account_id: context?.profileId,
+        };
+    };
+
+
+
+    const downloadRoutes = {
+        folder: classId => {
+            const portal = getPortalParams();
+
+            return `https://portal.infoeight.com/class/folder`
+                + `?client_id=${portal.client_id}`
+                + `&guid=${portal.guid}`
+                + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+                + `&user_account_id=${portal.user_account_id}`
+                + `&id=${classId}`;
+        },
+
+        idCard: classId => {
+            const portal = getPortalParams();
+
+            return `https://portal.infoeight.com/class/id-card`
+                + `?client_id=${portal.client_id}`
+                + `&guid=${portal.guid}`
+                + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+                + `&user_account_id=${portal.user_account_id}`
+                + `&id=${classId}`;
+        },
+
+        admitCard: classId => {
+            const portal = getPortalParams();
+
+            return `https://portal.infoeight.com/class/id-card`
+                + `?client_id=${portal.client_id}`
+                + `&guid=${portal.guid}`
+                + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+                + `&user_account_id=${portal.user_account_id}`
+                + `&id=${classId}`;
+        },
+
+
+
+        studentData: classId => {
+            const portal = getPortalParams();
+
+            return `https://portal.infoeight.com/class/student-data`
+                + `?client_id=${portal.client_id}`
+                + `&guid=${portal.guid}`
+                + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+                + `&user_account_id=${portal.user_account_id}`
+                + `&id=${classId}`;
+        },
+
+
+        ptmSheet: classId => {
+            const portal = getPortalParams();
+
+            return `https://portal.infoeight.com/class/download-ptm-sheet`
+                + `?client_id=${portal.client_id}`
+                + `&guid=${portal.guid}`
+                + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+                + `&user_account_id=${portal.user_account_id}`
+                + `&class_id=${classId}`;
+        },
+
+
+        studentDetails: classId => {
+            const portal = getPortalParams();
+
+            return `https://portal.infoeight.com/class/student-data`
+                + `?client_id=${portal.client_id}`
+                + `&guid=${portal.guid}`
+                + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+                + `&user_account_id=${portal.user_account_id}`
+                + `&id=${classId}`;
+        },
+
+
+
+        proofReadingSoft: classId => {
+            const p = getPortalParams();
+            return `https://portal.infoeight.com/class/proof-reading`
+                + `?client_id=${p.client_id}`
+                + `&guid=${p.guid}`
+                + `&logged_in_user_account_id=${p.logged_in_user_account_id}`
+                + `&user_account_id=${p.user_account_id}`
+                + `&id=${classId}`
+                + `&format=SOFT COPY`;
+        },
+
+        proofReadingHard: classId => {
+            const p = getPortalParams();
+            return `https://portal.infoeight.com/class/proof-reading`
+                + `?client_id=${p.client_id}`
+                + `&guid=${p.guid}`
+                + `&logged_in_user_account_id=${p.logged_in_user_account_id}`
+                + `&user_account_id=${p.user_account_id}`
+                + `&id=${classId}`
+                + `&format=HARD COPY`;
+        }
+    };
+
+    const handleDownload = (classData, action) => {
+
+        console.log('classData, action=======', classData, action);
+
+
+        const classId = classData.id;
+
+        const routeFn = downloadRoutes[action];
+        if (!routeFn) {
+            console.warn("Unknown download action:", action);
+            return;
+        }
+
+        const url = routeFn(classId);
+        window.open(url, "_blank");
     };
 
     // ==================================================================
@@ -702,8 +840,9 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                             {/* PDF */}
                                                                                             <li>
                                                                                                 <button
-                                                                                                    onClick={() => handleDownload(classData, "pdf")}
-                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                    onClick={() => handleDownload(classData, "folder")}
+
+                                                                                                    className="cursor-pointer w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                 >
                                                                                                     Folder
                                                                                                 </button>
@@ -712,7 +851,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                             {/* Excel */}
                                                                                             <li>
                                                                                                 <button
-                                                                                                    onClick={() => handleDownload(classData, "excel")}
+                                                                                                    onClick={() => handleDownload(classData, "idCard")}
                                                                                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                 >
                                                                                                     Id Card
@@ -722,7 +861,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                             {/* CSV */}
                                                                                             <li>
                                                                                                 <button
-                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    onClick={() => handleDownload(classData, "admitCard")}
                                                                                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                 >
                                                                                                     Admit Card
@@ -730,7 +869,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                             </li>
                                                                                             <li>
                                                                                                 <button
-                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    onClick={() => handleDownload(classData, "ptmSheet")}
                                                                                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                 >
                                                                                                     PTM Sheet
@@ -738,7 +877,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                             </li>
                                                                                             <li>
                                                                                                 <button
-                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    onClick={() => handleDownload(classData, "studentDetails")}
                                                                                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                 >
                                                                                                     Student Details
@@ -773,7 +912,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                                     <ul className="ml-4 mt-1 flex flex-col border-l border-gray-200">
                                                                                                         <li>
                                                                                                             <button
-                                                                                                                onClick={() => handleDownload(classData, "json")}
+                                                                                                                onClick={() => handleDownload(classData, "proofReadingSoft")}
                                                                                                                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                             >
                                                                                                                 Soft Copy(.xlsx)
@@ -781,7 +920,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                                         </li>
                                                                                                         <li>
                                                                                                             <button
-                                                                                                                onClick={() => handleDownload(classData, "txt")}
+                                                                                                                onClick={() => handleDownload(classData, "proofReadingHard")}
                                                                                                                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                             >
                                                                                                                 Hard Copy(.pdf)
@@ -1169,6 +1308,6 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
         </>
     );
 };
-// ==================================================================
+// ================================================
 export default StandardsClassesManagementDashboard;
-// ==================================================================
+// ================================================

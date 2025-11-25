@@ -170,8 +170,8 @@ const Navbar = ({
   return (
     <>
       <header className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 shadow-2xl z-50 w-full border-b border-white/10 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
-          {/* Left Section */}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-4">
+
           <div className="flex items-center gap-4">
             {!sidebarOpen && (
               <button

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import Navbar from '../components/Navbar';
 import ConfirmationDialogueBox from '../components/ui/status/Confirmation';
@@ -9,101 +9,62 @@ import { getSessionCache, setSessionCache } from '../utils/sessionCache';
 import { getUserDashboardData } from '../api/dashboard';
 import Loader from '../components/ui/status/Loader';
 
-// ==============================================================================
-
 export default function Layout({ children, dashboardData, stateChanged }) {
 
   const initialConfig = getSessionCache("dashboardConfig");
-  // console.log('---- stateChanged', initialConfig);
   const initialContext = getSessionCache("dashboardContext");
 
   const [dashboardConfig, setDashboardConfig] = useState(initialConfig);
   const [userProfile, setUserProfile] = useState(initialConfig?.profile || null);
 
-  const [loadingProfile, setLoadingProfile] = useState(true);
   const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showIdleDialogue, setShowIdleDialogue] = useState(false);
-  const [error, setError] = useState(null);
   const [selectedSession, setSelectedSession] = useState(initialContext?.session || "");
 
-  // const mounted = useRef(true);
-  const ctx = getSessionCache("dashboardContext");
-  // console.log('--------selectedSession==== ', selectedSession);
+  const didMount = useRef(false);
 
-  // --------------------------------------------------------------------------
   async function load(sessionOverride) {
     setLoadingDashboard(true);
-    setError(null);
 
     try {
-      const activeSession = sessionOverride || ctx?.session;
-      // console.log('data ____________', activeSession);
-
-      const data = await getUserDashboardData(ctx?.profileId, activeSession);
-      // console.log('data ____________', data?.success);
+      const activeSession = sessionOverride || initialContext?.session;
+      const data = await getUserDashboardData(initialContext?.profileId, activeSession);
 
       if (data?.results) {
         setSessionCache("dashboardConfig", data.results);
-        setDashboardConfig(data.results); // reactive update
+        setDashboardConfig(data.results);
       }
+
     } catch (err) {
-      if (mounted.current) setError(err);
       console.error("Failed to load dashboard data", err);
     } finally {
-      // if (mounted.current) 
-      setLoadingDashboard(false); // ✅ always end loader
+      setLoadingDashboard(false);
     }
   }
 
-  // --------------------------------------------------------------------------
-  // First load on mount
-  // useEffect(() => {
-  //   // const ctx = getSessionCache("dashboardContext");
-  //   console.log('--------- again ===== ',selectedSession?.clientId,ctx?.session);
-
-  //   if (ctx?.session !==selectedSession?.clientId) {
-  //     load(ctx.session); // ✅ initial load only
-  //   }
-  // }, []); // empty dependency array!
-
-
-  // --------------------------------------------------------------------------
-  const didMount = useRef(false);
-
   useEffect(() => {
     if (!didMount.current) {
-      // ✅ skip the very first render
       didMount.current = true;
       return;
     }
 
-    const currentContext = getSessionCache("dashboardContext");
-    const newSession = selectedSession?.clientId || currentContext?.session;
+    const context = getSessionCache("dashboardContext");
+    const newSession = selectedSession?.clientId || context?.session;
+
     if (!newSession) return;
 
-    if (currentContext?.session !== newSession) {
-      console.log('changed on session chaned --------------');
-
-      setSessionCache("dashboardContext", { ...currentContext, session: newSession });
+    if (context?.session !== newSession) {
+      setSessionCache("dashboardContext", { ...context, session: newSession });
       load(newSession);
     } else if (stateChanged) {
-      console.log('changed on stateChanged  --------------');
-      load(newSession);   // ✅ reload only after updates
+      load(newSession);
     }
-  }, [
-    selectedSession?.clientId,
-    stateChanged
-  ]);
+  }, [selectedSession?.clientId, stateChanged]);
 
-
-  const reloadDashboard = async () => {
-    await load(selectedSession); // your existing load function
-  };
-  // console.log('====== stateChanged ...  --------------', stateChanged);
-  // --------------------------------------------------------------------------
   return (
-    <div className="flex w-full h-screen overflow-hidden">
+    <div className="flex w-full min-h-screen bg-gray-50">
+
       <IdleTimeContainer
         onIdle={() => {
           localStorage.removeItem('token');
@@ -120,18 +81,24 @@ export default function Layout({ children, dashboardData, stateChanged }) {
       )}
 
       {/* Sidebar */}
-      <div className={`bg-primary text-white transition-all duration-300`}>
-        {sidebarOpen && (
-          <Sidebar
-            dashboardData={dashboardData}
-            sidebarOpen={sidebarOpen}
-            config={dashboardConfig} // ✅ use live config
-            setSidebarOpen={setSidebarOpen}
-          />
-        )}
+      <div
+        className={`
+          ${sidebarOpen ? "w-64" : "w-0"}
+          bg-primary text-white transition-all duration-300
+          flex-shrink-0 overflow-hidden
+        `}
+      >
+        <Sidebar
+          dashboardData={dashboardData}
+          sidebarOpen={sidebarOpen}
+          config={dashboardConfig}
+          setSidebarOpen={setSidebarOpen}
+        />
       </div>
 
-      <div className="flex-1 flex flex-col">
+      {/* Main area */}
+      <div className="flex-1 flex flex-col min-h-screen">
+
         <Navbar
           currentSession={dashboardConfig?.year}
           schoolSessions={dashboardConfig?.school?.sessions}
@@ -142,17 +109,19 @@ export default function Layout({ children, dashboardData, stateChanged }) {
           setSidebarOpen={setSidebarOpen}
         />
 
-        <main className="flex-1 bg-muted overflow-y-auto">
+        {/* Scrollable content area */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-muted">
           {loadingDashboard ? (
             <Loader />
           ) : (
             React.Children.map(children, child =>
               React.isValidElement(child)
-                ? React.cloneElement(child, { dashboardConfig, reloadDashboard })
+                ? React.cloneElement(child, { dashboardConfig })
                 : child
             )
           )}
         </main>
+
       </div>
     </div>
   );

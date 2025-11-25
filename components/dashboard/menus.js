@@ -177,67 +177,35 @@ const DashboardMenus = () => {
     <Layout
       setSelectedSession={setSelectedSession}
     >
-      {!loading ? <div className="flex h-screen bg-gray-50">
+      {!loading ?
+        <div className="flex min-h-screen bg-gray-50">
 
-        <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
-
-          <main className="flex-1 overflow-y-auto p-6">
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    </div>
-                    <div className={`${stat.color}`}>
-                      {stat.icon}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div> */}
-
+          <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
 
             <main className="flex-1 overflow-y-auto p-6">
+
               <DashboardStatsSection stats={stats} />
-              {/* Rest of your dashboard */}
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                <div className="lg:col-span-2">
+
+                  <QuickActions />
+                  <FeeCollectionChart />
+
+                </div>
+
+                <div className="space-y-6">
+                  <UpcomingEvent context={Context} />
+                  <TodaySummary />
+                </div>
+              </div>
+
             </main>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
 
-
-
-
-                <QuickActions />
-
-                {/* -================= Chart/Analytics -========================= */}
-                <FeeCollectionChart />
-              </div>
-
-              {/* Sidebar Content */}
-              <div className="space-y-6">
-
-                <UpcomingEvent
-                  context={Context}
-                />
-                <TodaySummary />
-              </div>
-            </div>
-          </main>
+          </div>
         </div>
 
-        {/* Mobile Overlay */}
-        {
-          sidebarOpen && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            ></div>
-          )
-        }
-      </div > : <Loader />}
+        : <Loader />}
 
     </Layout>
   );
