@@ -34,6 +34,8 @@ import { useRouter } from 'next/navigation';
 import { useStudent } from '../../context/studentContext';
 import SuccessStatus from '../ui/status/Success';
 import { getCookie } from "cookies-next";
+import { addStandard } from '../../api/standards';
+import ErrorStatus from '../ui/status/Error';
 
 // ==========================================================================================
 const breadcrumbs = [
@@ -62,6 +64,15 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
         }
     }, []);
     // ==================================================================
+
+    const [addStandardForm, setAddStandardForm] = useState({
+        standardName: '',
+        standardLevelId: '',
+        sessionStartDate: '',
+        sessionEndDate: '',
+    })
+
+
     const [stateChanged, setStateChanged] = useState(false);
     const [loading, setLoading] = useState(false);
     const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
@@ -78,6 +89,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
     const [selectedClassId, setSelectedClassId] = useState(null);
     const [section, setSection] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
+    const [showError, setShowError] = useState('');
     const [apiResponse, setApiResponse] = useState('');
     const [removeAllStudent, setRemoveAllStudent] = useState('');
 
@@ -202,6 +214,57 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
 
 
+    // ...existing code...
+    const handleAddStandard = async () => {
+        console.log('addStandardForm', addStandardForm);
+
+        const payload = {
+            name: addStandardForm?.standardName,
+            session_start_date: addStandardForm?.sessionStartDate,
+            session_end_date: addStandardForm?.sessionEndDate,
+            standard_level_id: addStandardForm?.standardLevelId
+        };
+
+        setLoading(true);
+
+        try {
+            const res = await addStandard(
+                context?.profileId,
+                context?.session,
+                payload
+            );
+
+            console.log('res_+___', res);
+
+            if (res?.success) {
+                setShowSuccess(true);
+                setReloadKey(k => k + 1);
+                setShowEditModal(false);        // close only on success
+                setSelectedItem(null);
+                setApiResponse(res?.results?.message || res?.message || 'Added successfully');
+
+                // auto-close success indicator
+                setTimeout(() => setShowSuccess(false), 1500);
+            } else {
+                const msg = res?.results?.message || res?.message || 'Failed to add standard. Please try again.';
+                setApiResponse(msg);
+                setShowError(true);             // leave modal open so user can retry/correct
+                // optional: auto-hide error after a while
+                setTimeout(() => setShowError(false), 6000);
+            }
+        } catch (err) {
+            console.error("Add Standard Error:", err);
+            const msg = err?.response?.data?.message || err?.message || 'Something went wrong while saving. Try again.';
+            setApiResponse(msg);
+            setShowError(true);               // show the ErrorStatus
+            // optional: auto-hide error after a while
+            setTimeout(() => setShowError(false), 6000);
+        } finally {
+            setLoading(false);
+            // moved modal close to success branch; do not close modal automatically on error
+        }
+    };
+    // ...existing code...;
 
 
     // After class add
@@ -1090,13 +1153,18 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                         {/* Add Modal */}
                         {showAddModal && (
                             <AddStandardModal
+                                context={context}
+                                config={config}
                                 setSelectedTeacher={setSelectedTeacher}
                                 setSection={setSection}
                                 modalType={modalType}
                                 teachers={teachers}
                                 handleAddClass={handleAddClass}
+                                handleAddStandard={handleAddStandard}
                                 loading={loading}
                                 setShowAddModal={setShowAddModal}
+                                setAddStandardForm={setAddStandardForm}
+                                addStandardForm={addStandardForm}
                             />
                         )}
 
@@ -1180,6 +1248,9 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
 
 
+            {showError && (
+                <ErrorStatus message={apiResponse} />
+            )}
 
 
         </>

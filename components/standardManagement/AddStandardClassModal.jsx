@@ -1,3 +1,5 @@
+import { getStandardLevelList } from "../../api/standards";
+import { useEffect, useState } from "react";
 
 export const AddStandardModal = ({
     modalType,
@@ -7,10 +9,34 @@ export const AddStandardModal = ({
     section,
     teachers,
     setSection,
-    setSelectedTeacher
+    setSelectedTeacher,
+    handleAddStandard,
+    context,
+    setAddStandardForm,
+    addStandardForm
 }) => {
 
+    const [standardLevel, setStandardLevel] = useState([]);
+    const fetchLevels = async () => {
+        try {
+            const resp = await getStandardLevelList(
+                context?.profileId,
+                context?.session,
 
+            );
+            setStandardLevel(resp?.results?.standard_levels || []);
+        } catch (err) {
+            console.error("Failed to load standard levels:", err);
+            setStandardLevel([]);
+        }
+    };
+    useEffect(() => {
+
+
+        fetchLevels();
+    }, [modalType]);
+
+    console.log('_________________', modalType);
 
     const isClass = modalType === "class";
 
@@ -19,7 +45,7 @@ export const AddStandardModal = ({
             <div className="fixed inset-0   backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
                 <div className="bg-white border border-accent ring-2 rounded-lg p-6 w-full max-w-md">
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                        Add New Standard
+                        {modalType === "class" ? " Add New Class" : " Add New Standard"}
                     </h2>
 
                     <form className="space-y-4">
@@ -30,7 +56,14 @@ export const AddStandardModal = ({
                                         Standard Name
                                     </label>
                                     <input
+                                        value={addStandardForm?.standardName}
+                                        id={addStandardForm?.standardName}
                                         type="text"
+                                        onChange={(e) => setAddStandardForm({
+                                            ...addStandardForm,
+                                            standardName: e.target.value
+                                        })}
+
                                         placeholder="e.g., 11th Standard"
                                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
@@ -42,6 +75,14 @@ export const AddStandardModal = ({
                                         Start Session
                                     </label>
                                     <input
+                                        id={addStandardForm?.sessionStartDate}
+
+                                        value={addStandardForm?.sessionStartDate}
+                                        onChange={(e) => setAddStandardForm({
+                                            ...addStandardForm,
+                                            sessionStartDate: e.target.value
+                                        })}
+
                                         type="date"
                                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
@@ -53,6 +94,15 @@ export const AddStandardModal = ({
                                         End Session
                                     </label>
                                     <input
+                                        id={addStandardForm?.sessionEndDate}
+
+                                        value={addStandardForm?.sessionEndDate}
+                                        onChange={(e) => setAddStandardForm({
+                                            ...addStandardForm,
+                                            sessionEndDate: e.target.value
+                                        })}
+
+
                                         type="date"
                                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
@@ -65,13 +115,23 @@ export const AddStandardModal = ({
                                     </label>
                                     <select
                                         className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        onChange={(e) => setAddStandardForm({
+                                            ...addStandardForm,
+                                            standardLevelId: e.target.value
+                                        })}
                                     >
-                                        <option value="">Select Level</option>
-                                        <option value="primary">Primary</option>
-                                        <option value="secondary">Secondary</option>
-                                        <option value="higher_secondary">Higher Secondary</option>
-                                        <option value="college">College</option>
+                                        <option
+                                            value={addStandardForm?.standardLevelId}
+                                        >
+                                            Select Level
+                                        </option>
+                                        {standardLevel?.map(level => (
+                                            <option key={level.id} value={level.id}>
+                                                {level.name}({level?.board?.name || 'No Board'})
+                                            </option>
+                                        ))}
                                     </select>
+
                                 </div>
                             </>
                         ) : (
@@ -122,7 +182,7 @@ export const AddStandardModal = ({
                             Cancel
                         </button>
                         <button
-                            onClick={handleAddClass}
+                            onClick={modalType === 'class' ? handleAddClass : handleAddStandard}
                             className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                         >
                             {!loading

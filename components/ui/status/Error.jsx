@@ -33,7 +33,7 @@ const ErrorStatus = ({ user, message }) => {
                 </h2>
 
                 <p className="text-secondary-text text-sm mb-6" style={{ fontSize: 'var(--text-lg)' }}>
-                    {message?.message}
+                    {message?.message || message || 'An unexpected error has occurred. Please try again later.'}
                 </p>
 
                 <button
