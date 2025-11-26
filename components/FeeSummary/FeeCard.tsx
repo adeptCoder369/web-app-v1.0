@@ -231,7 +231,7 @@ export default function FeesWithSummary({ fees, isPaid, context, config, selecte
     try {
       // Actual API call
       console.log('============================', selectedFees, context?.profileId, context?.session, payload);
-      // const resp = await markStudentFee(context?.profileId, context?.session, payload);
+      const resp = await markStudentFee(context?.profileId, context?.session, payload);
       console.log('resp==================', resp);
       if (resp?.data?.success) {
         setShowSuccess(true)
