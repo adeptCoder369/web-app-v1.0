@@ -60,7 +60,7 @@ export default function FeeSection({
             />
 
           ) : (
-            <p className="text-center text-gray-500">No due fees 🎉</p>
+            <p className="text-center text-gray-500">No due fees </p>
           )
         )}
 
