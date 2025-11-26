@@ -15,7 +15,7 @@ import HouseCreate from './houseCreateForm';
 import HouseEdit from './houseEditForm';
 import { getSessionCache } from '../../utils/sessionCache';
 
-const HouseManagement = ({ houses ,setIsHouseUpdatedOrCreated}) => {
+const HouseManagement = ({ houses, setIsHouseUpdatedOrCreated }) => {
   const context = getSessionCache('dashboardContext');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -249,6 +249,20 @@ const HouseManagement = ({ houses ,setIsHouseUpdatedOrCreated}) => {
           </div>
         )}
       </div>
+
+
+      {categoryToDelete && (
+        <ConfirmationDialogueBox
+          title="Delete Category?"
+          description={`Are you sure you want to delete "${categoryToDelete.name}"?`}
+          onConfirm={confirmDelete}
+          onCancel={() => setCategoryToDelete(null)}
+        />
+      )}
+
+
+
+
 
       {/* Modals */}
       <HouseCreate

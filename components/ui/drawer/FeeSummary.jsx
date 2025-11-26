@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 import { FaXmark } from "react-icons/fa6";
 import TooltipInfo from '../tooltip/TooltipInfo';
-import FeeSection from '../../../components/FeeSummary/FeeSection';
+import FeeSection from '../../FeeSummary/FeeSection';
 import { useStudentFees } from '../../../controllers/fees';
 import { ReceiptIndianRupee } from 'lucide-react';
 import Loader from '../status/Loader';
+import { getStudentFee } from '../../../api/fees';
 
 
 
@@ -17,26 +18,51 @@ const FeeSummaryDrawer = ({
     cookyId,
     school
 }) => {
-    const { getStudentFees, studetnFeesData, isLoading } = useStudentFees();
-
-
-    useEffect(() => {
-        getStudentFees(
-            studentId,
-            profile,
-            session,
-            cookyGuid,
-            cookyId,
-            school
-        );
-        // console.log('chala  -------------',);
-
-    }, [studentId]);
-    // console.log('changed studentId -----------', studetnFeesData, studentId);
 
 
     const [isOpen, setIsOpen] = useState(false);
+    const [paidFee, setPaidFee] = useState([]);
+    const [dueFee, setDueFee] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const toggleDrawer = () => setIsOpen(!isOpen);
+
+
+
+
+
+    const fetchStudentFees = async () => {
+        setIsLoading(true);
+        try {
+            // console.log('studentId, profile,session =======-',studentId, profile,session  );
+            const resp = await getStudentFee(studentId, profile, session);
+            const fetched = resp?.data?.results || [];
+
+            setPaidFee(fetched?.paid);
+            setDueFee(fetched?.dues);
+        } catch (err) {
+            console.error('Failed to fetch events:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
+
+
+
+    useEffect(() => {
+        fetchStudentFees();
+    }, [studentId]);
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -93,15 +119,20 @@ const FeeSummaryDrawer = ({
                     </div>
 
                 </div>
-                {
+                <FeeSection
+                    isLoading={isLoading}
+                    paidFees={paidFee}
+                    dueFees={dueFee}
+                    studentId={studentId}
+                />
+                {/* {
 
-                    isLoading ? <FeeSection data={studetnFeesData} />
+                    isLoading ? <FeeSection data={dueFee} />
                         : <>
                             <div className='bg-accent'>
                                 <Loader />
-                                {/* <h1 className='text-acent'>Loading...</h1> */}
                             </div>
-                        </>}
+                        </>} */}
             </div>
         </div>
     );

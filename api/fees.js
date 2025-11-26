@@ -8,28 +8,22 @@ import { getCookie } from 'cookies-next';
 
 
 
-export const getStudentFee = async ({
+export const getStudentFee = async (
   studentId,
   profileId,
   sessionId,
-  guid,
-  id, }) => {
-  // console.log('======== studetnFeesData ==========',
-  //   studentId,
-  //   profileId,
-  //   sessionId,
-  //   guid,
-  //   id,);
+) => {
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
 
   return axios.post(`${API_BASE_URL}/api`, {
     api: 'student.getFees',
     id: studentId,
-    guid: guid,
-    logged_in_user_account_id: id,
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
     user_account_id: profileId,
     client_id: sessionId,
-    platform: 'android',
-    version_code: '1.1.3.19'
+    platform: 'web'
   });
 };
 
@@ -333,5 +327,26 @@ export const getFeeNameWiseSummary = async ({
   });
 };
 
+//========================================================================================================
 
+
+
+export const markStudentFee = async (
+  profileId, session, payload
+) => {
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+  return axios.post(`${API_BASE_URL}/api`, {
+    "api": "user.markStudentFee",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "WEB",
+    ...payload,
+
+
+  });
+};
 

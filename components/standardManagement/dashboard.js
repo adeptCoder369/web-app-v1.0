@@ -885,14 +885,31 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                             </li>
                                                                                             <li>
                                                                                                 <button
-                                                                                                    onClick={() => handleDownload(classData, "csv")}
+                                                                                                    onClick={() => handleDownload(classData, "studentData")}
                                                                                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                                                 >
-                                                                                                    Login Credentials
+                                                                                                    Download Student Data
+                                                                                                </button>
+                                                                                            </li>
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "proofReadingSoft")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    Soft Copy(.xlsx)
+                                                                                                </button>
+                                                                                            </li>
+                                                                                            <li>
+                                                                                                <button
+                                                                                                    onClick={() => handleDownload(classData, "proofReadingHard")}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                                >
+                                                                                                    Hard Copy(.pdf)
+
                                                                                                 </button>
                                                                                             </li>
                                                                                             {/* Nested Example */}
-                                                                                            <li className="relative">
+                                                                                            {/* <li className="relative">
                                                                                                 <button
                                                                                                     onClick={() =>
                                                                                                         setSubOpenId(subOpenId === classData.id ? null : classData.id)
@@ -907,65 +924,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                                                                         ▶
                                                                                                     </span>
                                                                                                 </button>
-
-                                                                                                {subOpenId === classData.id && (
-                                                                                                    <ul className="ml-4 mt-1 flex flex-col border-l border-gray-200">
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "proofReadingSoft")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Soft Copy(.xlsx)
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "proofReadingHard")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Hard Copy(.pdf)
-
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "txt")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Background Download
-
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "txt")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Soft Copy(mobiATTENDANCE)(.xlsx)
-
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "txt")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Hard Copy-A4(mobiATTENDANCE)(.pdf)
-
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "txt")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Hard Copy-A4(mobiATTENDANCE)(.pdf)
-
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                    </ul>
-                                                                                                )}
-                                                                                            </li>
+                                                                                            </li> */}
 
 
 
@@ -978,89 +937,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
 
 
-                                                                                            <li className="relative">
-                                                                                                <button
-                                                                                                    onClick={() =>
-                                                                                                        setSubOpenId(subOpenId === classData.id ? null : classData.id)
-                                                                                                    }
-                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
-                                                                                                >
-                                                                                                    Class Change
-                                                                                                    <span
-                                                                                                        className={`ml-2 transition-transform ${subOpenId === classData.id ? "rotate-90" : ""
-                                                                                                            }`}
-                                                                                                    >
-                                                                                                        ▶
-                                                                                                    </span>
-                                                                                                </button>
 
-                                                                                                {subOpenId === classData.id && (
-                                                                                                    <ul className="ml-4 mt-1 flex flex-col border-l border-gray-200">
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "json")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Soft Copy(.xlsx)
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "txt")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Hard Copy(.pdf)
-
-                                                                                                            </button>
-                                                                                                        </li>
-
-                                                                                                    </ul>
-                                                                                                )}
-                                                                                            </li>
-
-
-
-
-
-                                                                                            <li className="relative">
-                                                                                                <button
-                                                                                                    onClick={() =>
-                                                                                                        setSubOpenId(subOpenId === classData.id ? null : classData.id)
-                                                                                                    }
-                                                                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center"
-                                                                                                >
-                                                                                                    Download A4 Marksheet
-                                                                                                    <span
-                                                                                                        className={`ml-2 transition-transform ${subOpenId === classData.id ? "rotate-90" : ""
-                                                                                                            }`}
-                                                                                                    >
-                                                                                                        ▶
-                                                                                                    </span>
-                                                                                                </button>
-
-                                                                                                {subOpenId === classData.id && (
-                                                                                                    <ul className="ml-4 mt-1 flex flex-col border-l border-gray-200">
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "json")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Download Full
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                        <li>
-                                                                                                            <button
-                                                                                                                onClick={() => handleDownload(classData, "txt")}
-                                                                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                                                            >
-                                                                                                                Choose Options
-
-                                                                                                            </button>
-                                                                                                        </li>
-
-                                                                                                    </ul>
-                                                                                                )}
-                                                                                            </li>
 
 
 

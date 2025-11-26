@@ -41,11 +41,11 @@ const FeeManagementDashboard = ({ cookyGuid, cookyId, }) => {
   const config = getSessionCache("dashboardConfig");
   const Context = getSessionCache("dashboardContext");
   const [standardFees, setStandardFees] = useState(config?.standards); // default first period
-  const [selectedStandardId, setSelectedStandardId] = useState(config?.standards[0] ? config?.standards[0] : []);
   const [activePeriodId, setActivePeriodId] = useState("april"); // default first period
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
   const [pageSize, setPageSize] = useState(5);
+  const [selectedData, setSelectedData] = useState(null);
 
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false); // default first period
 
@@ -185,7 +185,6 @@ const FeeManagementDashboard = ({ cookyGuid, cookyId, }) => {
 
   // -----------------------------------
   const toggleFilter = (filterType, value, event) => {
-    // console.log('---- values ----', filterType, value, event);
 
     if (event) {
       event.stopPropagation();
@@ -1119,11 +1118,13 @@ const FeeManagementDashboard = ({ cookyGuid, cookyId, }) => {
                           {/* <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all group-hover:opacity-100 lg:opacity-0">
                             <Eye className="w-4 h-4" />
                           </button> */}
-                          <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all group-hover:opacity-100 lg:opacity-0">
+                          <button
+                          onClick={()=>setSelectedData(record)}
+                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all group-hover:opacity-100 lg:opacity-0">
                             {/* <IndianRupee className="w-4 h-4" /> */}
                             <FeeSummaryDrawer
 
-                              studentId={970121}
+                              studentId={selectedData?.student?.id}
                               profile={Context?.profileId}
                               session={Context?.session}
                               cookyGuid={cookyGuid}
