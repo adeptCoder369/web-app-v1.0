@@ -13,30 +13,15 @@ import {
 } from "lucide-react";
 import { getSessionCache } from "../../utils/sessionCache";
 
-interface FeeCardProps {
-  fee: {
-    id: string;
-    name: string;
-    fee_amount: number;
-    payment_status: string;
-    payment_date?: string;
-    due_date: string;
-    amount_per_param: Array<{
-      id: string;
-      name: string;
-      amount: number;
-    }>;
-  };
-  isPaid: boolean;
-}
 
-export default function PaidFeeCard({ fee, isPaid, setShowPay, setSelectedFee }: FeeCardProps) {
+
+export default function PaidFeeCard({ fee, isPaid }) {
 
 
 
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const getStatusConfig = (isPaid: boolean, status: string) => {
+  const getStatusConfig = (isPaid, status) => {
     if (isPaid) {
       return {
         badge: "bg-emerald-50 text-emerald-700 border border-emerald-200",
@@ -105,10 +90,7 @@ export default function PaidFeeCard({ fee, isPaid, setShowPay, setSelectedFee }:
             onClick={() => {
               if (isPaid && fee?.fee_receipt?.url) {
                 window.open(fee.fee_receipt.url, "_blank");
-              } else {
-                setShowPay(true);
-                setSelectedFee(fee)
-              }
+              } 
             }} className={`cursor-pointer inline-flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${statusConfig.button}`}
           >
             {isPaid ? (

@@ -71,7 +71,11 @@ export default function FeeSection({
           ) : paidFees?.length > 0 ? (
             paidFees.map(fee => (
               <PaidFeeCard
-                key={fee.id} fee={fee} isPaid={true} />
+
+                key={fee.id}
+                fee={fee}
+                isPaid={true}
+              />
             ))
           ) : (
             <p className="text-center text-gray-500">No payments yet</p>

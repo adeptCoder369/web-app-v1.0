@@ -232,7 +232,7 @@ export default function FeesWithSummary({ fees, isPaid, context, config, selecte
       // Actual API call
       console.log('============================', selectedFees, context?.profileId, context?.session, payload);
       const resp = await markStudentFee(context?.profileId, context?.session, payload);
-      // console.log('resp==================', resp);
+      console.log('resp==================', resp?.data?.results?.message);
       if (resp?.data?.success) {
         setShowSuccess(true)
         setApiResponse(resp?.data?.results?.message);
@@ -463,7 +463,7 @@ export default function FeesWithSummary({ fees, isPaid, context, config, selecte
       )}
 
       {showSuccess && (
-        <SuccessStatus user={} message={apiResponse?.message} />
+        <SuccessStatus  message={apiResponse?.message} />
       )}
 
     </div>

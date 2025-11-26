@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "app/new-page/page.js", "components/studentManagement/listStudent.jsx", "components/FeeSummary/FeeSection.jsx", "components/profile/ProfileSelection.js", "components/staffManagement/AddStaffPersonalInfo.js", "components/staffManagement/addStaffForm.tsx", "components/FeeSummary/MarkFee.jsx"  ],
+, "app/new-page/page.js", "components/studentManagement/listStudent.jsx", "components/FeeSummary/FeeSection.jsx", "components/profile/ProfileSelection.js", "components/staffManagement/AddStaffPersonalInfo.js", "components/staffManagement/addStaffForm.tsx", "components/FeeSummary/MarkFee.jsx", "components/FeeSummary/FeeCard.jsx", "components/FeeSummary/PaidFeeCard.jsx"  ],
   "exclude": [
     "node_modules"
   ]
