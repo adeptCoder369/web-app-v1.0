@@ -14,32 +14,7 @@ import { ArrowRight, BarChart3, Calendar, Clock, Receipt, ReceiptIndianRupee, Sp
 import { getFeeTypes } from '../../api/fees';
 import HeaderFeeTypes from './HeaderFeeTypes';
 
-const reportTypes = [
-  {
-    key: "datewise",
-    label: "Datewise Collection",
-    icon: <Calendar className="w-5 h-5" />,
-    gradient: "from-blue-500 to-cyan-500",
-    hoverGradient: "hover:from-blue-600 hover:to-cyan-600",
-    link: "/reports/datewise"
-  },
-  {
-    key: "standardwise",
-    label: "Standardwise",
-    icon: <BarChart3 className="w-5 h-5" />,
-    gradient: "from-purple-500 to-pink-500",
-    hoverGradient: "hover:from-purple-600 hover:to-pink-600",
-    link: "/reports/standardwise"
-  },
-  {
-    key: "periodwise",
-    label: "Periodwise",
-    icon: <Clock className="w-5 h-5" />,
-    gradient: "from-emerald-500 to-teal-500",
-    hoverGradient: "hover:from-emerald-600 hover:to-teal-600",
-    link: "/reports/periodwise"
-  },
-];
+
 const FeeTpes = ({ }) => {
   const [activeReport, setActiveReport] = useState('datewise');
 

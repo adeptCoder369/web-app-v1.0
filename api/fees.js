@@ -355,7 +355,8 @@ export const markStudentFee = async (
 
 
 export const getFeeTypes = async (
-  profileId, session
+  profileId, session,page,
+    limit,
 ) => {
   const resolvedGuid = getCookie("guid");
   const resolvedUserId = getCookie("id");
@@ -367,6 +368,8 @@ export const getFeeTypes = async (
     "user_account_id": profileId,
     "client_id": session,
     "platform": "WEB",
+  page,
+    limit,
 
 
 

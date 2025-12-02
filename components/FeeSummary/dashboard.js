@@ -318,7 +318,7 @@ const FeeManagementDashboard = ({ cookyGuid, cookyId, }) => {
 
 
 
-  // console.log('------------##', filters)
+  console.log('---------paginatedData---##', paginatedData)
 
 
   // Utility: get all class IDs from config
