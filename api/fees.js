@@ -350,3 +350,25 @@ export const markStudentFee = async (
   });
 };
 
+//========================================================================================================
+
+
+
+export const getFeeTypes = async (
+  profileId, session
+) => {
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+  return axios.post(`${API_BASE_URL}/api`, {
+    "api": "feeType.getList",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "WEB",
+
+
+
+  });
+};

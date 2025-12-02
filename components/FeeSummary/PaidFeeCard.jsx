@@ -19,7 +19,7 @@ export default function PaidFeeCard({ fee, isPaid }) {
 
 
 
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(null);
 
   const getStatusConfig = (isPaid, status) => {
     if (isPaid) {

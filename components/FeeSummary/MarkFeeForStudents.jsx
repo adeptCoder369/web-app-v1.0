@@ -18,7 +18,7 @@ const MarkFeeForStudents = ({
   config,
   selectedFee
 }) => {
-  console.log('selectedStandard=======>>', selectedFee, config?.standards);
+  // console.log('selectedStandard=======>>', selectedFee, config?.standards);
 
   const [selectedFeeTypes, setSelectedFeeTypes] = useState([]);
   const [permissions, setPermissions] = useState({

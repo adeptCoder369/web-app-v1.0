@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export default function QuickActions() {
-const router = useRouter()
+  const router = useRouter()
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -164,9 +164,15 @@ const router = useRouter()
 
       features: [
         {
-          name: "Configuration",
+          name: "View fees",
           url: "/dashboard/view-fee",
         },
+        {
+          name: "Fee Types",
+          url: "/dashboard/fee-types",
+        },
+        
+
         {
           name: "Summary",
           url: "/dashboard/fee-summary",
@@ -246,7 +252,7 @@ const router = useRouter()
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log('Navigate to:', feature.url);
-                          router.push( feature.url)
+                          router.push(feature.url)
                         }}
                         className={`cursor-pointer relative px-4 py-2 rounded-full text-xs font-semibold
                           bg-gradient-to-r from-gray-100 to-gray-200
@@ -271,7 +277,7 @@ const router = useRouter()
             ))}
           </div>
 
-          
+
         </div>
       </div>
     </div>
