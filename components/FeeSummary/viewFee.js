@@ -11,6 +11,7 @@ import HeaderViewFee from './HeaderViewFee';
 import ViewFeeFiltersSummary from './ViewFeeFiltersSummary';
 import ViewFeeFilterPanel from './ViewFeeFilterPanel';
 import { ArrowRight, BarChart3, Calendar, Clock, Receipt, ReceiptIndianRupee, Sparkles, User2 } from 'lucide-react';
+import { getFee } from '../../api/fees';
 
 const reportTypes = [
   {
@@ -104,23 +105,25 @@ const ViewFee = ({ }) => {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedFee, setSelectedFee] = useState(null);
+  const [fees, setFees] = useState(null);
+  const [isLoading,setIsLoading ] = useState(false);
 
 
   // const { setAuthStates, id, setGuid, guid } = useAuthContext();
-  const { getFees, feesData: fees, feesResponse, totalCount, limit, isLoading } = useFees(
-    context?.profileId,
-    context?.session,
+  // const { getFees, feesData: fees, feesResponse, totalCount, limit, isLoading } = useFees(
+  //   context?.profileId,
+  //   context?.session,
 
 
-  );
+  // );
 
 
   // ==================================================================================================
   const fetchFees = async () => {
-    const pageSize = feesResponse?.limit || feesPerPage;
-
+    // const pageSize = feesResponse?.limit || feesPerPage;
+    const pageSize = 1
     try {
-      const re = await getFees(
+      const re = await getFee(
         context.profileId,
         context.session,
         currentPage,
@@ -135,7 +138,7 @@ const ViewFee = ({ }) => {
           dueDate: filters?.dueDate || "",
         }
       );
-
+      setFees(res?.data?.results?.fees)
     } catch (error) {
       console.error("Error fetching fees:", error);
     }
@@ -199,8 +202,9 @@ const ViewFee = ({ }) => {
   // if (!fees || isLoading || fees.length === 0) {
   //   return <p className="text-center text-gray-500">No fee data available</p>;
   // }
-  const serverLimit = feesResponse?.limit || feesPerPage;
-  const totalPages = Math.ceil((totalCount || 0) / serverLimit);
+  // const serverLimit = feesResponse?.limit || feesPerPage;
+  const serverLimit = 1
+  const totalPages = Math.ceil(( 0) / serverLimit);
 
   // Calculate pagination
   const indexOfLastFee = currentPage * feesPerPage;
@@ -365,12 +369,12 @@ const ViewFee = ({ }) => {
         ⚙️ Set Fee Type Permissions
       </button>
 
-      <button
+      {/* <button
         onClick={() => setMarkFeeForStudents(true)}
         className="ml-4 cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
       >
         Mark Fee For Students
-      </button>
+      </button> */}
       <FeeTypeDetail
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
@@ -511,7 +515,7 @@ const ViewFee = ({ }) => {
                                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                   }`}
                                 onClick={() => {
-                                  if (option.action === 'pay') return handlePayFee(option,fee);
+                                  if (option.action === 'pay') return handlePayFee(option, fee);
                                   if (option.action === 'download') return handleDownloadStructure(fee);
                                   return handleActionClick(option, fee);
                                 }}

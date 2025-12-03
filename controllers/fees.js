@@ -103,14 +103,14 @@ export const useFees = () => {
   ) => {
     try {
 
-      const data = await getFeesMutation.mutateAsync({
+      const data = await getFeesMutation.mutateAsync(
         profileId,
         sessionId,
 
         page,
         limit,
         payload
-      });
+      );
 
       return { success: true, data };
     } catch (error) {

@@ -8,7 +8,7 @@ import FeeTpes from '../../../components/FeeSummary/feeTypes';
 const breadcrumbs = [
   { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Fee Summary" },
+  { label: "Fee Types " },
 ];
 // ========================================================================================
 

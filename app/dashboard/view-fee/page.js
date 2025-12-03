@@ -8,7 +8,7 @@ import ViewFee from '../../../components/FeeSummary/viewFee';
 const breadcrumbs = [
   { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Fee Summary" },
+  { label: "View Fee" },
 ];
 // ========================================================================================
 

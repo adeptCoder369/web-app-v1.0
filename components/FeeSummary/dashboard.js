@@ -8,19 +8,16 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
-  IndianRupee,
   Search,
   Filter,
-  Download,
-  Eye,
   Bell,
   TrendingUp,
   Calendar,
   ChevronDown,
-  MoreHorizontal,
-  RefreshCw,
-  FileText
+  
 } from 'lucide-react';
+
+
 import { BiSolidReceipt } from 'react-icons/bi';
 import { FaDownload, FaFileCsv, FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import QuickActions from './quickActions'
@@ -31,9 +28,7 @@ import { useFeeCollection, useFees } from '../../controllers/fees';
 import FeeSummary from './Summary';
 import { useMemo } from 'react';
 import FeeSummaryDrawer from '../ui/drawer/FeeSummary';
-
 // ===================================================================
-
 
 
 const FeeManagementDashboard = ({ cookyGuid, cookyId, }) => {

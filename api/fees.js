@@ -1,5 +1,4 @@
 import axios from 'axios';
-import httpClient from '../services/httpClient';
 import { API_BASE_URL } from '../config/server';
 import { getCookie } from 'cookies-next';
 
@@ -28,13 +27,13 @@ export const getStudentFee = async (
 };
 
 //========================================================================================================
-export const getFee = async ({
+export const getFee = async (
   profileId,
   sessionId,
   page,
   limit,
   payload,
-}) => {
+) => {
   const resolvedGuid = getCookie("guid");
   const resolvedUserId = getCookie("id");
 
@@ -237,7 +236,6 @@ export const updateFeePermission = async (
 
     }
 
-
   );
 };
 
@@ -350,13 +348,14 @@ export const markStudentFee = async (
   });
 };
 
+
 //========================================================================================================
 
 
 
 export const getFeeTypes = async (
-  profileId, session,page,
-    limit,
+  profileId, session, page,
+  limit,
 ) => {
   const resolvedGuid = getCookie("guid");
   const resolvedUserId = getCookie("id");
@@ -368,7 +367,7 @@ export const getFeeTypes = async (
     "user_account_id": profileId,
     "client_id": session,
     "platform": "WEB",
-  page,
+    page,
     limit,
 
 

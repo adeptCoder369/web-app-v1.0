@@ -3,13 +3,6 @@ import { X, CheckCircle, Ban, Settings, Sparkles, ReceiptIndianRupee } from 'luc
 import { updateFeePermission } from '../../api/fees';
 import { FaUserGraduate } from 'react-icons/fa';
 
-const permissionLabels = {
-  is_online_payment_allowed: "Online Payment",
-  is_partial_payment_allowed: "Partial Payment",
-  is_disabled: "Disabled",
-  is_adjustment_amount_applicable: "Adjustment Applicable",
-  show_break_up_on_receipt: "Show Break-up on Receipt"
-};
 
 const MarkFeeForStudents = ({
   open,

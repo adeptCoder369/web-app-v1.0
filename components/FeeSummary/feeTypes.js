@@ -5,18 +5,17 @@ import { getSessionCache } from '../../utils/sessionCache';
 import CreateFee from '../ui/drawer/CreateFee';
 import FeeTypeDetail from '../ui/drawer/FeeTypeDetail';
 import FeePermissionManager from './FeePermissionManager';
-import MarkFeeForStudents from './MarkFeeForStudents';
+import AddFeeTypeStudents from './AddFeeTypeStudents';
 import Loader from '../ui/status/Loader';
 import HeaderViewFee from './HeaderViewFee';
 import ViewFeeFiltersSummary from './ViewFeeFiltersSummary';
 import ViewFeeFilterPanel from './ViewFeeFilterPanel';
-import { ArrowRight, BarChart3, Calendar, Clock, Receipt, ReceiptIndianRupee, Sparkles, User2 } from 'lucide-react';
+import { ReceiptIndianRupee } from 'lucide-react';
 import { getFeeTypes } from '../../api/fees';
 import HeaderFeeTypes from './HeaderFeeTypes';
 
 
 const FeeTpes = ({ }) => {
-  const [activeReport, setActiveReport] = useState('datewise');
 
   const [staffStatus, setStudentStatus] = useState([
     {
@@ -84,7 +83,7 @@ const FeeTpes = ({ }) => {
   const [selectedFee, setSelectedFee] = useState(null);
   const [isLoading, setIsLoading] = useState(null);
 
-  console.log('-=---fee =======>>', fees);
+  // console.log('-=---fee =======>>', fees);
 
 
 
@@ -109,7 +108,7 @@ const FeeTpes = ({ }) => {
         //   dueDate: filters?.dueDate || "",
         // }
       );
-      console.log('fee =======>>', re?.data?.results?.fee_types);
+      // console.log('fee =======>>', re?.data?.results?.fee_types);
 
       if (re.status) {
         setFees(re?.data?.results?.fee_types || []);
@@ -249,7 +248,7 @@ const getCountColor = (count) => {
 
     if (option.action === 'pay') {
       setSelectedFee(fee);
-      setMarkFeeForStudents(true);
+      // setMarkFeeForStudents(true);
       return;
     }
 
@@ -323,7 +322,7 @@ const getCountColor = (count) => {
 
       />
 
-      <MarkFeeForStudents
+      <AddFeeTypeStudents
         open={markFeeForStudents}
         onClose={() => setMarkFeeForStudents(false)}
         feeTypes={currentFees}
@@ -335,18 +334,12 @@ const getCountColor = (count) => {
 
 
       <button
-        onClick={() => setPermissionDrawer(true)}
-        className="cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+        onClick={() => setMarkFeeForStudents(true)}
+        className="cursor-pointer group relative px-6 py-2.5 bg-gradient-to-r from-accent to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 font-medium"
       >
-        ⚙️ Set Fee Type Permissions
+        ⚙️ Add Fee Type Student 
       </button>
 
-      <button
-        onClick={() => setMarkFeeForStudents(true)}
-        className="ml-4 cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-      >
-        Mark Fee For Students
-      </button>
       <FeeTypeDetail
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
