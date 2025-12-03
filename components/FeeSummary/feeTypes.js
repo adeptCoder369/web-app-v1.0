@@ -211,12 +211,12 @@ const FeeTpes = ({ }) => {
     setSearchTerm('');
   };
 
-const getCountColor = (count) => {
-  if (count == 0) return "bg-gray-100 text-gray-700";
-  if (count <= 2) return "bg-green-100 text-green-700";
-  if (count <= 5) return "bg-yellow-100 text-yellow-700";
-  return "bg-red-100 text-red-700";
-};
+  const getCountColor = (count) => {
+    if (count == 0) return "bg-gray-100 text-gray-700";
+    if (count <= 2) return "bg-green-100 text-green-700";
+    if (count <= 5) return "bg-yellow-100 text-yellow-700";
+    return "bg-red-100 text-red-700";
+  };
 
 
 
@@ -241,7 +241,10 @@ const getCountColor = (count) => {
     console.log(`${option.action} fee:`, fee.id);
   };
 
+  const handleToggle = (fee, key) => {
+    console.log(' hnadling : ', fee, key);
 
+  }
 
   const handlePayFee = (option, fee) => {
     // console.log(`${option.action} fee:`, fee);
@@ -337,7 +340,7 @@ const getCountColor = (count) => {
         onClick={() => setMarkFeeForStudents(true)}
         className="cursor-pointer group relative px-6 py-2.5 bg-gradient-to-r from-accent to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 font-medium"
       >
-        ⚙️ Add Fee Type Student 
+        ⚙️ Add Fee Type Student
       </button>
 
       <FeeTypeDetail
@@ -401,10 +404,16 @@ const getCountColor = (count) => {
 
         {/* Fee Table */}
         {currentFees.length > 0 ? (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="
+  bg-white 
+  rounded-xl 
+  border border-gray-100 
+  shadow-[0_4px_20px_rgba(0,0,0,0.06)]
+  overflow-hidden
+">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50/60 backdrop-blur-sm">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fee Name
@@ -447,8 +456,7 @@ const getCountColor = (count) => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-2">
-
+                        <div className="flex flex-wrap gap-1.5 max-w-[260px]">
                           {[
                             { key: "is_variable", label: "Variable" },
                             { key: "is_applicable_for_new_students", label: "New Students" },
@@ -457,34 +465,57 @@ const getCountColor = (count) => {
                             { key: "is_applicable_for_concession", label: "Concession" },
                             { key: "is_miscellaneous", label: "Miscellaneous" }
                           ].map((item) => (
-                            <label key={item.key} className="flex items-center gap-2">
+                            <label
+                              key={item.key}
+                              className="
+          flex items-center gap-1.5
+          px-2 py-1
+          rounded-md
+          border border-gray-200
+          bg-gray-50
+          text-[11px]
+          hover:bg-gray-100
+          transition
+          cursor-pointer
+        "
+                            >
                               <input
                                 type="checkbox"
-                                checked={fee?.[item.key] === "1"}
+                                checked={fee?.[item.key] === '1'}
                                 onChange={() => handleToggle(fee, item.key)}
-                                className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                                className="
+            h-3.5 w-3.5
+            text-indigo-600 
+            rounded 
+            border-gray-300
+          "
                               />
-                              <span className="text-sm text-gray-700">{item.label}</span>
+                              <span className="text-gray-700 font-medium">
+                                {item.label}
+                              </span>
                             </label>
                           ))}
-
                         </div>
                       </td>
 
+
+
                       <td className="px-6 py-4 whitespace-nowrap">
-                   <span className={`
+                        <span className={`
   inline-flex items-center justify-center 
   h-8 w-8 rounded-full text-sm font-semibold
+  ring-1 ring-gray-200
   ${getCountColor(Number(fee?.fee_count))}
 `}>
-  {fee?.fee_count}
-</span>
+                          {fee?.fee_count}
+                        </span>
+
 
                       </td>
 
 
-                    
-                
+
+
 
                       {/* Actions */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -496,17 +527,20 @@ const getCountColor = (count) => {
                           ].map((option, idx) => (
                             <button
                               key={idx}
-                              className={`cursor-pointer px-3 py-1 rounded transition
-                ${option.action === "delete"
-                                  ? "bg-red-100 text-red-700 hover:bg-red-200"
+                              className={`
+    cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium 
+    shadow-sm transition
+    ${option.action === "delete"
+                                  ? "bg-red-50 text-red-700 hover:bg-red-100"
                                   : option.action === "edit"
-                                    ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                    ? "bg-blue-50 text-blue-700 hover:bg-blue-100"
                                     : option.action === "pay"
-                                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                      ? "bg-green-50 text-green-700 hover:bg-green-100"
                                       : option.action === "download"
-                                        ? "bg-purple-100 text-purple-700 hover:bg-purple-200"
-                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                }`}
+                                        ? "bg-purple-50 text-purple-700 hover:bg-purple-100"
+                                        : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                                }
+  `}
                               onClick={() => {
                                 if (option.action === "pay") return handlePayFee(option, fee);
                                 if (option.action === "download") return handleDownloadStructure(fee);
@@ -515,6 +549,7 @@ const getCountColor = (count) => {
                             >
                               {option.label}
                             </button>
+
                           ))}
                         </div>
                       </td>
