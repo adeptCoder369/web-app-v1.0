@@ -1,46 +1,20 @@
 'use client';
 import React, { useState, useMemo, useEffect } from 'react';
-import { useFees } from '../../controllers/fees';
 import { getSessionCache } from '../../utils/sessionCache';
-import CreateFee from '../ui/drawer/CreateFee';
 import FeeTypeDetail from '../ui/drawer/FeeTypeDetail';
-import FeePermissionManager from './FeePermissionManager';
-import MarkFeeForStudents from './MarkFeeForStudents';
 import Loader from '../ui/status/Loader';
 import HeaderViewFee from './HeaderViewFee';
 import ViewFeeFiltersSummary from './ViewFeeFiltersSummary';
-import ViewFeeFilterPanel from './ViewFeeFilterPanel';
+import VariableFeeFilterPanel from './VariableFeeFilterPanel';
 import { ArrowRight, BarChart3, Calendar, Clock, Receipt, ReceiptIndianRupee, Sparkles, User2 } from 'lucide-react';
-import { getFee } from '../../api/fees';
+import { getFee, getFeeTypes, getFeeTypeStudents, removeStudentFromFeeApi } from '../../api/fees';
+import AddFeeTypeStudents from './AddFeeTypeStudents';
+import { FaTrash } from 'react-icons/fa';
+import ConfirmationDialogueBox from '../ui/status/Confirmation';
 
-const reportTypes = [
-  {
-    key: "datewise",
-    label: "Datewise Collection",
-    icon: <Calendar className="w-5 h-5" />,
-    gradient: "from-blue-500 to-cyan-500",
-    hoverGradient: "hover:from-blue-600 hover:to-cyan-600",
-    link: "/reports/datewise"
-  },
-  {
-    key: "standardwise",
-    label: "Standardwise",
-    icon: <BarChart3 className="w-5 h-5" />,
-    gradient: "from-purple-500 to-pink-500",
-    hoverGradient: "hover:from-purple-600 hover:to-pink-600",
-    link: "/reports/standardwise"
-  },
-  {
-    key: "periodwise",
-    label: "Periodwise",
-    icon: <Clock className="w-5 h-5" />,
-    gradient: "from-emerald-500 to-teal-500",
-    hoverGradient: "hover:from-emerald-600 hover:to-teal-600",
-    link: "/reports/periodwise"
-  },
-];
-const ViewFee = ({ }) => {
-  const [activeReport, setActiveReport] = useState('datewise');
+
+const VariableFee = ({ }) => {
+  const [removeVariableFee, setRemoveVariableFee] = useState(false);
 
   const [staffStatus, setStudentStatus] = useState([
     {
@@ -70,6 +44,7 @@ const ViewFee = ({ }) => {
 
 
   ]);
+
   const [viewMode, setViewMode] = useState('overview');
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
 
@@ -92,38 +67,82 @@ const ViewFee = ({ }) => {
   const config = getSessionCache("dashboardConfig");
   const context = getSessionCache("dashboardContext");
   // ================================================================
-
-  const [permissionDrawer, setPermissionDrawer] = useState(false);
   const [markFeeForStudents, setMarkFeeForStudents] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStandard, setSelectedStandard] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+
   const feesPerPage = 10;
 
-
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [variableFee, setVariableFee] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiResponse, setApiResponse] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedFee, setSelectedFee] = useState(null);
-  const [fees, setFees] = useState(null);
-  const [isLoading,setIsLoading ] = useState(false);
 
-
-  // const { setAuthStates, id, setGuid, guid } = useAuthContext();
-  // const { getFees, feesData: fees, feesResponse, totalCount, limit, isLoading } = useFees(
-  //   context?.profileId,
-  //   context?.session,
-
-
-  // );
-
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [fees, setFees] = useState([]);
+  const [feeTypes_, setFeeTypes_] = useState([]);
 
   // ==================================================================================================
-  const fetchFees = async () => {
-    // const pageSize = feesResponse?.limit || feesPerPage;
+  const fetchFee = async () => {
+
+
     const pageSize = 1
     try {
       const res = await getFee(
+        context.profileId,
+        context.session,
+        currentPage,
+        pageSize,
+        // {
+        //   feeType: filters?.feeType || "",
+        //   standards: filters?.standards || [],
+        //   enabled: filters?.enabled ?? "",
+        //   hostelFee: filters?.hostelFee ?? "",
+        //   startDate: filters?.startDate || "",
+        //   endDate: filters?.endDate || "",
+        //   dueDate: filters?.dueDate || "",
+        // }
+      );
+      // console.log('res -------', res);
+      setFees(res?.data?.results?.fees || []);
+    } catch (error) {
+      console.error("Error fetching variableFee:", error);
+    }
+  };
+
+
+  const fetchFeeTypes = async () => {
+
+
+    const pageSize = 1
+    const limit = 20
+    try {
+      const res = await getFeeTypes(
+        context?.profileId,
+        context?.session,
+        pageSize,
+        limit
+      );
+      console.log('res____------', res);
+
+      setFeeTypes_(res?.data?.results?.fee_types || []);
+    } catch (error) {
+      console.error("Error fetching variableFee:", error);
+    }
+  };
+
+  const fetchStudentVariableFeeTypes = async () => {
+
+
+    const pageSize = 1
+    try {
+      const res = await getFeeTypeStudents(
         context.profileId,
         context.session,
         currentPage,
@@ -138,17 +157,20 @@ const ViewFee = ({ }) => {
           dueDate: filters?.dueDate || "",
         }
       );
-      setFees(res?.data?.results?.fees)
+      setVariableFee(res?.data?.results?.students)
     } catch (error) {
-      console.error("Error fetching fees:", error);
+      console.error("Error fetching variableFee:", error);
     }
   };
+
 
   useEffect(() => {
     if (!context?.profileId || !context?.session) return;
 
 
-    fetchFees();
+    fetchStudentVariableFeeTypes();
+    // fetchFee()
+    // fetchFeeTypes()
     setFilters((prev) => ({ ...prev, type: config?.fee_frequency[0]?.value || "" }));
 
     setIsFilterPanelOpen(false)
@@ -168,48 +190,67 @@ const ViewFee = ({ }) => {
   ]);
 
 
+  useEffect(() => {
 
-  // Extract unique standards from fees
+
+    fetchFeeTypes()
+    fetchFee()
+
+  }, [
+    context?.profileId,
+    context?.session,
+    currentPage,
+    filters?.type,
+    filters?.standards,
+    filters?.dueDate,
+    filters?.startDate,
+    filters?.endDate,
+    filters?.hostelFee,
+    filters?.enabled,
+
+
+  ]);
+  // Extract unique standards from variableFee
   const standards = useMemo(() => {
-    if (!fees) return [];
-    const uniqueStandards = [...new Set(fees.map(fee => fee?.standard?.name))];
+    if (!variableFee) return [];
+    const uniqueStandards = [...new Set(variableFee.map(fee => fee?.standard?.name))];
     return uniqueStandards.filter(Boolean).sort();
-  }, [fees]);
+  }, [variableFee]);
 
   // Extract unique fee types
   const feeTypes = useMemo(() => {
-    if (!fees) return [];
-    const types = [...new Set(fees.map(fee => fee?.type))];
+    if (!variableFee) return [];
+    const types = [...new Set(variableFee.map(fee => fee?.type))];
     return types.filter(Boolean);
-  }, [fees]);
+  }, [variableFee]);
 
-  // Filter fees based on selected criteria
+  // Filter variableFee based on selected criteria
   const filteredFees = useMemo(() => {
-    if (!fees) return [];
-    return fees.filter(fee => {
+    if (!variableFee) return [];
+    return variableFee.filter(fee => {
       const matchesStandard = !selectedStandard || fee?.standard?.name === selectedStandard;
       const matchesType = !selectedType || fee?.type === selectedType;
       const matchesSearch = !searchTerm || fee?.name?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStandard && matchesType && matchesSearch;
     });
-  }, [fees, selectedStandard, selectedType, searchTerm]);
+  }, [variableFee, selectedStandard, selectedType, searchTerm]);
 
   // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1);
   }, [selectedStandard, selectedType, searchTerm]);
 
-  // if (!fees || isLoading || fees.length === 0) {
+  // if (!variableFee || isLoading || variableFee.length === 0) {
   //   return <p className="text-center text-gray-500">No fee data available</p>;
   // }
   // const serverLimit = feesResponse?.limit || feesPerPage;
   const serverLimit = 1
-  const totalPages = Math.ceil(( 0) / serverLimit);
+  const totalPages = Math.ceil((0) / serverLimit);
 
   // Calculate pagination
   const indexOfLastFee = currentPage * feesPerPage;
   const indexOfFirstFee = indexOfLastFee - feesPerPage;
-  const currentFees = filteredFees; // fees is already server-limited; filteredFees applies any lightweight client filtering
+  const currentFees = filteredFees; // variableFee is already server-limited; filteredFees applies any lightweight client filtering
 
   // Pagination handlers
   const goToPage = (pageNumber) => {
@@ -245,12 +286,6 @@ const ViewFee = ({ }) => {
   };
 
 
-
-
-
-
-
-
   const handleActionClick = (option, fee) => {
     if (option.action === 'view') {
       setSelectedFee(fee);
@@ -270,11 +305,7 @@ const ViewFee = ({ }) => {
     console.log(`${option.action} fee:`, fee.id);
   };
 
-
-
   const handlePayFee = (option, fee) => {
-    // console.log(`${option.action} fee:`, fee);
-
     if (option.action === 'pay') {
       setSelectedFee(fee);
       setMarkFeeForStudents(true);
@@ -282,7 +313,6 @@ const ViewFee = ({ }) => {
     }
 
   };
-
 
 
   const toggleFilterPanel = () => {
@@ -321,60 +351,93 @@ const ViewFee = ({ }) => {
   };
 
 
+  const handleRemoveStudent = async () => {
+    setLoading(true);
+    setError(false);
+    setShowSuccess(false);
+    setApiResponse("");
+
+    try {
+      const payload = {
+        studentId: selectedFee?.id,
+        feeId: selectedFee?.fee?.id,
+        feeTypeId: selectedFee?.fee_type?.id
+      };
+
+      const result = await removeStudentFromFeeApi(
+        context.profileId,
+        context.session,
+        payload
+      );
+
+      if (result?.data?.success) {
+        setShowSuccess(true);
+        setApiResponse({
+          message: result.data?.results?.message
+        });
+
+        setRemoveVariableFee(false);
+
+        setTimeout(() => {
+          setShowSuccess(false);
+          setApiResponse("");
+          // reload the whole window after success
+          window.location.reload();
+        }, 1500);
+
+      } else {
+        setRemoveVariableFee(false);
+        setError(true);
+        setApiResponse({
+          status: "error",
+          message: result.data?.results?.message
+        });
+
+        setTimeout(() => {
+          setError(false);
+          setApiResponse("");
+        }, 3000);
+      }
+
+    } catch (err) {
+      setError(true);
+      setRemoveVariableFee(false);
+      setApiResponse({
+        message: "Request failed."
+      });
+
+      setTimeout(() => {
+        setError(false);
+        setApiResponse("");
+      }, 3000);
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+
+
   if (isLoading) {
-    return (
-      <Loader />
-    )
+    return (<Loader />)
   }
 
-
-
-
-
-
-
-  // console.log('filter s ', filters);
-
-
+  // ======================================================================
 
   return (
-
-
     <>
       {/* ================== Drawer ======================================== */}
 
-      <FeePermissionManager
-        open={permissionDrawer}
-        onClose={() => setPermissionDrawer(false)}
-        feeTypes={currentFees}
-        context={context}
-
-      />
-
-      <MarkFeeForStudents
-        open={markFeeForStudents}
-        onClose={() => setMarkFeeForStudents(false)}
-        feeTypes={currentFees}
-        config={config}
-        selectedFee={selectedFee}
-
-      />
-
-
-
       <button
-        onClick={() => setPermissionDrawer(true)}
+        onClick={() => setMarkFeeForStudents(true)}
         className="cursor-pointer group relative px-6 py-2.5 bg-gradient-to-r from-accent to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 font-medium"
       >
-        ⚙️ Set Fee Type Permissions
+        ⚙️ Add Fee Type Student
       </button>
 
-      {/* <button
-        onClick={() => setMarkFeeForStudents(true)}
-        className="ml-4 cursor-pointer px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-      >
-        Mark Fee For Students
-      </button> */}
+
       <FeeTypeDetail
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
@@ -382,7 +445,6 @@ const ViewFee = ({ }) => {
         context={context}
       />
 
-      {/* backdrop */}
       {drawerOpen && <div onClick={() => setDrawerOpen(false)} className="fixed inset-0 bg-black-50 bg-opacity-30 z-40"></div>}
 
 
@@ -399,7 +461,7 @@ const ViewFee = ({ }) => {
 
 
           <HeaderViewFee
-            headerTitle={"View Fee"}
+            headerTitle={"Variable Fee Type Students"}
             headerIcon={<ReceiptIndianRupee />}
             toggleFilterPanel={toggleFilterPanel}
             getFilterCount={getFilterCount}
@@ -414,7 +476,8 @@ const ViewFee = ({ }) => {
             clearFilters={clearFilters}
           />
 
-          <ViewFeeFilterPanel
+          <VariableFeeFilterPanel
+
             setFilters={setFilters}
             filters={filters}
             config={config}
@@ -422,19 +485,14 @@ const ViewFee = ({ }) => {
             staffStatus={staffStatus}
             accountStatus={accountStatus}
             toggleFilter={toggleFilter}
-
+            fees={fees}
+            feeTypes_={feeTypes_}
           />
-
-
-
-
-
-
 
         </div>
 
 
-        {/* Fee Table */}
+        {/* Student Fee Table */}
         {currentFees.length > 0 ? (
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="overflow-x-auto">
@@ -442,94 +500,99 @@ const ViewFee = ({ }) => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Fee Name
+                      Student
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Standard
+                      Roll No
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Type
+                      Standard / Class
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Fee
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Fee Type
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Due Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
+
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {currentFees.map((fee) => (
-                    <tr key={fee?.id} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{fee?.name}</div>
-                        {fee?.is_miscellaneous && (
-                          <span className="text-xs text-gray-500">Miscellaneous</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{fee?.standard?.name}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getTypeBadgeColor(fee?.type)}`}>
-                          {fee?.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">₹{fee?.amount}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{fee?.due_date?.text || 'N/A'}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${fee?.is_disabled ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                          }`}>
-                          {fee?.is_disabled ? 'Disabled' : 'Active'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <div className="flex gap-2">
-                          {[
-                            ...fee?.options,
-                            { label: "Pay Fee", action: "pay" },
-                            { label: "Download Structure", action: "download" }
-                          ].map((option, idx) => (
-                            <>
-                              <button
-                                key={idx}
-                                className={`cursor-pointer px-3 py-1 rounded transition
-          ${option.action === 'delete'
-                                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                    : option.action === 'edit'
-                                      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                                      : option.action === 'pay'
-                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        : option.action === 'download'
-                                          ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                  }`}
-                                onClick={() => {
-                                  if (option.action === 'pay') return handlePayFee(option, fee);
-                                  if (option.action === 'download') return handleDownloadStructure(fee);
-                                  return handleActionClick(option, fee);
-                                }}
-                              >
-                                {option.label}
-                              </button>
+                  {currentFees.map((item) => (
+                    <tr key={item?.id} className="hover:bg-gray-50 transition">
 
-
-                            </>
-
-                          ))}
-
+                      {/* Student Name */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {item?.name}
                         </div>
                       </td>
+
+                      {/* Roll No */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item?.roll_number || "N/A"}
+                        </div>
+                      </td>
+
+                      {/* Standard + Class */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item?.standard?.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {item?.standard?.class?.name}
+                        </div>
+                      </td>
+
+                      {/* Fee */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {item?.fee?.name}
+                        </div>
+                      </td>
+
+                      {/* Fee Type */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {item?.fee_type?.name}
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {item?.fee_type?.category}
+                        </span>
+                      </td>
+
+                      {/* Amount */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div
+                          className={`text-sm font-semibold ${Number(item?.fee_type_amount) < 0
+                            ? "text-red-600"
+                            : "text-gray-900"
+                            }`}
+                        >
+                          ₹{item?.fee_type_amount}
+                        </div>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <button
+                          className="cursor-pointer px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
+                          onClick={() => {
+                            setSelectedFee(item)
+                            setRemoveVariableFee(item)
+                          }}
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -538,7 +601,7 @@ const ViewFee = ({ }) => {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow p-12 text-center">
-            <p className="text-gray-500 text-lg">No fees found matching your filters</p>
+            <p className="text-gray-500 text-lg">No data found</p>
             <button
               onClick={clearFilters}
               className="cursor-pointer mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -587,87 +650,52 @@ const ViewFee = ({ }) => {
         {/* Results Info */}
         {filteredFees.length > 0 && (
           <p className="text-center text-sm text-gray-600">
-            Showing {indexOfFirstFee + 1}-{Math.min(indexOfLastFee, filteredFees.length)} of {filteredFees.length} fees
+            Showing {indexOfFirstFee + 1}-{Math.min(indexOfLastFee, filteredFees.length)} of {filteredFees.length} variableFee
           </p>
         )}
       </div>
-      {/* Fancy Card Container */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {reportTypes.map((item) => {
-            const isActive = activeReport === item.key;
 
-            return (
-              <button
-                key={item.key}
-                onClick={() => handleNavigation(item.key, item.link)}
-                className={`group relative p-6 rounded-xl font-semibold text-sm
-                    transition-all duration-300 transform hover:scale-105 hover:-translate-y-1
-                    ${isActive
-                    ? `bg-gradient-to-br ${item.gradient} text-white shadow-xl`
-                    : `bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:shadow-xl border-2 border-gray-200 hover:border-transparent`
-                  }`}
-              >
-                {/* Glow Effect */}
-                {isActive && (
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-xl blur-xl opacity-60 -z-10 animate-pulse`}></div>
-                )}
 
-                {/* Content */}
-                <div className="flex flex-col items-center text-center space-y-3">
-                  <div className={`p-3 rounded-lg transition-all duration-300 ${isActive
-                    ? 'bg-white/20 backdrop-blur-sm'
-                    : 'bg-white border border-gray-200 group-hover:border-transparent'
-                    } ${!isActive && `group-hover:bg-gradient-to-br ${item.gradient}`}`}>
-                    <span className={`transition-all duration-300 ${isActive
-                      ? 'text-white'
-                      : 'text-gray-600 group-hover:text-white'
-                      }`}>
-                      {item.icon}
-                    </span>
-                  </div>
+      <AddFeeTypeStudents
+        open={markFeeForStudents}
+        onClose={() => setMarkFeeForStudents(false)}
+        config={config}
+        context={context}
+        selectedStudent={selectedStudent}
+        setSelectedStudent={setSelectedStudent}
+      />
 
-                  <div>
-                    <span className="block font-bold text-base mb-1">{item.label}</span>
-                    <span className={`text-xs flex items-center justify-center space-x-1 ${isActive ? 'text-white/80' : 'text-gray-500 group-hover:text-gray-700'
-                      }`}>
-                      <span>View Report</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </div>
-                </div>
 
-                {/* Active Indicator */}
-                {isActive && (
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white shadow-lg">
-                    <div className="absolute inset-0 bg-yellow-400 rounded-full animate-ping"></div>
-                  </div>
-                )}
+      {removeVariableFee && (
+        <ConfirmationDialogueBox
+          title="Remove Student?"
+          description={`Are you sure you want to remove student by "${removeVariableFee.name}"?`}
+          onConfirm={handleRemoveStudent}
+          onCancel={() => setRemoveVariableFee(null)}
+        />
+      )}
+      <div className="fixed right-0 top-0 w-full sm:w-[420px] z-[60] p-4 space-y-3">
 
-                {/* Hover Arrow */}
-                {!isActive && (
-                  <div className={`absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
-                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
-                      <ArrowRight className="w-4 h-4 text-white" />
-                    </div>
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {showSuccess && (
+          <div className="relative bg-green-100 border border-green-300 text-green-800 rounded-lg px-4 py-3 shadow-md">
+            <span className="font-medium">{apiResponse.message}</span>
+          </div>
+        )}
 
-        {/* Description Text */}
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <p className="text-sm text-gray-500 flex items-center space-x-2">
-            <span className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></span>
-            <span>Click on any report type to view detailed analytics and insights</span>
-          </p>
-        </div>
+        {error && (
+          <div className="relative bg-red-100 border border-red-300 text-red-800 rounded-lg px-4 py-3 shadow-md">
+            <span className="font-medium">{apiResponse.message}</span>
+          </div>
+        )}
+
       </div>
+
+
     </>
 
   );
 };
+// ================================================================
 
-export default ViewFee;
+export default VariableFee;
+// ================================================================

@@ -195,10 +195,11 @@ const menuItems = [
         quickLink: true,
 
       },
-      { name: "Mark Student Fees", url: "/mark-fees", quickLink: true },
-      { name: "Fee Summary", url: "/fee-summary", quickLink: true },
+      { name: "Mark Student Fees", url: "/dashboard/mark-fees", quickLink: true },
+      { name: "Fee Summary", url: "/dashboard/fee-summary", quickLink: true },
       { name: "Fee Defaulters", url: "/fee-defaulters" },
-      { name: "Transport Locations", url: "/locations" }
+      { name: "Variable Fees Students", url: "/dashboard/variable-fee",quickLink: true  },
+      { name: "Transport Locations", url: "/dashboard/locations" }
     ]
   },
   // {

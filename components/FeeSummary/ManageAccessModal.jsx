@@ -8,7 +8,9 @@ export default function ManageAccessModal({
   onClose,
   feeList = [],
   feeTypes = [],
-  onUpdate
+  onUpdate,
+  loading,
+  setLoading
 }) {
   if (!open) return null;
   // console.log('feeList =======>>', feeList);
@@ -90,7 +92,7 @@ export default function ManageAccessModal({
     );
   };
 
-  console.log('fees==================================>>', fees);
+  // console.log('fees==================================>>', fees);
 
 
   return (
@@ -170,16 +172,20 @@ export default function ManageAccessModal({
 
         {/* Update Button */}
         <button
+          disabled={loading}
+
           onClick={() =>
             onUpdate?.({
               selectedFees,
               selectedFeeTypeId,
               amount: Number(amount)
+
             })
           }
-          className="w-full py-3 rounded-lg bg-indigo-600 text-white font-medium"
-        >
-          Update
+          className={`cursor-pointer w-full py-3 rounded-lg text-white font-medium
+    ${loading ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}
+  `}        >
+          {loading ? "Updating..." : "Update"}
         </button>
 
       </div>

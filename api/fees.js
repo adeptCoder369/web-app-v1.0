@@ -374,3 +374,108 @@ export const getFeeTypes = async (
 
   });
 };
+
+
+
+
+//========================================================================================================
+
+
+
+export const getFeeTypeStudents = async (
+  profileId,
+  session,
+  page,
+  limit,
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+
+    "api": "client.getFeeTypeStudents",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "platform": "WEB",
+    "client_id": session,
+    "id": session,
+    "fee_type_id": "2247",
+    "standard_id": "34115",
+    "fee_id": "17303",
+    "class_id": "100009",
+    "is_variable": 1
+
+
+
+  });
+};
+
+//========================================================================================================
+
+export const addVariableFeeTypeStudentApi = async (
+  profileId,
+  session,
+  payload
+) => {
+  console.log(payload, payload?.classId, 'addVariableFeeTypeStudentApi ===========')
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+
+    "api": "classRoom.setFeeTypeStudents",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "platform": "WEB",
+    "client_id": session,
+    // "id": session,
+    "fee_type_id": payload?.selectedFeeTypeId,
+    // "standard_id": "34115",
+    "fee_ids": payload?.selectedFees,
+    "student_ids": [payload?.selectedStudent?.id],
+    "id": payload?.classId,
+    // "is_variable": 1
+
+
+
+  });
+};
+
+
+//========================================================================================================
+
+export const removeStudentFromFeeApi = async (
+  profileId,
+  session,
+  payload
+) => {
+  // console.log(profileId,payload, 'removeStudentFromFeeApi ===========')
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+
+    "api": "feeType.removeStudentFromFee",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "platform": "WEB",
+    "client_id": session,
+    "student_id": payload?.studentId,
+    "fee_id": payload?.feeId,
+    "id": payload?.feeTypeId,
+
+
+
+  });
+};

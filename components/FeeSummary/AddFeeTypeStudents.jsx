@@ -1,30 +1,39 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { X, CheckCircle } from "lucide-react";
 import ManageAccessModal from "./ManageAccessModal";
-import { getFeeTypes } from "../../api/fees";
+import { getFeeTypes, addVariableFeeTypeStudentApi } from "../../api/fees";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
-
+// ========================================================
 export default function AddFeeTypeStudents({
   open,
   onClose,
   config,
-  onFullConcession
-}) {
-  if (!open) return null;
+  context,
+  setSelectedStudent,
+  selectedStudent
 
+}) {
+  // console.log('config',config);
+
+  // ========================================================
+  if (!open) return null;
+  // ========================================================
   const [selectedStandardId, setSelectedStandardId] = useState("");
   const [search, setSearch] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState(null);
   const [manageModalOpen, setManageModalOpen] = useState(false);
   const [activeStudent, setActiveStudent] = useState(null);
   const [fees, setFees] = useState([]);
   const [allowFullConcession, setAllowFullConcession] = useState(null);
+  const [apiResponse, setApiResponse] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchFeesTypes = async () => {
     try {
       const re = await getFeeTypes(
-        config.profileId,
-        config.session,
+        context?.profileId,
+        context?.session,
         (page = 1),
         (limit = 20)
       );
@@ -40,6 +49,9 @@ export default function AddFeeTypeStudents({
   useEffect(() => {
     fetchFeesTypes();
   }, []);
+
+
+
 
   const selectedStandard = useMemo(() => {
     return config?.standards?.find(
@@ -71,6 +83,76 @@ export default function AddFeeTypeStudents({
     setManageModalOpen(true);
   };
 
+const updateStudentFeeType = async (payload) => {
+  setLoading(true);
+  setError(false);
+  setApiResponse("");
+  setShowSuccess(false);
+
+  try {
+    const matchedClass = selectedStandard?.classes?.find(
+      cls => cls.name === selectedStudent?.className
+    );
+
+    const finalPayload = {
+      ...payload,
+      selectedStudent,
+      selectedStandard,
+      classId: matchedClass?.id || null
+    };
+
+    const result = await addVariableFeeTypeStudentApi(
+      context.profileId,
+      context.session,
+      finalPayload
+    );
+
+    if (result?.data?.success) {
+      setShowSuccess(true);
+      setApiResponse({
+        message: result.data?.results?.message
+      });
+
+      // close modal + cleanup
+      setManageModalOpen(false);
+
+      setTimeout(() => {
+        setShowSuccess(false);
+        setApiResponse("");
+      }, 3000);
+
+    } else {
+      setError(true);
+      setApiResponse({
+        status: "error",
+        message: result.data?.results?.message
+      });
+
+      setTimeout(() => {
+        setError(false);
+        setApiResponse("");
+      }, 3000);
+    }
+
+  } catch (err) {
+    setError(true);
+    setApiResponse({
+      status: "error",
+      message: "Request failed."
+    });
+
+    setTimeout(() => {
+      setError(false);
+      setApiResponse("");
+    }, 3000);
+
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  // ========================================================
   return (
     <>
       <div
@@ -194,15 +276,16 @@ export default function AddFeeTypeStudents({
           </div>
         )}
 
-        {/* MANAGE ACCESS */}
+        {/* MANAGE_ACCESS */}
         <ManageAccessModal
           open={manageModalOpen}
           onClose={() => setManageModalOpen(false)}
           feeList={fees}
           feeTypes={config?.fee_types}
-          onUpdate={() => {
-            setManageModalOpen(false);
-          }}
+          onUpdate={updateStudentFeeType}
+          loading={loading}
+          setLoading={setLoading}
+
         />
 
         {/* FULL CONCESSION */}
@@ -214,6 +297,24 @@ export default function AddFeeTypeStudents({
             onCancel={() => setAllowFullConcession(null)}
           />
         )}
+
+        <div className="fixed right-0 top-0 w-full sm:w-[480px] z-[60] p-4 space-y-3">
+
+          {showSuccess && (
+            <div className="relative bg-green-100 border border-green-300 text-green-800 rounded-lg px-4 py-3 shadow-md">
+              <span className="font-medium">{apiResponse.message}</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="relative bg-red-100 border border-red-300 text-red-800 rounded-lg px-4 py-3 shadow-md">
+              <span className="font-medium">{apiResponse.message}</span>
+            </div>
+          )}
+
+        </div>
+
+
       </div>
     </>
   );
