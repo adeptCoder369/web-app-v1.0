@@ -87,6 +87,7 @@ const VariableFee = ({ }) => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [fees, setFees] = useState([]);
   const [feeTypes_, setFeeTypes_] = useState([]);
+console.log('filters=====',filters);
 
   // ==================================================================================================
   const fetchFee = async () => {
