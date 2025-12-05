@@ -14,6 +14,7 @@ import {
 import HouseCreate from './houseCreateForm';
 import HouseEdit from './houseEditForm';
 import { getSessionCache } from '../../utils/sessionCache';
+import ConfirmationDialogueBox from '../ui/status/Confirmation';
 
 const HouseManagement = ({ houses, setIsHouseUpdatedOrCreated }) => {
   const context = getSessionCache('dashboardContext');
@@ -22,6 +23,7 @@ const HouseManagement = ({ houses, setIsHouseUpdatedOrCreated }) => {
   const [editingHouse, setEditingHouse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [houseData, setHouseData] = useState([]);
+  const [categoryToDelete, setCategoryToDelete] = useState(false);
 
   // Simulate fetch delay
   useEffect(() => {
@@ -255,7 +257,7 @@ const HouseManagement = ({ houses, setIsHouseUpdatedOrCreated }) => {
         <ConfirmationDialogueBox
           title="Delete Category?"
           description={`Are you sure you want to delete "${categoryToDelete.name}"?`}
-          onConfirm={confirmDelete}
+          // onConfirm={confirmDelete}
           onCancel={() => setCategoryToDelete(null)}
         />
       )}

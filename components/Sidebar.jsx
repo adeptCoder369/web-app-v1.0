@@ -77,10 +77,15 @@ const menuItems = [
 
 
       { name: "Add Student", url: "/add-student", quickLink: true },
+
       { name: "Houses", url: "/dashboard/student-management?tab=houses" },
+
       { name: "Download Student Data", url: "/student-downloads", quickLink: true },
+
       { name: "Parents", url: "/student-parents" },
+
       { name: "Birthdays", url: "/birthdays" }
+
     ]
   },
   {
@@ -198,7 +203,7 @@ const menuItems = [
       { name: "Mark Student Fees", url: "/dashboard/mark-fees", quickLink: true },
       { name: "Fee Summary", url: "/dashboard/fee-summary", quickLink: true },
       { name: "Fee Defaulters", url: "/fee-defaulters" },
-      { name: "Variable Fees Students", url: "/dashboard/variable-fee",quickLink: true  },
+      { name: "Variable Fees Students", url: "/dashboard/variable-fee", quickLink: true },
       { name: "Transport Locations", url: "/dashboard/locations" }
     ]
   },

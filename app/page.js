@@ -18,7 +18,8 @@ import {
   Zap,
   Award,
   Globe,
-  Video
+  Video,
+  IndianRupee 
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -42,7 +43,7 @@ export default function SchoolERPLanding() {
       iconBg: "bg-gradient-to-br from-blue-500 to-blue-800"
     },
     {
-      icon: <DollarSign className="w-6 h-6" />,
+      icon: <IndianRupee  className="w-6 h-6" />,
       title: "Financial Management",
       description: "Fee collection, payment tracking, financial reporting, and automated billing systems",
       gradient: "from-blue-500 to-blue-800",
