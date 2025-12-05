@@ -439,20 +439,18 @@ const StaffMangementDashboard = ({
                     </button>
                   )}
                 </div>
+
+
               </div>
             </div>
           )}
-
           {/* List Students */}
           {activeTab === 'list' && (
             <>
               <StaffList
                 setActiveTab={setActiveTab}
                 setSelectedStaff={setSelectedStaff}
-
-
               />
-
             </>
           )}
 

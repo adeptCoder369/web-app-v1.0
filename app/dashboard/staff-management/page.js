@@ -5,11 +5,13 @@ import { cookies } from 'next/headers';
 import { Breadcrumbs } from '../../../components/ui/Breadcrumb/breadcrumb';
 import Layout from '../../../layouts/Layout';
 // =============================================================
+
 const breadcrumbs = [
   { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Manage Staff" },
 ];
+
 // ===================================================================
 export default async function StudentProfile({ params }) {
   // =============================================================
@@ -18,7 +20,12 @@ export default async function StudentProfile({ params }) {
   const cookyGuid = cookieStore.get('guid').value
   const cookyId = cookieStore.get('id').value
   // -----------------------------------------------------------
-  const standardListData = await getStudentList(resolvedParams.profile, resolvedParams.session, cookyGuid, cookyId)
+  const standardListData = await getStudentList(
+    resolvedParams.profile,
+    resolvedParams.session,
+    cookyGuid,
+    cookyId
+  )
   // =============================================================
   return (
     <Layout>
@@ -33,10 +40,10 @@ export default async function StudentProfile({ params }) {
       >
         <Breadcrumbs items={breadcrumbs} />
         <StaffMangementDashboard
-          students={standardListData.results.items}
-          profile={resolvedParams.profile}
-          session={resolvedParams.session}
-          school={resolvedParams.school}
+          students={standardListData?.results?.students}
+          profile={resolvedParams?.profile}
+          session={resolvedParams?.session}
+          school={resolvedParams?.school}
           cookyGuid={cookyGuid}
           cookyId={cookyId}
         />

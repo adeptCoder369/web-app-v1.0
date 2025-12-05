@@ -3,10 +3,32 @@
 import { List, User, MoreVertical, GraduationCap, School } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Loader from '../../components/ui/status/LoaderWIthoutBgBlurr';
+import StudentFilterPanel from './StudentFilterPanel';
+import { getSessionCache } from "../../utils/sessionCache";
+import { FaFilter } from "react-icons/fa";
 
-export const StudentList = ({ students, setSelectedStudent, setActiveTab, loading }) => {
+export const StudentList = ({
+  students,
+  setSelectedStudent,
+  setActiveTab,
+  loading,
+  filters,
+  setFilters,
+  isFilterPanelOpen ,
+setIsFilterPanelOpen
+
+}) => {
+
+  const config = getSessionCache("dashboardConfig");
+
+
+
   const [openMenu, setOpenMenu] = useState(null);
   const menuRef = useRef(null);
+
+
+
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -18,6 +40,42 @@ export const StudentList = ({ students, setSelectedStudent, setActiveTab, loadin
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+
+
+  const toggleFilter = (filterType, value, event) => {
+    // console.log('---- values ----', filterType, value, event);
+
+    if (event) {
+      event.stopPropagation();
+    }
+    setFilters(prev => {
+
+      const current = prev[filterType];
+      // If current is an array (multi-select), toggle value in the array
+      if (Array.isArray(current)) {
+        if (current.includes(value)) {
+          return { ...prev, [filterType]: current.filter(item => item !== value) };
+        } else {
+          return { ...prev, [filterType]: [...current, value] };
+        }
+      }
+      // If scalar (string/date), toggle between value and empty
+      return { ...prev, [filterType]: current === value ? '' : value };
+
+
+    });
+
+  };
+
+
+
+  const getFilterCount = () => {
+    return  (filters?.classId ? 1 : 0) + (filters?.name? 1 : 0)
+  };
+
+
+
 
   if (loading) {
     return (
@@ -110,7 +168,34 @@ export const StudentList = ({ students, setSelectedStudent, setActiveTab, loadin
             <p className="text-sm text-gray-600 mt-1">{students.length} {students.length === 1 ? 'student' : 'students'} enrolled</p>
           </div>
         </div>
+        <button
+          onClick={() => {
+            setIsFilterPanelOpen((prev) => !prev)
+          }}
+          className="cursor-pointer flex items-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <FaFilter size={16} className="mr-2" />
+          <span>Filters</span>
+          {getFilterCount() > 0 && (
+            <span className="ml-2 bg-blue-500 text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
+              {getFilterCount()}
+            </span>
+          )}
+        </button>
       </div>
+
+      <StudentFilterPanel
+
+        setFilters={setFilters}
+        filters={filters}
+        config={config}
+        isFilterPanelOpen={isFilterPanelOpen}
+        setIsFilterPanelOpen={setIsFilterPanelOpen}
+        // staffStatus={staffStatus}
+        // accountStatus={accountStatus}
+        toggleFilter={toggleFilter}
+
+      />
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {students?.map((student, index) => (

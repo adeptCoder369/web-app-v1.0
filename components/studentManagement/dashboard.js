@@ -44,6 +44,14 @@ const StudentMangementDashboard = ({
 
 
 
+
+
+
+
+
+
+
+
   const { selectedStudent, setSelectedStudent } = useStudent()
   // console.log('selectedStudent', selectedStudent);
 
@@ -54,6 +62,28 @@ const StudentMangementDashboard = ({
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [studentUpdated, setStudentUpdated] = useState(false);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+
+
+
+  const [filters, setFilters] = useState({
+    class: "",
+    name: '',
+    admissionNumber: '',
+    phoneNumber: '',
+    fatherName: '',
+    motherName: '',
+    dob: '',
+
+    isSearch: false
+
+
+
+
+  });
+
+
+
 
 
   const config = getSessionCache("dashboardConfig");
@@ -66,12 +96,20 @@ const StudentMangementDashboard = ({
     setLoading(true);
     setError(null);
     try {
-      const data = await getStudentList(context?.profileId, context?.session, cookyGuid, cookyId);
-      if (mounted.current) setStudentListData(data?.results?.items);
+      const data = await getStudentList(
+        context?.profileId,
+        context?.session,
+        filters
+      );
+      console.log('data', data?.data?.results);
+
+
+      if (mounted.current) setStudentListData(data?.data?.results?.students);
     } catch (err) {
       if (mounted.current) setError(err);
       console.error('Failed to load student list', err);
     } finally {
+      setIsFilterPanelOpen(false)
       if (mounted.current) setLoading(false);
     }
   }
@@ -82,7 +120,11 @@ const StudentMangementDashboard = ({
     mounted.current = true;
     load();
     return () => { mounted.current = false; };
-  }, [studentUpdated]);
+  }, [
+
+    filters?.class,
+    filters?.isSearch
+  ]);
 
 
   const fetchHouses = async () => {
@@ -449,15 +491,20 @@ const StudentMangementDashboard = ({
             </div>
           )}
 
-          {/* List Students */}
+
+
+          {/* --------- List_Students ----------- */}
           {activeTab === 'list' && (
             <>
               <StudentList
+                filters={filters}
+                setFilters={setFilters}
                 loading={loading}
                 setActiveTab={setActiveTab}
                 students={studentListData}
                 setSelectedStudent={setSelectedStudent}
-
+                isFilterPanelOpen={isFilterPanelOpen}
+                setIsFilterPanelOpen={setIsFilterPanelOpen}
               />
             </>
           )}

@@ -68,23 +68,28 @@ const menuItems = [
       width={20}
       height={20}
       className="w-8 h-8"
-    />, subMenu: [
+    />,
+    subMenu: [
       {
         name: "All Students",
         url: "/dashboard/student-management",
-
+      },
+      {
+        name: "Add Student",
+        url: "/dashboard/student-management?tab=add",
+        quickLink: true
       },
 
+      {
+        name: "Houses",
+        url: "/dashboard/student-management?tab=houses"
+      },
 
-      { name: "Add Student", url: "/add-student", quickLink: true },
+      // { name: "Download Student Data", url: "/student-downloads", quickLink: true },
 
-      { name: "Houses", url: "/dashboard/student-management?tab=houses" },
+      // { name: "Parents", url: "/student-parents" },
 
-      { name: "Download Student Data", url: "/student-downloads", quickLink: true },
-
-      { name: "Parents", url: "/student-parents" },
-
-      { name: "Birthdays", url: "/birthdays" }
+      // { name: "Birthdays", url: "/birthdays" }
 
     ]
   },

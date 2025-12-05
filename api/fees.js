@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../config/server';
 import { getCookie } from 'cookies-next';
 
 
-//========================================================================================================
+// ========================================================================================================
 
 
 
@@ -11,7 +11,10 @@ export const getStudentFee = async (
   studentId,
   profileId,
   sessionId,
+  
 ) => {
+
+
   const resolvedGuid = getCookie("guid");
   const resolvedUserId = getCookie("id");
 
@@ -27,6 +30,7 @@ export const getStudentFee = async (
 };
 
 //========================================================================================================
+
 export const getFee = async (
   profileId,
   sessionId,
@@ -94,7 +98,7 @@ export const getFee = async (
 };
 
 
-//========================================================================================================
+// ========================================================================================================
 
 export const getFeeTypeDetail = async (
   profileId,
