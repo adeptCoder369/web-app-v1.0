@@ -74,7 +74,7 @@ const StudentMangementDashboard = ({
     fatherName: '',
     motherName: '',
     dob: '',
-
+    appUsed: "",
     isSearch: false
 
 
@@ -123,6 +123,8 @@ const StudentMangementDashboard = ({
   }, [
 
     filters?.class,
+    filters?.status,
+    filters,
     filters?.isSearch
   ]);
 

@@ -20,26 +20,26 @@ const menuItems = [
     url: "/dashboard",
     active: true
   },
-  {
-    name: "ERP MANAGEMENT",
-    icon: <Image
-      src="/icons/erp.png"
-      alt="Standards Icon"
-      width={20}
-      height={20}
-      className="w-8 h-8"
-    />,
-    subMenu: [
-      {
-        name: "Setup",
-        url: "/dashboard/erp-management",
-        quickLink: true
-      },
-      { name: "Images", url: "/client/images" },
-      { name: "Permissions", url: "/client/permissions", quickLink: true },
-      { name: "Staff Usage Report", url: "/staff-report" }
-    ]
-  },
+  // {
+  //   name: "ERP MANAGEMENT",
+  //   icon: <Image
+  //     src="/icons/erp.png"
+  //     alt="Standards Icon"
+  //     width={20}
+  //     height={20}
+  //     className="w-8 h-8"
+  //   />,
+  //   subMenu: [
+  //     {
+  //       name: "Setup",
+  //       url: "/dashboard/erp-management",
+  //       quickLink: true
+  //     },
+  //     { name: "Images", url: "/client/images" },
+  //     { name: "Permissions", url: "/client/permissions", quickLink: true },
+  //     { name: "Staff Usage Report", url: "/staff-report" }
+  //   ]
+  // },
   {
     name: "STANDARD MANAGEMENT",
     icon: <Image
@@ -55,9 +55,14 @@ const menuItems = [
         url: "/dashboard/standard-management",
 
       },
-      { name: "All Classes", url: "/classes" },
-      { name: "Class Details", url: "/class-details" },
-      { name: "Bulk Promotion", url: "/bulk-promotion" }
+      {
+        name: "All Classes",
+        url: "/dashboard/standard-management",
+
+
+      },
+      // { name: "Class Details", url: "/class-details" },
+      // { name: "Bulk Promotion", url: "/bulk-promotion" }
     ]
   },
   {
@@ -107,9 +112,9 @@ const menuItems = [
         url: "/dashboard/staff-management",
       },
       { name: "Add Staff", url: "/add-staff", quickLink: true },
-      { name: "Departments", url: "/departments", quickLink: true },
-      { name: "School Roles", url: "/school-roles", quickLink: true },
-      { name: "Subject Class Mapping", url: "/subject-mapping", quickLink: true }
+      // { name: "Departments", url: "/departments", quickLink: true },
+      // { name: "School Roles", url: "/school-roles", quickLink: true },
+      // { name: "Subject Class Mapping", url: "/subject-mapping", quickLink: true }
     ]
   },
   // {
@@ -158,9 +163,9 @@ const menuItems = [
         url: "/dashboard/attendance-management",
         quickLink: true
       },
-      { name: "Daily Report", url: "/attendance-report", quickLink: true },
-      { name: "Download Report", url: "/download-attendance" },
-      { name: "Monthly Average", url: "/monthly-attendance" }
+      // { name: "Daily Report", url: "/attendance-report", quickLink: true },
+      // { name: "Download Report", url: "/download-attendance" },
+      // { name: "Monthly Average", url: "/monthly-attendance" }
     ]
   },
   // {
@@ -205,11 +210,11 @@ const menuItems = [
         quickLink: true,
 
       },
-      { name: "Mark Student Fees", url: "/dashboard/mark-fees", quickLink: true },
+      // { name: "Mark Student Fees", url: "/dashboard/mark-fees", quickLink: true },
       { name: "Fee Summary", url: "/dashboard/fee-summary", quickLink: true },
-      { name: "Fee Defaulters", url: "/fee-defaulters" },
+      // { name: "Fee Defaulters", url: "/fee-defaulters" },
       { name: "Variable Fees Students", url: "/dashboard/variable-fee", quickLink: true },
-      { name: "Transport Locations", url: "/dashboard/locations" }
+      // { name: "Transport Locations", url: "/dashboard/locations" }
     ]
   },
   // {

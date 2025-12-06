@@ -29,7 +29,7 @@ const StudentFilterPanel = ({
   const handleSearch = () => {
     setFilters((prev) => ({
       ...prev,
-      isSearch: prev =>!prev
+      isSearch: prev => !prev
     }));
 
     console.log('filters____________', filters);
@@ -161,7 +161,7 @@ const StudentFilterPanel = ({
         >
           <option value="">All</option>
           <option value="Android">Android</option>
-          <option value="IOS">IOS</option>
+          <option value="iOS">IOS</option>
         </select>
       </div>
 
@@ -263,9 +263,9 @@ const StudentFilterPanel = ({
       focus:border-blue-500 focus:ring focus:ring-blue-200"
         >
           <option value="">All</option>
-          {config?.statusList?.map((st) => (
-            <option key={st.id} value={st.id}>
-              {st.name}
+          {["ACTIVE", "INACTIVE"].map((st) => (
+            <option key={st} value={st}>
+              {st}
             </option>
           ))}
         </select>

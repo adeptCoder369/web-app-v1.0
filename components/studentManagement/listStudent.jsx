@@ -14,8 +14,8 @@ export const StudentList = ({
   loading,
   filters,
   setFilters,
-  isFilterPanelOpen ,
-setIsFilterPanelOpen
+  isFilterPanelOpen,
+  setIsFilterPanelOpen
 
 }) => {
 
@@ -71,7 +71,7 @@ setIsFilterPanelOpen
 
 
   const getFilterCount = () => {
-    return  (filters?.classId ? 1 : 0) + (filters?.name? 1 : 0)
+    return (filters?.classId ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.status ? 1 : 0)+ (filters?.appUsed ? 1 : 0)
   };
 
 
@@ -87,31 +87,49 @@ setIsFilterPanelOpen
     );
   }
 
-  if (!students || students.length === 0) {
-    return (
-      <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-8">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="p-2 bg-blue-100 rounded-xl">
-            <GraduationCap className="h-6 w-6 text-blue-600" />
+if (!students || students.length === 0) {
+  return (
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-8">
+      
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-blue-100 rounded-xl">
+          <GraduationCap className="h-6 w-6 text-blue-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">Student Directory</h2>
+      </div>
+
+      {/* Clear Filters */}
+      <button
+        onClick={() => setFilters({})}
+        className="cursor-pointer flex items-center px-4 py-2 mb-6 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+      >
+        <FaFilter size={16} className="mr-2" />
+        <span>Clear Filters</span>
+      </button>
+
+      {/* Empty State */}
+      <div className="text-center py-10">
+        <div className="relative inline-block">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full blur-xl opacity-30"></div>
+          <div className="relative p-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full">
+            <List className="h-16 w-16 text-gray-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Student Directory</h2>
         </div>
 
-        <div className="text-center py-12">
-          <div className="relative inline-block">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full blur-xl opacity-30"></div>
-            <div className="relative p-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full">
-              <List className="h-16 w-16 text-gray-500" />
-            </div>
-          </div>
-          <h3 className="text-xl font-semibold text-gray-700 mt-6 mb-2">No Students Found</h3>
-          <p className="text-gray-500 max-w-md mx-auto">
-            Your student directory is empty. Students will appear here once they're added to the system.
-          </p>
-        </div>
+        <h3 className="text-xl font-semibold text-gray-700 mt-6 mb-2">
+          No Students Found
+        </h3>
+
+        <p className="text-gray-500 max-w-md mx-auto">
+          No students match the current filters. Try adjusting your filter options.
+        </p>
       </div>
-    );
-  }
+
+    </div>
+  );
+}
+
 
   const handleOptionClick = (studentId, option) => {
     if (option.alert) {

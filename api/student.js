@@ -40,9 +40,13 @@ export const getStudentList = async (
     requestBody.name = payload.name;
   }
 
-  // if (payload?.search && payload.search.trim() !== "") {
-  //   requestBody.search = payload.search;
-  // }
+  if (payload?.status && payload.status.trim() !== "") {
+    requestBody.status = payload.status;
+  }
+  if (payload?.appUsed && payload.appUsed.trim() !== "") {
+    requestBody.app_user = payload.appUsed;
+  }
+
 
   return axios.post(`${API_BASE_URL}/api`, requestBody);
 };
