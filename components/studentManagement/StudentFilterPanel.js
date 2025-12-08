@@ -8,10 +8,8 @@ const StudentFilterPanel = ({
   setFilters,
   config,
   isFilterPanelOpen,
-  staffStatus,
   filters,
-  toggleFilter,
-  accountStatus
+
 
 }) => {
 
@@ -85,9 +83,9 @@ const StudentFilterPanel = ({
         <h3 className="font-medium text-gray-700 mb-3">Admission Number</h3>
         <input
           type="text"
-          value={filters.admissionNo || ""}
+          value={filters.admission_number || ""}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, admissionNo: e.target.value }))
+            setFilters((prev) => ({ ...prev, admission_number: e.target.value }))
           }
           className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
@@ -114,9 +112,9 @@ const StudentFilterPanel = ({
         <h3 className="font-medium text-gray-700 mb-3">Father's Name</h3>
         <input
           type="text"
-          value={filters.fatherName || ""}
+          value={filters.father_name || ""}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, fatherName: e.target.value }))
+            setFilters((prev) => ({ ...prev, father_name: e.target.value }))
           }
           className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
@@ -127,9 +125,9 @@ const StudentFilterPanel = ({
         <h3 className="font-medium text-gray-700 mb-3">Mother's Name</h3>
         <input
           type="text"
-          value={filters.motherName || ""}
+          value={filters.mother_name || ""}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, motherName: e.target.value }))
+            setFilters((prev) => ({ ...prev, mother_name: e.target.value }))
           }
           className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
@@ -140,9 +138,9 @@ const StudentFilterPanel = ({
         <h3 className="font-medium text-gray-700 mb-3">Date of Birth</h3>
         <input
           type="date"
-          value={filters.dob || ""}
+          value={filters.date_of_birth || ""}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, dob: e.target.value }))
+            setFilters((prev) => ({ ...prev, date_of_birth: e.target.value }))
           }
           className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
@@ -170,9 +168,9 @@ const StudentFilterPanel = ({
         <h3 className="font-medium text-gray-700 mb-3">Registration Number</h3>
         <input
           type="text"
-          value={filters.registrationNo || ""}
+          value={filters.registration_number || ""}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, registrationNo: e.target.value }))
+            setFilters((prev) => ({ ...prev, registration_number: e.target.value }))
           }
           className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
@@ -185,10 +183,10 @@ const StudentFilterPanel = ({
           type="text"
           inputMode="numeric"
           maxLength={10}
-          value={filters.smsPhone || ""}
+          value={filters.registered_phone_for_sms || ""}
           onChange={(e) => {
             const val = e.target.value.replace(/\D/g, "");
-            setFilters((prev) => ({ ...prev, smsPhone: val }));
+            setFilters((prev) => ({ ...prev, registered_phone_for_sms: val }));
           }}
           className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
@@ -198,9 +196,9 @@ const StudentFilterPanel = ({
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Optional Subject</h3>
         <select
-          value={filters.optionalSubject || ""}
+          value={filters.optional_subject || ""}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, optionalSubject: e.target.value }))
+            setFilters((prev) => ({ ...prev, optional_subject: e.target.value }))
           }
           className="w-full border border-gray-300 rounded-md p-2 text-gray-700
       focus:border-blue-500 focus:ring focus:ring-blue-200"
@@ -288,9 +286,9 @@ const StudentFilterPanel = ({
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Renewal Status</h3>
         <select
-          value={filters.renewalStatus || ""}
+          value={filters.renewal_status || ""}
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, renewalStatus: e.target.value }))
+            setFilters((prev) => ({ ...prev, renewal_status: e.target.value }))
           }
           className="w-full border border-gray-300 rounded-md p-2 text-gray-700
       focus:border-blue-500 focus:ring focus:ring-blue-200"
@@ -311,8 +309,8 @@ const StudentFilterPanel = ({
           <input
             type="radio"
             name="notUsingApp"
-            checked={filters.notUsingApp === true}
-            onChange={() => setFilters((prev) => ({ ...prev, notUsingApp: true }))}
+            checked={filters.non_app_user === true}
+            onChange={() => setFilters((prev) => ({ ...prev, non_app_user: true }))}
           />
           Not Using App
         </label>
@@ -321,9 +319,9 @@ const StudentFilterPanel = ({
           <input
             type="radio"
             name="registeredStudents"
-            checked={filters.registeredStudents === true}
+            checked={filters.is_registered === true}
             onChange={() =>
-              setFilters((prev) => ({ ...prev, registeredStudents: true }))
+              setFilters((prev) => ({ ...prev, is_registered: true }))
             }
           />
           Registered Students
@@ -333,8 +331,8 @@ const StudentFilterPanel = ({
           <input
             type="radio"
             name="withoutPhone"
-            checked={filters.noPhone === true}
-            onChange={() => setFilters((prev) => ({ ...prev, noPhone: true }))}
+            checked={filters.with_out_any_phone_number === true}
+            onChange={() => setFilters((prev) => ({ ...prev, with_out_any_phone_number: true }))}
           />
           Without any phone number
         </label>

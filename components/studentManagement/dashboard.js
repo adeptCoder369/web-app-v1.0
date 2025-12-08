@@ -75,8 +75,21 @@ const StudentMangementDashboard = ({
     motherName: '',
     dob: '',
     appUsed: "",
-    isSearch: false
-
+    isSearch: false,
+    gender: '',
+    phone: '',
+    admission_number: '',
+    father_name: '',
+    mother_name: '',
+    date_of_birth: "",
+    registration_number: "",
+    registered_phone_for_sms: "",
+    optional_subject: "",
+    email: "",
+    renewal_status:"",
+    non_app_user:"",
+    is_registered:"",
+    with_out_any_phone_number:"",
 
 
 

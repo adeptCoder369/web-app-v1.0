@@ -46,6 +46,58 @@ export const getStudentList = async (
   if (payload?.appUsed && payload.appUsed.trim() !== "") {
     requestBody.app_user = payload.appUsed;
   }
+  if (payload?.gender && payload.gender.trim() !== "") {
+    requestBody.gender = payload.gender;
+  }
+  if (payload?.phone && payload.phone.trim() !== "") {
+    requestBody.phone = payload.phone;
+  }
+  if (payload?.admission_number && payload.admission_number.trim() !== "") {
+    requestBody.admission_number = payload.admission_number;
+  }
+
+  if (payload?.father_name && payload.father_name.trim() !== "") {
+    requestBody.father_name = payload.father_name;
+  }
+  if (payload?.mother_name && payload.mother_name.trim() !== "") {
+    requestBody.mother_name = payload.mother_name;
+  }
+
+
+  if (payload?.date_of_birth && payload.date_of_birth.trim() !== "") {
+    requestBody.date_of_birth = payload.date_of_birth;
+  }
+
+  if (payload?.registration_number && payload.registration_number.trim() !== "") {
+    requestBody.registration_number = payload.registration_number;
+  }
+  if (payload?.registered_phone_for_sms && payload.registered_phone_for_sms.trim() !== "") {
+    requestBody.registered_phone_for_sms = payload.registered_phone_for_sms;
+  }
+  if (payload?.optional_subject && payload.optional_subject.trim() !== "") {
+    requestBody.optional_subject = payload.optional_subject;
+  }
+
+  if (payload?.email && payload.email.trim() !== "") {
+    requestBody.email = payload.email;
+  }
+  if (payload?.renewal_status && payload.renewal_status.trim() !== "") {
+    requestBody.renewal_status = payload.renewal_status;
+  }
+  if (payload?.non_app_user) {
+    requestBody.non_app_user = payload.non_app_user;
+  }
+  if (payload?.is_registered) {
+    requestBody.is_registered = payload.is_registered;
+  }
+    if (payload?.with_out_any_phone_number) {
+    requestBody.with_out_any_phone_number = payload.with_out_any_phone_number;
+  }
+
+
+
+
+
 
 
   return axios.post(`${API_BASE_URL}/api`, requestBody);
