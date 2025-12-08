@@ -86,10 +86,10 @@ const StudentMangementDashboard = ({
     registered_phone_for_sms: "",
     optional_subject: "",
     email: "",
-    renewal_status:"",
-    non_app_user:"",
-    is_registered:"",
-    with_out_any_phone_number:"",
+    renewal_status: "",
+    non_app_user: "",
+    is_registered: "",
+    with_out_any_phone_number: "",
 
 
 
@@ -215,7 +215,10 @@ const StudentMangementDashboard = ({
       { name: '', gender: 'MALE', relation: "FATHER", qualification: '', annualIncome: '', phones: [''] },
       { name: '', gender: 'FEMALE', relation: "MOTHER", qualification: '', annualIncome: '', phones: [''] },
       // { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
-    ]
+    ],
+    smsRegisteredNumber: "",
+    emergencyContactNumber: ""
+
   });
 
   const formSteps = [
@@ -271,7 +274,7 @@ const StudentMangementDashboard = ({
       };
 
 
-      console.log('====== payload___________________ : ', payload?.documents?.birthCertificate?.uploadedUrl, payload)
+      console.log('====== payload___________________ : ', payload)
       // return
       // Example: Call your addStaff API or controller function
       let res = await addStudent(
@@ -283,6 +286,7 @@ const StudentMangementDashboard = ({
         payload
       );
       console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
+
       if (!res?.data?.success) {
         // console.log('====== resaxxx : ', res?.data?.results?.message)
         setError(res?.data?.results?.message || 'Failed to save student data. Please try again.');
@@ -318,9 +322,11 @@ const StudentMangementDashboard = ({
         setCurrentFormStep('basic');
         setActiveTab('add');
         setSuccess(res?.data?.results?.message);
+
         setTimeout(() => {
           window.location.reload();
         }, 600);
+
       }
 
 

@@ -219,24 +219,7 @@ const BasicInfoForm = ({
 
 
 
-        {/* Address (spans 2 columns) */}
-        <div className="relative sm:col-span-2">
-          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Address</label>
-          <div className="mt-1 relative rounded-md shadow-sm">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <LucideMapPinned className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              value={formData.address || ''}
-              onChange={(e) => handleChange('address', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
-                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                 transition duration-200 placeholder-gray-400 hover:border-gray-400"              placeholder="Full Address"
-            />
-          </div>
-        </div>
+     
 
       </form>
 

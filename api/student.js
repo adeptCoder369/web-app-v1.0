@@ -195,15 +195,14 @@ export const addStudent = async (
 ) => {
 
 
-  console.log('=======--------------- payload : ', payload?.parents?.map((p) => ({
-    relation_with_student: p.relation,
-    name: p.name,
-    gender: p.gender,
-    phones: p.phones?.filter((ph) => ph && ph.trim() !== "") || [],
-    emails: p.emails?.filter((em) => em && em.trim() !== "") || [],
-    // qualification: p.qualification,
-    // annual_income: p.annualIncome
-  })));
+  // console.log('=======--------------- payload : ', payload?.parents?.map((p) => ({
+  //   relation_with_student: p.relation,
+  //   name: p.name,
+  //   gender: p.gender,
+  //   phones: p.phones?.filter((ph) => ph && ph.trim() !== "") || [],
+  //   emails: p.emails?.filter((em) => em && em.trim() !== "") || [],
+ 
+  // })));
 
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "student.add",
@@ -284,9 +283,9 @@ export const addStudent = async (
     //     "emails": []
     //   }
     // ],
-    "registered_phone_for_sms": payload?.registered_phone_for_sms,
-    "emergency_contact_number": payload?.emergency_contact_number,
-
+    "registered_phone_for_sms": payload?.smsRegisteredNumber,
+    "emergency_contact_number": payload?.emergencyContactNumber
+,
 
 
 
