@@ -109,9 +109,13 @@ const menuItems = [
     />, subMenu: [
       {
         name: "All Staff",
-        url: "/dashboard/staff-management",
+        url: "/dashboard/staff-management?tab=list",
       },
-      { name: "Add Staff", url: "/add-staff", quickLink: true },
+      {
+        name: "Add Staff",
+        url: "/dashboard/staff-management?tab=add",
+        quickLink: true
+      },
       // { name: "Departments", url: "/departments", quickLink: true },
       // { name: "School Roles", url: "/school-roles", quickLink: true },
       // { name: "Subject Class Mapping", url: "/subject-mapping", quickLink: true }

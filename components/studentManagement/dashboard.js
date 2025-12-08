@@ -124,7 +124,7 @@ const StudentMangementDashboard = ({
 
     filters?.class,
     filters?.status,
-    filters,
+
     filters?.isSearch
   ]);
 

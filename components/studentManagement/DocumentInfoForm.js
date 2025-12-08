@@ -3,8 +3,11 @@ import { X, Upload, FileText, Image } from 'lucide-react';
 import { PiListNumbersFill } from 'react-icons/pi';
 import { FcDocument } from 'react-icons/fc';
 import { GrDocumentVerified } from "react-icons/gr";
+import { getCookie } from "cookies-next";
+import { getSessionCache } from '../../utils/sessionCache';
 
 const DocumentInfoForm = ({ formData, setFormData }) => {
+
   const documentFields = [
     { key: 'profileImage', label: 'Profile Image', icon: Image },
     { key: 'birthCertificate', label: 'Birth Certificate', icon: FileText },
@@ -12,15 +15,58 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
     { key: 'familyPhoto', label: 'Family Photo', icon: Image }
   ];
 
-  const handleFileChange = (key, file) => {
-    const previewUrl = URL.createObjectURL(file);
-    setFormData(prev => ({
-      ...prev,
-      documents: {
-        ...prev.documents,
-        [key]: { file, preview: previewUrl }
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState(false)
+
+  const handleFileChange = async (key, file) => {
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const resolvedGuid = getCookie("guid");
+      const resolvedUserId = getCookie("id");
+      const context = getSessionCache("dashboardContext");
+
+      const data = new FormData();
+      data.append("api", "file.upload");
+      data.append("guid", resolvedGuid);
+      data.append("logged_in_user_account_id", resolvedUserId);
+      data.append("user_account_id", context?.profileId);
+      data.append("client_id", context?.session);
+      data.append("platform", "WEB");
+      data.append("file_upload_destination", "student_photo_upload");
+      data.append("uploaded_files[]", file);
+
+      const resp = await fetch("/api/file.upload", {
+        method: "POST",
+        body: data,
+      });
+
+      const result = await resp.json();
+      console.log('result___', result);
+
+      if (result?.success && result?.results?.files?.[0]) {
+        const uploadedUrl = result.results.files[0].full_url;
+        const previewUrl = URL.createObjectURL(file);
+
+        setFormData(prev => ({
+          ...prev,
+          documents: {
+            ...prev.documents,
+            [key]: { file, preview: previewUrl, uploadedUrl }
+          }
+        }));
+      } else {
+        setUploadError(`Failed to upload ${file.name}`);
       }
-    }));
+    } catch (err) {
+      console.error(err);
+      setUploadError("Error uploading file.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const removeFile = (key) => {
@@ -35,6 +81,14 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
     });
   };
 
+  const handleChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+      console.log('filters', formData);
+
   return (
     <div className="w-full  mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
       <div className="mb-6">
@@ -45,7 +99,11 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 m-4">
         {documentFields.map((doc) => {
           const Icon = doc.icon;
-          const hasFile = formData.documents?.[doc.key]?.file;
+          const docState = formData.documents?.[doc.key];
+          const hasFile = !!docState?.file;
+          const isLoading = uploading && !docState?.uploadedUrl;
+          const imageUrl = docState?.uploadedUrl || docState?.preview;
+
 
           return (
             <div key={doc.key} className="space-y-2">
@@ -55,7 +113,10 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
               </label>
 
               {!hasFile ? (
-                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors group">
+                <label
+                  htmlFor={`file-${doc.key}`}
+                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors group"
+                >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <Upload className="h-10 w-10 text-gray-400 group-hover:text-gray-500 mb-3" />
                     <p className="mb-2 text-sm text-gray-500">
@@ -63,7 +124,9 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
                     </p>
                     <p className="text-xs text-gray-400">PNG, JPG or PDF</p>
                   </div>
+
                   <input
+                    id={`file-${doc.key}`}
                     type="file"
                     accept="image/*,application/pdf"
                     onChange={(e) => e.target.files[0] && handleFileChange(doc.key, e.target.files[0])}
@@ -71,27 +134,39 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
                   />
                 </label>
               ) : (
-                <div className="relative w-full h-48 border-2 border-gray-200 rounded-xl overflow-hidden bg-gray-50 group">
-                  <img
-                    src={formData.documents[doc.key].preview}
-                    alt={doc.label}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200" />
-                  <button
-                    type="button"
-                    onClick={() => removeFile(doc.key)}
-                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <p className="text-white text-xs font-medium truncate">
-                      {formData.documents[doc.key].file.name}
-                    </p>
-                  </div>
+                <div className="relative w-full h-48 border-2 border-gray-200 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
+
+                  {isLoading ? (
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-10 h-10 border-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin"></div>
+                      <p className="text-xs text-gray-500 mt-3">Uploading...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <img
+                        src={imageUrl}
+                        alt={doc.label}
+                        className="w-full h-full object-cover"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => removeFile(doc.key)}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-all"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3 opacity-100 transition-opacity">
+                        <p className="text-white text-xs font-medium truncate">
+                          {docState?.file?.name}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
+
             </div>
           );
         })}
@@ -124,89 +199,89 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-       
+
 
 
           <div className="relative">
-          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Name Matches With Aadhaar
-          </label>
-          <div className="mt-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <GrDocumentVerified className="h-5 w-5 text-gray-400" />
-            </div>
-            <select
-              value={formData.isHyperActive || ''}
-              onChange={(e) => handleChange('isHyperActive', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+            <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
+              Name Matches With Aadhaar
+            </label>
+            <div className="mt-1 relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <GrDocumentVerified className="h-5 w-5 text-gray-400" />
+              </div>
+              <select
+                value={formData.isHyperActive || ''}
+                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
-              <option value="">Select options</option>
-              {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
-            </select>
-          </div>
-        </div>
-
-
-        <div className="relative">
-          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Date Of Birth Matches With Aadhaar
-          </label>
-          <div className="mt-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <GrDocumentVerified className="h-5 w-5 text-gray-400" />
+                <option value="">Select options</option>
+                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
             </div>
-            <select
-              value={formData.isHyperActive || ''}
-              onChange={(e) => handleChange('isHyperActive', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+          </div>
+
+
+          <div className="relative">
+            <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
+              Date Of Birth Matches With Aadhaar
+            </label>
+            <div className="mt-1 relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <GrDocumentVerified className="h-5 w-5 text-gray-400" />
+              </div>
+              <select
+                value={formData.isHyperActive || ''}
+                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
-              <option value="">Select options</option>
-              {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
-            </select>
+                <option value="">Select options</option>
+                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
           </div>
-        </div>
 
 
-        <div className="relative">
-          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Father Name Matches With Aadhaar
-          </label>
-          <div className="mt-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <GrDocumentVerified className="h-5 w-5 text-gray-400" />
-            </div>
-            <select
-              value={formData.isHyperActive || ''}
-              onChange={(e) => handleChange('isHyperActive', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+          <div className="relative">
+            <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
+              Father Name Matches With Aadhaar
+            </label>
+            <div className="mt-1 relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <GrDocumentVerified className="h-5 w-5 text-gray-400" />
+              </div>
+              <select
+                value={formData.isHyperActive || ''}
+                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
-              <option value="">Select options</option>
-              {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
-            </select>
-          </div>
-        </div>
-        <div className="relative">
-          <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Address Matches With Aadhaar
-          </label>
-          <div className="mt-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <GrDocumentVerified  className="h-5 w-5 text-gray-400" />
+                <option value="">Select options</option>
+                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
             </div>
-            <select
-              value={formData.isHyperActive || ''}
-              onChange={(e) => handleChange('isHyperActive', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
+          </div>
+          <div className="relative">
+            <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
+              Address Matches With Aadhaar
+            </label>
+            <div className="mt-1 relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <GrDocumentVerified className="h-5 w-5 text-gray-400" />
+              </div>
+              <select
+                value={formData.isHyperActive || ''}
+                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
-              <option value="">Select options</option>
-              {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
-            </select>
+                <option value="">Select options</option>
+                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
           </div>
-        </div>
         </div>
 
 
