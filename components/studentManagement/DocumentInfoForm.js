@@ -45,17 +45,28 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
       });
 
       const result = await resp.json();
-      console.log('result___', result);
 
       if (result?.success && result?.results?.files?.[0]) {
-        const uploadedUrl = result.results.files[0].full_url;
+        const fullUrl = result.results.files[0].full_url;
+
+        // Extract ONLY the relative path, because that's how your system stores it
+        const relative = fullUrl.split(
+          "https://infoeight-s3-new.s3.ap-south-1.amazonaws.com/students/demo-model-school-secondary-bankura/"
+        )[1];
+
+        // Save both the preview & uploaded relative path
         const previewUrl = URL.createObjectURL(file);
 
         setFormData(prev => ({
           ...prev,
           documents: {
             ...prev.documents,
-            [key]: { file, preview: previewUrl, uploadedUrl }
+            [key]: {
+              file,
+              preview: previewUrl,
+              uploadedUrl: fullUrl,
+              relativePath: relative
+            }
           }
         }));
       } else {
@@ -68,6 +79,7 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
       setUploading(false);
     }
   };
+
 
   const removeFile = (key) => {
     setFormData(prev => {
@@ -87,7 +99,7 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
       [field]: value
     }));
   };
-      console.log('filters', formData);
+  console.log('filters', formData);
 
   return (
     <div className="w-full  mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
@@ -102,7 +114,7 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
           const docState = formData.documents?.[doc.key];
           const hasFile = !!docState?.file;
           const isLoading = uploading && !docState?.uploadedUrl;
-          const imageUrl = docState?.uploadedUrl || docState?.preview;
+          const imageUrl = docState?.uploadedUrl || docState?.preview || null;
 
 
           return (
@@ -182,8 +194,8 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
 
           <input
             type="text"
-            value={formData.previousRollNo || ''}
-            onChange={(e) => handleChange('previousRollNo', e.target.value)}
+            value={formData.aadharCard || ''}
+            onChange={(e) => handleChange('aadharCard', e.target.value)}
             placeholder="Enter Aadhar Card Number"
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 

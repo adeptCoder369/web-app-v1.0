@@ -234,5 +234,15 @@ export const addStudent = async (
     // ],
     "registered_phone_for_sms": payload?.registered_phone_for_sms,
     "emergency_contact_number": payload?.emergency_contact_number,
+
+
+
+
+
+    "birth_certificate": payload?.documents?.birthCertificate?.uploadedUrl,
+    "aadhaar_image": payload?.documents?.aadhar?.uploadedUrl,
+    "family_photo": payload?.documents?.familyPhoto?.uploadedUrl,
+    "profile_photo": payload?.documents?.profileImage?.uploadedUrl,
+
   });
 };

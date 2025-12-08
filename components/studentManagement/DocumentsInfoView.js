@@ -18,6 +18,8 @@ export default function DocumentsInfoViewTab({
 
   const [uploadingKey, setUploadingKey] = useState(null);
   const [error, setError] = useState(null);
+  const [isSaving, setIsSaving] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const basePayload = {
     user_account_id: profile,
@@ -28,10 +30,39 @@ export default function DocumentsInfoViewTab({
     school_id: school,
     class_id: studentDetail.class?.id,
   };
+const handleSave = async (key, value) => {
+  try {
+    setIsSaving(true);
+    setError('');
+    setSuccess('');
 
-  const handleSave = async (key, value) => {
-    await patchStudentDetail({ ...basePayload, [key]: value });
-  };
+    const res = await patchStudentDetail({ 
+      ...basePayload, 
+      [key]: value 
+    });
+
+    console.log('res==____', res);
+
+    if (!res?.data?.success) {
+      setError(res?.results?.message || 'Failed to update.');
+      return;
+    }
+
+    setSuccess(res?.data?.message || 'Updated');
+
+  } catch (err) {
+    console.error('Save error:', err);
+    setError('Something went wrong while updating.');
+  } finally {
+    setIsSaving(false);
+
+    setTimeout(() => {
+      setError('');
+      setSuccess('');
+    }, 4000);
+  }
+};
+
 
 
 

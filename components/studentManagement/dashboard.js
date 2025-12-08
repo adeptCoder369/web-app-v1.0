@@ -194,6 +194,7 @@ const StudentMangementDashboard = ({
 
     // School Details
     registrationNumber: '',
+    documents: {},
 
 
     // Parents Information
@@ -257,8 +258,8 @@ const StudentMangementDashboard = ({
       };
 
 
-      // console.log('====== payload : ', Context, payload)
-
+      console.log('====== payload___________________ : ', payload?.documents?.birthCertificate?.uploadedUrl, payload)
+      // return
       // Example: Call your addStaff API or controller function
       let res = await addStudent(
         Context?.profileId,
@@ -268,7 +269,7 @@ const StudentMangementDashboard = ({
 
         payload
       );
-      // console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
+      console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
       if (!res?.data?.success) {
         // console.log('====== resaxxx : ', res?.data?.results?.message)
         setError(res?.data?.results?.message || 'Failed to save student data. Please try again.');
@@ -304,6 +305,9 @@ const StudentMangementDashboard = ({
         setCurrentFormStep('basic');
         setActiveTab('add');
         setSuccess(res?.data?.results?.message);
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
       }
 
 
@@ -440,14 +444,16 @@ const StudentMangementDashboard = ({
                   />
                 }
                 {currentFormStep === 'documents' &&
-                  <DocumentInfoForm
+                  <>
+                    <DocumentInfoForm
 
-                    formData={formData}
-                    setFormData={setFormData}
+                      formData={formData}
+                      setFormData={setFormData}
 
-                    genderOptions={genderOptions}
+                      genderOptions={genderOptions}
 
-                  />
+                    />
+                  </>
                 }
               </div>
 
