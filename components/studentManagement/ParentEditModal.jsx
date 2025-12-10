@@ -39,13 +39,17 @@ export default function ParentEditModal({
       comment: p?.comment || "",
       emails: p?.emails || [],
       phones: Array.isArray(p?.phones) ? p.phones.map(x => x.phone || x) : [p?.phone || ""],
-      children: Array.isArray(p?.students) ? p.students.map(s => ({
-        standardId: s?.standard_id || "",
-        classId: s?.class_id || "",
-        studentId: s?.id || "",
-        relation: s?.relation_with_student || ""
-      })) : [],
-      // keep UI-safe defaults for any other fields used in the form
+      children: Array.isArray(p?.students)
+        ? p.students.map(s => ({
+          id: s.id,
+          name: s.name || "",
+          className: s.class || "",
+          rollNumber: s.roll_number || "",
+          relation: s.relation_with_parent || "",
+          image: s.image_url || null
+        }))
+        : [],
+
       locality: p?.locality || "",
       landmark: p?.landmark || "",
       city: p?.city || "",
@@ -168,15 +172,25 @@ export default function ParentEditModal({
         aadhaar_number: form.aadhaar || "",
         emails: form.emails || [],
         phones: form.phones,
-        address: form.org_address || "",
-        locality: form.locality || "",
-        landmark: form.landmark || "",
-        city: form.city || "",
-        state_id: form.state_id || "",
+        pan: form.pan || "",
+        pan: form.qualification || "",
+        designation: form.designation || "",
+        organisation: form.organisation || "",
+        comment: form.comment || "",
+        org_address: form.org_address || "",
+        profession: form.profession || "",
+        annual_income: form.annual_income || "",
+        is_single_parent: form.is_single_parent || "",
+        is_alumni: form.is_alumni || "",
+        profile_img: form.profile_img || "",
+        family_img: form.family_img || "",
+
         students: form.children || "",
+        nationality: form.nationality || "",
       };
 
       if (updateParents) {
+        console.log('payload--', payload)
 
         const resp = await updateParents(
           context?.profileId,
@@ -184,7 +198,6 @@ export default function ParentEditModal({
           payload
         );
 
-        console.log('resp___', resp)
 
         if (resp?.data?.success) {
           setSuccess(resp.data?.results?.message || "Parent saved successfully");
@@ -197,6 +210,8 @@ export default function ParentEditModal({
           setSubmitted(false)
         } else {
           setError(resp?.data?.results?.message || "Failed to save parent");
+          setSubmitted(false)
+
         }
       } else {
         throw new Error("No function provided to handle parent submission");
@@ -409,12 +424,12 @@ export default function ParentEditModal({
                     </label>
                     <select
                       className="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                      value={form.is_alumni}
+                      value={form.is_alumni ?? ""}
                       onChange={(e) => updateField("is_alumni", e.target.value)}
                     >
                       <option value="">Select status</option>
-                      <option value="YES">Yes</option>
-                      <option value="NO">No</option>
+                      <option value="1">Yes</option>
+                      <option value="0">No</option>
                     </select>
                   </div>
 
@@ -606,6 +621,71 @@ export default function ParentEditModal({
                   </button>
                 </div>
               </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Linked Students
+                </h3>
+
+                {form.children.length === 0 && (
+                  <div className="text-gray-500 text-sm">No children linked yet.</div>
+                )}
+
+                <div className="space-y-4">
+                  {form.children.map((child, index) => (
+                    <div
+                      key={child.id || index}
+                      className="border rounded-xl p-4 flex items-center justify-between bg-gray-50"
+                    >
+                      {/* Left Section: Avatar + Info */}
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
+                          {child.image ? (
+                            <img
+                              src={child.image_url}
+                              alt={child.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <img
+                              src={"/placeholder-student.png"}
+                              alt={child.name}
+                              className="w-full h-full object-cover"
+                            />
+
+                          )}
+                        </div>
+
+                        <div>
+                          <div className="font-semibold">{child.name}</div>
+                          <div className="text-sm text-gray-600">
+                            {child.class} • Roll No. {child.roll_number || child.rollNumber}
+                          </div>
+                          <div className="text-sm text-blue-600">
+                            Relation: {child.relation_with_parent || child?.relation}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Section: Buttons */}
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => removeChild(index)}
+                          className="px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600"
+                        >
+                          Remove Student
+                        </button>
+                        <button
+                          onClick={() => yourEditFunction(index)}
+                          className="px-3 py-1.5 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        >
+                          Update Relation
+                        </button>
+
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* Children Mapping */}
               <div>
@@ -745,7 +825,7 @@ export default function ParentEditModal({
               onClick={handleSubmit}
               className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg font-medium"
             >
-              {!submitted ? "Update Parent" : "Updating"}
+              {!submitted ? "Update Parent" : "Updating ..."}
             </button>
           </div>
         </div>

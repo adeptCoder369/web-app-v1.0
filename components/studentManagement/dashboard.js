@@ -591,6 +591,7 @@ const StudentMangementDashboard = ({
             <>
               <ParentManagement
               Context={Context}
+              config={config}
                 // parents={parents}
                 // setIsHouseUpdatedOrCreated={setIsHouseUpdatedOrCreated}
               />
