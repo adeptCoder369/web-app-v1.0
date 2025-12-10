@@ -6,7 +6,6 @@ import { StudentList } from './listStudent';
 import StudentProfile from './studentProfile';
 import { getSessionCache } from '../../utils/sessionCache';
 import { addStudent, getStudentList } from '../../api/student';
-import { addParents, getParentsList } from '../../api/parents';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 import BasicInfoForm from './BasicInfoForm';
 import PersonalInfoForm from './PersonalInfoForm';
@@ -16,10 +15,11 @@ import DocumentInfoForm from './DocumentInfoForm';
 import { useStudent } from '../../context/studentContext';
 import HouseManagement from './houseList';
 import ParentManagement from './parents';
+import Birthdays from './birthdays';
 import { getHouseList } from '../../api/houses';
 import { useSearchParams } from "next/navigation";
-import ConfirmationSuccessDialogueBox from "../ui/status/ConfirmationSuccess";
 import { IoPeopleSharp } from 'react-icons/io5';
+import { FaBirthdayCake } from 'react-icons/fa';
 
 
 const breadcrumbs = [
@@ -33,7 +33,8 @@ const tabs = [
   { id: 'add', label: 'Add Student', icon: BadgePlus },
   { id: 'view', label: 'View Profile', icon: User },
   { id: 'houses', label: 'Houses', icon: House },
-  { id: 'parents', label: 'Parents', icon: IoPeopleSharp }
+  { id: 'parents', label: 'Parents', icon: IoPeopleSharp },
+  { id: 'birthdays', label: 'Birthdays', icon: FaBirthdayCake }
 ];
 
 const StudentMangementDashboard = ({
@@ -590,10 +591,18 @@ const StudentMangementDashboard = ({
           {activeTab === 'parents' && (
             <>
               <ParentManagement
-              Context={Context}
-              config={config}
-                // parents={parents}
-                // setIsHouseUpdatedOrCreated={setIsHouseUpdatedOrCreated}
+                Context={Context}
+                config={config}
+              />
+            </>
+          )}
+
+
+          {activeTab === 'birthdays' && (
+            <>
+              <Birthdays
+                context={Context}
+                config={config}
               />
             </>
           )}

@@ -95,6 +95,10 @@ const menuItems = [
         url: "/dashboard/student-management?tab=parents"
       },
 
+       {
+        name: "Birthdays",
+        url: "/dashboard/student-management?tab=birthdays"
+      },
 
       // { name: "Download Student Data", url: "/student-downloads", quickLink: true },
 
