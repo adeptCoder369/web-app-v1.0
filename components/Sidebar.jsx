@@ -90,6 +90,12 @@ const menuItems = [
         url: "/dashboard/student-management?tab=houses"
       },
 
+      {
+        name: "Parents",
+        url: "/dashboard/student-management?tab=parents"
+      },
+
+
       // { name: "Download Student Data", url: "/student-downloads", quickLink: true },
 
       // { name: "Parents", url: "/student-parents" },

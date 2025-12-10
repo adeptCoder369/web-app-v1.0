@@ -6,6 +6,7 @@ import { StudentList } from './listStudent';
 import StudentProfile from './studentProfile';
 import { getSessionCache } from '../../utils/sessionCache';
 import { addStudent, getStudentList } from '../../api/student';
+import { addParents, getParentsList } from '../../api/parents';
 import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 import BasicInfoForm from './BasicInfoForm';
 import PersonalInfoForm from './PersonalInfoForm';
@@ -14,9 +15,11 @@ import AcademicInfoForm from './AcademicInfoForm';
 import DocumentInfoForm from './DocumentInfoForm';
 import { useStudent } from '../../context/studentContext';
 import HouseManagement from './houseList';
+import ParentManagement from './parents';
 import { getHouseList } from '../../api/houses';
 import { useSearchParams } from "next/navigation";
 import ConfirmationSuccessDialogueBox from "../ui/status/ConfirmationSuccess";
+import { IoPeopleSharp } from 'react-icons/io5';
 
 
 const breadcrumbs = [
@@ -29,7 +32,8 @@ const tabs = [
   { id: 'list', label: 'List Students', icon: List },
   { id: 'add', label: 'Add Student', icon: BadgePlus },
   { id: 'view', label: 'View Profile', icon: User },
-  { id: 'houses', label: 'Houses', icon: House }
+  { id: 'houses', label: 'Houses', icon: House },
+  { id: 'parents', label: 'Parents', icon: IoPeopleSharp }
 ];
 
 const StudentMangementDashboard = ({
@@ -114,7 +118,7 @@ const StudentMangementDashboard = ({
         context?.session,
         filters
       );
-      console.log('data', data?.data?.results);
+      // console.log('data', data?.data?.results);
 
 
       if (mounted.current) setStudentListData(data?.data?.results?.students);
@@ -156,7 +160,9 @@ const StudentMangementDashboard = ({
     fetchHouses();
   }, [isHouseUpdatedOrCreated]);
 
-  // console.log(  isHouseUpdatedOrCreated,"isHouseUpdatedOrCreated");
+
+
+
 
 
   const classesOptions = config?.classes || [];
@@ -274,7 +280,7 @@ const StudentMangementDashboard = ({
       };
 
 
-      console.log('====== payload___________________ : ', payload)
+      // console.log('====== payload___________________ : ', payload)
       // return
       // Example: Call your addStaff API or controller function
       let res = await addStudent(
@@ -285,7 +291,7 @@ const StudentMangementDashboard = ({
 
         payload
       );
-      console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
+      // console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
 
       if (!res?.data?.success) {
         // console.log('====== resaxxx : ', res?.data?.results?.message)
@@ -578,6 +584,21 @@ const StudentMangementDashboard = ({
               />
             </>
           )}
+
+
+
+          {activeTab === 'parents' && (
+            <>
+              <ParentManagement
+              Context={Context}
+                // parents={parents}
+                // setIsHouseUpdatedOrCreated={setIsHouseUpdatedOrCreated}
+              />
+            </>
+          )}
+
+
+
 
         </div>
       </div>
