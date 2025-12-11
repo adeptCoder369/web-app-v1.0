@@ -1,21 +1,23 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { User, BadgePlus, List, Save, Users, Heart, Book, FileInput, File, Banknote, } from 'lucide-react';
+import { User, BadgePlus, List, Save, Heart, Book, File, Banknote, Notebook, Captions, } from 'lucide-react';
 import { StaffList } from './listStaff';
 import StaffProfile from './staffProfile';
 import AddStaff from './addStaffForm';
 import { getSessionCache } from '../../utils/sessionCache';
-import { useStaff } from '../../controllers/staff';
-
-import Loader from '../../components/ui/status/Loader';
 import { addStaff } from '../../api/staff';
 import AddStaffPersonalInfo from './AddStaffPersonalInfo';
 import AddDocumentInfo from './AddDocumentInfo';
 import AddAcademicInfo from './AddAcademicInfo';
+import DepartmentManagement from './departments';
+import SchoolRolesManagement from './schoolRoles';
+import SchoolTitleManagement from './titles';
+import SchoolDesignationManagement from './schoolDesignation';
+import ClassSubjectMapping from './ClassSubjectMapping';
 import AddBankInfo from './AddBankInfo';
-import { set } from 'date-fns';
 import { useSearchParams } from 'next/navigation';
-
+import { VscSymbolClass } from "react-icons/vsc";
+import { MdClass } from 'react-icons/md';
 // ===================================================================
 
 
@@ -23,7 +25,12 @@ import { useSearchParams } from 'next/navigation';
 const tabs = [
   { id: 'list', label: 'List Staff', icon: List },
   { id: 'add', label: 'Add Staff', icon: BadgePlus },
-  { id: 'view', label: 'View Profile', icon: User }
+  { id: 'view', label: 'View Profile', icon: User },
+  { id: 'departments', label: 'Departments', icon: VscSymbolClass },
+  { id: 'schoolRoles', label: 'Roles', icon: Notebook },
+  { id: 'schoolDesignation', label: 'Designation', icon: Captions },
+  { id: 'schoolTitles', label: 'Titles', icon: Captions },
+  { id: 'subjectClassMapping', label: 'Subject Class Mapping', icon: MdClass },
 ];
 
 const StaffMangementDashboard = ({
@@ -483,6 +490,56 @@ const StaffMangementDashboard = ({
 
             </>
           )}
+
+
+
+          {activeTab === 'departments' && (
+            <>
+              <DepartmentManagement
+                Context={Context}
+                config={config}
+              />
+            </>
+          )}
+
+
+          {activeTab === 'schoolRoles' && (
+            <>
+              <SchoolRolesManagement
+                Context={Context}
+                config={config}
+              />
+            </>
+          )}
+
+          {activeTab === 'schoolDesignation' && (
+            <>
+              <SchoolDesignationManagement
+                Context={Context}
+                config={config}
+              />
+            </>
+          )}
+
+          {activeTab === 'schoolTitles' && (
+            <>
+              <SchoolTitleManagement
+                Context={Context}
+                config={config}
+              />
+            </>
+          )}
+
+          {activeTab === 'subjectClassMapping' && (
+            <>
+              <ClassSubjectMapping
+                Context={Context}
+                config={config}
+              />
+            </>
+          )}
+
+
           {/* ======================================================================================== */}
 
 

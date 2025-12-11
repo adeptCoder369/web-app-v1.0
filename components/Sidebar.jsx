@@ -95,7 +95,7 @@ const menuItems = [
         url: "/dashboard/student-management?tab=parents"
       },
 
-       {
+      {
         name: "Birthdays",
         url: "/dashboard/student-management?tab=birthdays"
       },
@@ -126,9 +126,38 @@ const menuItems = [
         url: "/dashboard/staff-management?tab=add",
         quickLink: true
       },
+
+      {
+        name: "Departments",
+        url: "/dashboard/staff-management?tab=departments",
+        quickLink: false
+      },
+
+      {
+        name: "School Roles",
+        url: "/dashboard/staff-management?tab=schoolRoles",
+        quickLink: false
+      },
+
+      {
+        name: "School Designations",
+        url: "/dashboard/staff-management?tab=schoolDesignation",
+        quickLink: false
+      },
+      {
+        name: "Titles",
+        url: "/dashboard/staff-management?tab=schoolTitles",
+        quickLink: false
+      },
+
+
       // { name: "Departments", url: "/departments", quickLink: true },
       // { name: "School Roles", url: "/school-roles", quickLink: true },
-      // { name: "Subject Class Mapping", url: "/subject-mapping", quickLink: true }
+      {
+        name: "Subject Class Mapping",
+        url: "/dashboard/staff-management?tab=subjectClassMapping",
+        quickLink: true
+      }
     ]
   },
   // {
