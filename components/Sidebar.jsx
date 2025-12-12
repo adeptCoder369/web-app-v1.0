@@ -20,26 +20,7 @@ const menuItems = [
     url: "/dashboard",
     active: true
   },
-  // {
-  //   name: "ERP MANAGEMENT",
-  //   icon: <Image
-  //     src="/icons/erp.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />,
-  //   subMenu: [
-  //     {
-  //       name: "Setup",
-  //       url: "/dashboard/erp-management",
-  //       quickLink: true
-  //     },
-  //     { name: "Images", url: "/client/images" },
-  //     { name: "Permissions", url: "/client/permissions", quickLink: true },
-  //     { name: "Staff Usage Report", url: "/staff-report" }
-  //   ]
-  // },
+
   {
     name: "STANDARD MANAGEMENT",
     icon: <Image
@@ -61,8 +42,42 @@ const menuItems = [
 
 
       },
-      // { name: "Class Details", url: "/class-details" },
-      // { name: "Bulk Promotion", url: "/bulk-promotion" }
+      {
+        name: "Class Details",
+        subMenu: [
+          { name: "All", url: "/class-details" },
+          { name: "With App Users", url: "/class-details" },
+          // {
+          //   name: "More Levels",
+          //   subMenu: [
+          //     { name: "Level 3 Item A", url: "/l3/a" },
+          //     {
+          //       name: "Level 3 deeper",
+          //       subMenu: [
+          //         { name: "Level 4 Item A", url: "/l4/a" }
+          //       ]
+          //     }
+          //   ]
+          // }
+        ]
+      },
+
+
+      {
+        name: "Class Change",
+        subMenu: [
+          { name: ".xls", url: "/class-details" },
+          { name: "Student Renew", url: "/class-details" },
+
+        ]
+      },
+      {
+        name: "Shuffle Sections",
+        url: "/dashboard/standard-management",
+
+
+      },
+
     ]
   },
   {
@@ -89,22 +104,35 @@ const menuItems = [
         name: "Houses",
         url: "/dashboard/student-management?tab=houses"
       },
-
+      {
+        name: "Uploads",
+        url: "/dashboard/student-management?tab=birthdays"
+      },
+      {
+        name: "Download Student Data",
+        url: "/dashboard/student-management?tab=birthdays"
+      },
+      {
+        name: "Verify Image",
+        url: "/dashboard/student-management?tab=birthdays"
+      },
+      {
+        name: "Proof Reading",
+        url: "/dashboard/student-management?tab=birthdays"
+      },
       {
         name: "Parents",
         url: "/dashboard/student-management?tab=parents"
       },
-
+      {
+        name: "Siblings",
+        url: "/dashboard/student-management?tab=birthdays"
+      },
       {
         name: "Birthdays",
         url: "/dashboard/student-management?tab=birthdays"
       },
 
-      // { name: "Download Student Data", url: "/student-downloads", quickLink: true },
-
-      // { name: "Parents", url: "/student-parents" },
-
-      // { name: "Birthdays", url: "/birthdays" }
 
     ]
   },
@@ -150,9 +178,6 @@ const menuItems = [
         quickLink: false
       },
 
-
-      // { name: "Departments", url: "/departments", quickLink: true },
-      // { name: "School Roles", url: "/school-roles", quickLink: true },
       {
         name: "Subject Class Mapping",
         url: "/dashboard/staff-management?tab=subjectClassMapping",
@@ -166,38 +191,7 @@ const menuItems = [
 
     ]
   },
-  // {
-  //   name: "REPORT CARD",
-  //   icon: <Image
-  //     src="/icons/report_card.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     {
-  //       name: "Subjects",
-  //       url: "/dashboard/report-cards",
-  //       quickLink: true
-  //     },
-  //     { name: "Grades", url: "/grades", quickLink: true },
-  //     { name: "Exams", url: "/exams", quickLink: true },
-  //     { name: "Enter Marks", url: "/enter-marks", quickLink: true },
-  //     { name: "Report Card Formats", url: "/report-formats", quickLink: true }
-  //   ]
-  // },
-  // {
-  //   name: "ONLINE EXAM",
-  //   icon: <Image
-  //     src="/icons/online_exam.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     { name: "View Quizzes", url: "/quizzes", quickLink: true }
-  //   ]
-  // },
+
   {
     name: "MOBITENDANCE",
     icon: <Image
@@ -212,38 +206,10 @@ const menuItems = [
         url: "/dashboard/attendance-management",
         quickLink: true
       },
-      // { name: "Daily Report", url: "/attendance-report", quickLink: true },
-      // { name: "Download Report", url: "/download-attendance" },
-      // { name: "Monthly Average", url: "/monthly-attendance" }
+
     ]
   },
-  // {
-  //   name: "SMS CIRCULAR",
-  //   icon: <Image
-  //     src="/icons/sms_circular.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     { name: "View Notices", url: "/notices", quickLink: true },
-  //     { name: "Send SMS Circular", url: "/send-notice", quickLink: true },
-  //     { name: "Notice Types", url: "/notice-types" }
-  //   ]
-  // },
-  // {
-  //   name: "HOMEWORK MESSAGE",
-  //   icon: <Image
-  //     src="/icons/homework_message.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     { name: "View Homework", url: "/homework", quickLink: true },
-  //     { name: "Send Homework", url: "/send-homework", quickLink: true }
-  //   ]
-  // },
+
   {
     name: "ONLINE FEE",
     icon: <Image
@@ -259,72 +225,11 @@ const menuItems = [
         quickLink: true,
 
       },
-      // { name: "Mark Student Fees", url: "/dashboard/mark-fees", quickLink: true },
       { name: "Fee Summary", url: "/dashboard/fee-summary", quickLink: true },
-      // { name: "Fee Defaulters", url: "/fee-defaulters" },
       { name: "Variable Fees Students", url: "/dashboard/variable-fee", quickLink: true },
-      // { name: "Transport Locations", url: "/dashboard/locations" }
     ]
   },
-  // {
-  //   name: "TRANSPORT MANAGEMENT",
-  //   icon: <Image
-  //     src="/icons/gps.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     { name: "School Buses", url: "/school-buses" },
-  //     { name: "Transport Locations", url: "/locations" },
-  //     { name: "School Bus Attendance", url: "/bus-attendance" }
-  //   ]
-  // },
-  // {
-  //   name: "ID CARD",
-  //   icon: <Image
-  //     src="/icons/id_card.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     { name: "Download ID Card", url: "/id-card" },
-  //     { name: "Upload ID Card", url: "/upload-id-card" },
-  //     { name: "Staff ID Card", url: "/staff-id-cards" }
-  //   ]
-  // },
-  // {
-  //   name: "LIBRARY MANAGEMENT",
-  //   icon: <Image
-  //     src="/icons/online_exam.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     {
-  //       name: "View Libraries",
-  //       url: "/dashboard/online-library",
 
-  //     },
-  //     { name: "View Books", url: "/books" },
-  //     { name: "Book Issues", url: "/book-issues" }
-  //   ]
-  // },
-  // {
-  //   name: "GALLERY",
-  //   icon: <Image
-  //     src="/icons/gallery.png"
-  //     alt="Standards Icon"
-  //     width={20}
-  //     height={20}
-  //     className="w-8 h-8"
-  //   />, subMenu: [
-  //     { name: "Album", url: "/album", quickLink: true },
-  //     { name: "Photo", url: "/photo", quickLink: true }
-  //   ]
-  // }
 ];
 
 // ===============================================================
@@ -363,15 +268,65 @@ export default function Sidebar(props) {
   };
 
   const sideNavItems = mapMenusToSideNav(props?.dashboardData?.menus);
-  const toggleMenu = (menuName) => {
+  const toggleMenu_og = (menuName) => {
     setExpandedMenus(prev => ({
       ...prev,
       [menuName]: !prev[menuName]
     }));
   };
 
+  const toggleMenu = (key) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
+  const renderMenu = (item, level = 0) => {
+    const key = `${item.name}-${level}`;
 
+    const isExpanded = expandedMenus[key];
+    const hasChildren = item.subMenu && item.subMenu.length > 0;
+    const padding = 12 + level * 12;
+
+    return (
+      <div key={key} className="mb-1">
+        <div
+          className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200
+        ${item.active
+              ? "bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 border-r-2 border-blue-600"
+              : "text-gray-700 hover:bg-gray-50"
+            }`}
+          style={{ paddingLeft: padding }}
+          onClick={() => {
+            if (hasChildren) toggleMenu(key);
+            else router.push(item.url);
+          }}
+        >
+          <div className="flex items-center space-x-3">
+            {level === 0 && item.icon}
+            <span className="text-sm">{item.name}</span>
+          </div>
+
+          {hasChildren && (
+            isExpanded
+              ? <ChevronDown className="w-4 h-4" />
+              : <ChevronRight className="w-4 h-4" />
+          )}
+        </div>
+
+        {hasChildren && isExpanded && (
+          <div className="mt-1">
+            {item.subMenu.map((sub, idx) => (
+              <div key={idx}>
+                {renderMenu(sub, level + 1)}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
   return (
     <div
       className={`text-[#ffff] w-64 sm:w-74 h-full bg-[#f3f9ff] p-4 flex flex-col justify-between
@@ -401,7 +356,7 @@ export default function Sidebar(props) {
 
 
         <nav className="mt-6 px-3 overflow-y-auto h-full pb-20">
-          {menuItems.map((item, index) => (
+          {/* {menuItems.map((item, index) => (
             <div key={index} className="mb-1">
               <div
                 className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${item.active
@@ -447,7 +402,9 @@ export default function Sidebar(props) {
                 </div>
               )}
             </div>
-          ))}
+          ))} */}
+          {menuItems.map((item, i) => renderMenu(item))}
+
         </nav>
 
         {/* <UserProfile /> */}

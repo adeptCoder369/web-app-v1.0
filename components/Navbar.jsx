@@ -176,7 +176,7 @@ const Navbar = ({
             {!sidebarOpen && (
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400/50 group"
+                className="cursor-pointer p-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400/50 group"
                 aria-label="Toggle Sidebar"
               >
                 <TbLayoutSidebarRightCollapse className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
@@ -205,9 +205,7 @@ const Navbar = ({
           {/* Right Section */}
           <div className="flex items-center gap-3">
             {/* Mobile Search Toggle */}
-            <button className="lg:hidden p-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all duration-300">
-              <TbSearch className="w-5 h-5" />
-            </button>
+       
 
             {/* Notifications */}
             <div className="relative">
