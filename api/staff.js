@@ -15,7 +15,7 @@ export const getStaffApi = async ({
 }) => {
 
 
-  console.log('======= payload : ', params);
+  // console.log('======= payload : ', params);
   let resolvedGuid = getCookie("guid");
   let resolvedUserId = getCookie("id");
 

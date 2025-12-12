@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, List, Notebook } from "lucide-react";
-// import ParentCreateModal from "./ParentCreateModal";
-// import ParentFilterPanel from "./ParentFilterPanel";
+import TitleCreateModal from "./TitleCreateModal";
+import TitleEditModal from "./TitleEditModal";
+import TitleFilterPanel from "./TitleFilterPanel";
 // import ParentEditModal from "./ParentEditModal";
-import { getTitle } from "../../api/title";
+import { getTitle, addTitle, deleteTitle, editTitle } from "../../api/title";
 import { IoPeopleSharp } from "react-icons/io5";
 import { FaFilter } from "react-icons/fa";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
@@ -12,11 +13,12 @@ import { VscSymbolClass } from "react-icons/vsc";
 export default function SchoolTitleManagement({ Context, config }) {
   const [filters, setFilters] = useState({
     name: "",
-    mobile: "",
+
     isSearch: false
 
   });
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const [title, setTitle] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -24,12 +26,14 @@ export default function SchoolTitleManagement({ Context, config }) {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [total, setTotal] = useState(0);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingParent, setEditingParent] = useState(null);
-  const [parentToDelete, setParentToDelete] = useState(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(null);
+  const [titleToDelete, setTitleToDelete] = useState(null);
 
-  const fetchParents = async (pageNumber = 1) => {
+  const fetchTitle = async (pageNumber = 1) => {
     try {
       setLoading(true);
 
@@ -37,8 +41,6 @@ export default function SchoolTitleManagement({ Context, config }) {
       const res = await getTitle(
         Context?.profileId,
         Context?.session,
-        pageNumber,
-        limit,
         filters
       );
       console.log(res?.data?.results);
@@ -56,7 +58,7 @@ export default function SchoolTitleManagement({ Context, config }) {
   };
 
   useEffect(() => {
-    fetchParents(1);
+    fetchTitle(1);
   }, [
     filters?.isSearch,
     // filters?.mobile,
@@ -69,17 +71,17 @@ export default function SchoolTitleManagement({ Context, config }) {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (parent) => {
-    setEditingParent(parent);
+  const openEditModal = (title) => {
+    setEditingParent(title);
     // setIsModalOpen(true);
   };
 
-  const handleDelete = (parent) => {
-    console.log(parent);
+  const handleDelete = (title) => {
+    console.log(title);
 
-    // if (!window.confirm("Delete this parent?")) return;
-    // setTitle(parent);
-    setParentToDelete(parent)
+    // if (!window.confirm("Delete this title?")) return;
+    // setTitle(title);
+    setTitleToDelete(title)
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -117,8 +119,44 @@ export default function SchoolTitleManagement({ Context, config }) {
     });
 
   };
-  // console.log('lo aaya filters ___________', filters);
+  const handleTitleDelete = async () => {
+    setSubmitted(true);
+    setError(null);
+    setSuccess(null);
 
+    try {
+      if (!titleToDelete?.id) {
+        setError("Invalid department selected");
+        setSubmitted(false);
+        return;
+      }
+
+      const resp = await deleteTitle(
+        Context?.profileId,
+        Context?.session,
+        titleToDelete?.id
+      );
+
+      if (resp?.data?.success) {
+        setSuccess(resp?.data?.results?.message || "Title deleted successfully");
+
+        setTimeout(() => {
+          setSuccess(null);
+
+          window.location.reload(); // keeping your pattern
+        }, 700);
+
+        setSubmitted(false);
+      } else {
+        setError(resp?.data?.results?.message || "Failed to delete Title");
+        setSubmitted(false);
+      }
+    } catch (err) {
+      console.error("Title delete error:", err);
+      setError(err.message || "Something went wrong while deleting department");
+      setSubmitted(false);
+    }
+  };
   return (
     <>
 
@@ -171,7 +209,7 @@ export default function SchoolTitleManagement({ Context, config }) {
 
             </div>
           </div>
-          {/* <ParentFilterPanel
+          <TitleFilterPanel
             setFilters={setFilters}
             filters={filters}
             config={config}
@@ -182,7 +220,7 @@ export default function SchoolTitleManagement({ Context, config }) {
             // accountStatus={accountStatus}
             toggleFilter={toggleFilter}
 
-          /> */}
+          />
 
           {/* Table */}
           <div className="overflow-x-auto bg-white shadow rounded-lg">
@@ -198,8 +236,17 @@ export default function SchoolTitleManagement({ Context, config }) {
               <tbody className="divide-y divide-gray-200 text-sm">
                 {loading ? (
                   <tr>
-                    <td colSpan="4" className="text-center py-6 text-gray-400">
-                      Loading…
+                     <td colSpan="6" className="text-center py-6 text-gray-400">
+                      <div className="flex justify-center items-center py-12">
+                        <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
+                          {/* Note: Replaced static image with an illustrative loading icon for better UX */}
+                          <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span className="text-gray-700 text-sm font-medium">Loading Titles ...</span>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ) : title.length ? (
@@ -210,7 +257,7 @@ export default function SchoolTitleManagement({ Context, config }) {
                         {item.name}
                       </td>
 
-             
+
 
                       {/* Number of Users */}
                       <td className="px-6 py-3">
@@ -234,7 +281,7 @@ export default function SchoolTitleManagement({ Context, config }) {
 
                               case "edit":
                                 Icon = Edit2;
-                                handler = () => openEditModal(item);
+                                handler = () => setIsEditingTitle(item);
                                 styles = "bg-blue-100 text-blue-600 hover:bg-blue-200";
                                 break;
 
@@ -266,8 +313,30 @@ export default function SchoolTitleManagement({ Context, config }) {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center py-6 text-gray-400">
-                      No records found.
+                    <td colSpan="8" className="text-center py-6 text-gray-400">
+                      <div className="flex flex-col items-center gap-3">
+                        <span>No title found.</span>
+
+                        <button
+                          onClick={() =>
+                            setFilters({
+                              name: "",
+
+                              isSearch: prev => !prev
+                            })
+                          }
+                          className="flex items-center justify-center gap-2 px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"
+                        >
+                          <FaFilter size={16} />
+                          <span>Clear Filters</span>
+
+                          {getFilterCount() > 0 && (
+                            <span className="bg-blue-500 text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
+                              {getFilterCount()}
+                            </span>
+                          )}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -284,7 +353,7 @@ export default function SchoolTitleManagement({ Context, config }) {
               {/* Prev */}
               <button
                 disabled={page === 1}
-                onClick={() => fetchParents(page - 1)}
+                onClick={() => fetchTitle(page - 1)}
                 className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
               >
                 Prev
@@ -325,7 +394,7 @@ export default function SchoolTitleManagement({ Context, config }) {
                     ) : (
                       <button
                         key={p}
-                        onClick={() => fetchParents(p)}
+                        onClick={() => fetchTitle(p)}
                         className={`px-3 py-1 rounded ${p === page
                           ? "bg-blue-600 text-white"
                           : "bg-gray-200 hover:bg-gray-300"
@@ -342,7 +411,7 @@ export default function SchoolTitleManagement({ Context, config }) {
               {/* Next */}
               <button
                 disabled={page >= totalPages}
-                onClick={() => fetchParents(page + 1)}
+                onClick={() => fetchTitle(page + 1)}
                 className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
               >
                 Next
@@ -350,20 +419,25 @@ export default function SchoolTitleManagement({ Context, config }) {
             </div>
           )}
 
-          {/* Modal */}
-          {/* <ParentEditModal
-            updateParents={updateParents}
-            open={editingParent}
-            onClose={() => setEditingParent(false)}
-            editingParent={editingParent}
-          /> */}
+          <TitleEditModal
+            context={Context}
+            config={config}
+            onUpdate={editTitle}
+            editingTitle={isEditingTitle}
+            open={isEditingTitle}
+            onClose={() => setIsEditingTitle(null)}
+          />
 
 
-          {/* <ParentCreateModal
-            addParents={addParents}
+          <TitleCreateModal
+            context={Context}
+            config={config}
+
+            onCreate={addTitle}
             open={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-          /> */}
+          />
+
 
         </div>
       </div>
@@ -372,13 +446,29 @@ export default function SchoolTitleManagement({ Context, config }) {
 
 
 
-      {parentToDelete && (
+      {titleToDelete && (
         <ConfirmationDialogueBox
-          title="Delete Parent?"
-          description={`Are you sure you want to delete "${parentToDelete?.name}"?`}
-          // onConfirm={confirmDelete}
-          onCancel={() => setParentToDelete(null)}
+          title="Delete Title?"
+          description={`Are you sure you want to delete "${titleToDelete?.name}"?`}
+          onConfirm={handleTitleDelete}
+          onCancel={() => setTitleToDelete(null)}
         />
+      )}
+
+
+
+
+      {/* Success/Error Notifications */}
+      {success && (
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{success}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{error}</span>
+        </div>
       )}
     </>
   );

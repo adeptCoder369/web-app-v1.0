@@ -8,6 +8,7 @@ import { getCookie } from 'cookies-next';
 export const getSchoolDesignation = async (
   profileId,
   sessionId,
+  payload
 
 ) => {
 
@@ -24,6 +25,151 @@ export const getSchoolDesignation = async (
     platform: "web",
     "version_code": "1.2.4",
 
+
+  };
+
+  console.log('payload___', payload);
+
+
+  if (payload?.name && payload.name.trim() !== "") {
+    requestBody.name = payload.name;
+  }
+  if (payload?.role_id) {
+    requestBody.role = payload.role_id;
+  }
+  if (payload?.department_id) {
+    requestBody.department = payload.department_id;
+  }
+  if (payload?.has_login_access) {
+    requestBody.allow_login_access = payload.has_login_access ? "1" : "0";
+  }
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+
+
+};
+
+//========================================================================================================
+export const addSchoolDesignation = async (
+  profileId,
+  sessionId,
+  payload
+
+) => {
+  console.log('payload', payload);
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+  const requestBody = {
+    "api": "schoolDesignation.add",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    name: payload?.name,
+    role: payload?.role_id,
+    adminAccess: payload?.adminAccess,
+    loginAccess: payload?.loginAccess,
+    department_ids: payload?.department_ids,
+    platform: "web",
+    "version_code": "1.2.4",
+
+
+  };
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+
+
+};
+
+//========================================================================================================
+export const editSchoolDesignation = async (
+  profileId,
+  sessionId,
+  payload
+
+) => {
+  console.log('payload', payload);
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+  const requestBody = {
+    "api": "schoolDesignation.edit",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    name: payload?.name,
+    role: payload?.role_id,
+    adminAccess: payload?.adminAccess,
+    loginAccess: payload?.loginAccess,
+    department_ids: payload?.department_ids,
+    platform: "web",
+    "version_code": "1.2.4",
+
+
+  };
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+
+
+};
+//========================================================================================================
+export const deleteSchoolDesignation = async (
+  profileId,
+  sessionId,
+  id
+
+) => {
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+  const requestBody = {
+    "api": "schoolDesignation.delete",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    id,
+
+    platform: "web",
+    "version_code": "1.2.4",
+
+
+  };
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+
+
+};
+//========================================================================================================
+export const getDesignationPermissions = async (
+  profileId,
+  sessionId,
+
+) => {
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+  const requestBody = {
+    "api": "client.getPermissions",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    id: sessionId,
+    platform: "web"
 
   };
 

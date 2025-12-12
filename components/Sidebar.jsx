@@ -157,7 +157,13 @@ const menuItems = [
         name: "Subject Class Mapping",
         url: "/dashboard/staff-management?tab=subjectClassMapping",
         quickLink: true
-      }
+      },
+      {
+        name: "Revoke School Designation Permission",
+        url: "/dashboard/staff-management?tab=designationPermission",
+        quickLink: false
+      },
+
     ]
   },
   // {

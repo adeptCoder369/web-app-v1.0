@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import { BookOpen, Users, Settings, Loader2, CheckCircle, GraduationCap } from "lucide-react";
 import { getClassSubjectMapping } from "../../api/ClassSubjectMapping";
 
-export default function ClassSubjectMapping({ Context }) {
+export default function ClassSubjectMapping({ Context, config }) {
   const [loading, setLoading] = useState(false);
   const [standards, setStandards] = useState([]);
   const [teacherList, setTeacherList] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
 
+  const teachers = config?.users?.filter(
+    (user) => user?.designation?.role?.is_teaching_staff === '1'
+  );
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -17,9 +20,11 @@ export default function ClassSubjectMapping({ Context }) {
         Context?.profileId,
         Context?.session
       );
+      console.log('res________________', res);
 
       if (res?.data?.success) {
         const data = res.data.results?.client_class_subject_teacher_mapping || {};
+
         setStandards(data.standards || []);
         setTeacherList(data.teachers || []);
       }
@@ -37,10 +42,10 @@ export default function ClassSubjectMapping({ Context }) {
       setLastUpdated(null);
 
       // Placeholder delay
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // await new Promise(resolve => setTimeout(resolve, 300));
 
       setLastUpdated({ classId, subjectId });
-      await fetchData();
+      // await fetchData();
     } catch (e) {
       console.log("Update teacher failed", e);
     } finally {
@@ -99,7 +104,7 @@ export default function ClassSubjectMapping({ Context }) {
           <div className="space-y-8">
             {standards.map(std => (
               <div key={std.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                
+
                 {/* Standard Header */}
                 <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4">
                   <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -162,25 +167,24 @@ export default function ClassSubjectMapping({ Context }) {
                               return (
                                 <td
                                   key={cls.id}
-                                  className={`px-4 py-3 border-l border-gray-100 relative ${
-                                    isLastUpdated ? "bg-green-50" : ""
-                                  }`}
+                                  className={`px-4 py-3 border-l border-gray-100 relative ${isLastUpdated ? "bg-green-50" : ""
+                                    }`}
                                 >
                                   {/* Current teacher names */}
                                   <div className="flex flex-wrap gap-1 mb-1">
-  {teacherNames.length ? (
-    teacherNames.map((t, i) => (
-      <span
-        key={i}
-        className="text-[10px] px-2 py-[2px] bg-indigo-100 text-indigo-700 rounded-full border border-indigo-200 whitespace-nowrap"
-      >
-        {t}
-      </span>
-    ))
-  ) : (
-    <span className="text-xs text-gray-400">No teacher</span>
-  )}
-</div>
+                                    {teacherNames.length ? (
+                                      teacherNames.map((t, i) => (
+                                        <span
+                                          key={i}
+                                          className="text-[10px] px-2 py-[2px] bg-indigo-100 text-indigo-700 rounded-full border border-indigo-200 whitespace-nowrap"
+                                        >
+                                          {t}
+                                        </span>
+                                      ))
+                                    ) : (
+                                      <span className="text-xs text-gray-400">No teacher</span>
+                                    )}
+                                  </div>
 
                                   {/* Dropdown */}
                                   <select
@@ -193,7 +197,7 @@ export default function ClassSubjectMapping({ Context }) {
                                   >
                                     <option value="">Assign / Update</option>
 
-                                    {teacherList.map(t => (
+                                    {teachers?.map(t => (
                                       <option key={t.id} value={t.id}>
                                         {t.name}
                                       </option>

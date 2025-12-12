@@ -14,10 +14,12 @@ import SchoolRolesManagement from './schoolRoles';
 import SchoolTitleManagement from './titles';
 import SchoolDesignationManagement from './schoolDesignation';
 import ClassSubjectMapping from './ClassSubjectMapping';
+import PermissionsViewer from './PermissionsViewer';
 import AddBankInfo from './AddBankInfo';
 import { useSearchParams } from 'next/navigation';
 import { VscSymbolClass } from "react-icons/vsc";
 import { MdClass } from 'react-icons/md';
+import { GrUserAdmin } from 'react-icons/gr';
 // ===================================================================
 
 
@@ -31,6 +33,7 @@ const tabs = [
   { id: 'schoolDesignation', label: 'Designation', icon: Captions },
   { id: 'schoolTitles', label: 'Titles', icon: Captions },
   { id: 'subjectClassMapping', label: 'Subject Class Mapping', icon: MdClass },
+  { id: 'designationPermission', label: 'Revoke Designation Permission', icon: GrUserAdmin  },
 ];
 
 const StaffMangementDashboard = ({
@@ -533,6 +536,15 @@ const StaffMangementDashboard = ({
           {activeTab === 'subjectClassMapping' && (
             <>
               <ClassSubjectMapping
+                Context={Context}
+                config={config}
+              />
+            </>
+          )}
+
+           {activeTab === 'designationPermission' && (
+            <>
+              <PermissionsViewer
                 Context={Context}
                 config={config}
               />

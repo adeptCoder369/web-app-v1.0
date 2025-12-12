@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, List, Notebook, Captions } from "lucide-react";
-// import ParentCreateModal from "./ParentCreateModal";
-// import ParentFilterPanel from "./ParentFilterPanel";
-// import ParentEditModal from "./ParentEditModal";
-import { getSchoolDesignation } from "../../api/designation";
+import SchoolDesignationCreateModal from "./SchoolDesignationCreateModal";
+import SchoolDesignationEditModal from "./SchoolDesignationEditModal";
+import DesignationFilterPanel from "./DesignationFilterPanel";
+import { getSchoolDesignation, addSchoolDesignation, deleteSchoolDesignation, editSchoolDesignation } from "../../api/designation";
 import { IoPeopleSharp } from "react-icons/io5";
 import { FaFilter } from "react-icons/fa";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
@@ -12,7 +12,9 @@ import { VscSymbolClass } from "react-icons/vsc";
 export default function SchoolDesignationManagement({ Context, config }) {
   const [filters, setFilters] = useState({
     name: "",
-    mobile: "",
+    role_id: "",
+    department_id: "",
+    has_login_access: "",
     isSearch: false
 
   });
@@ -20,16 +22,21 @@ export default function SchoolDesignationManagement({ Context, config }) {
 
   const [designations, setDesignations] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [total, setTotal] = useState(0);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingParent, setEditingParent] = useState(null);
-  const [parentToDelete, setParentToDelete] = useState(null);
+  const [designationToDelete, setDesignationToDelete] = useState(null);
+  const [isEditingDesignation, setIsEditingDesignation] = useState(null);
 
-  const fetchParents = async (pageNumber = 1) => {
+
+  const fetchDesignation = async (pageNumber = 1) => {
     try {
       setLoading(true);
 
@@ -37,9 +44,9 @@ export default function SchoolDesignationManagement({ Context, config }) {
       const res = await getSchoolDesignation(
         Context?.profileId,
         Context?.session,
+        filters
 
       );
-      console.log('res___', res?.data?.results);
 
       if (res?.data?.success) {
         setDesignations(res.data.results.school_designations || []);
@@ -54,7 +61,7 @@ export default function SchoolDesignationManagement({ Context, config }) {
   };
 
   useEffect(() => {
-    fetchParents(1);
+    fetchDesignation(1);
   }, [
     filters?.isSearch,
     // filters?.mobile,
@@ -77,7 +84,7 @@ export default function SchoolDesignationManagement({ Context, config }) {
 
     // if (!window.confirm("Delete this parent?")) return;
     // setDesignations(parent);
-    setParentToDelete(parent)
+    setDesignationToDelete(parent)
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -87,7 +94,10 @@ export default function SchoolDesignationManagement({ Context, config }) {
   };
 
   const getFilterCount = () => {
-    return (filters?.name ? 1 : 0) + (filters?.mobile ? 1 : 0);
+    return (filters?.name ? 1 : 0)
+      + (filters?.role_id ? 1 : 0)
+      + (filters?.department_id ? 1 : 0)
+      + (filters?.has_login_access ? 1 : 0)
   };
 
 
@@ -115,14 +125,50 @@ export default function SchoolDesignationManagement({ Context, config }) {
     });
 
   };
-  // console.log('lo aaya filters ___________', filters);
+  const handleDesignationDelete = async () => {
+    setSubmitted(true);
+    setError(null);
+    setSuccess(null);
 
+    try {
+      if (!designationToDelete?.id) {
+        setError("Invalid department selected");
+        setSubmitted(false);
+        return;
+      }
+
+      const resp = await deleteSchoolDesignation(
+        Context?.profileId,
+        Context?.session,
+        designationToDelete?.id
+      );
+
+      if (resp?.data?.success) {
+        setSuccess(resp?.data?.results?.message || "Designation deleted successfully");
+
+        setTimeout(() => {
+          setSuccess(null);
+
+          window.location.reload(); // keeping your pattern
+        }, 700);
+
+        setSubmitted(false);
+      } else {
+        setError(resp?.data?.results?.message || "Failed to delete Designation");
+        setSubmitted(false);
+      }
+    } catch (err) {
+      console.error("Designation delete error:", err);
+      setError(err.message || "Something went wrong while deleting department");
+      setSubmitted(false);
+    }
+  };
   return (
     <>
 
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className=" mx-auto">
           <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
             {/* Left Section: Icon + Title */}
@@ -169,7 +215,7 @@ export default function SchoolDesignationManagement({ Context, config }) {
 
             </div>
           </div>
-          {/* <ParentFilterPanel
+          <DesignationFilterPanel
             setFilters={setFilters}
             filters={filters}
             config={config}
@@ -180,115 +226,27 @@ export default function SchoolDesignationManagement({ Context, config }) {
             // accountStatus={accountStatus}
             toggleFilter={toggleFilter}
 
-          /> */}
+          />
 
           {/* Table */}
           <div className="overflow-x-auto bg-white shadow rounded-lg">
             <table className="min-w-full divide-y divide-gray-200">
-           <thead className="bg-gray-50 text-sm font-semibold text-gray-700">
-  <tr>
-    <th className="px-6 py-3 text-left">Name</th>
-    <th className="px-6 py-3 text-left">School</th>
-    <th className="px-6 py-3 text-left">Priority</th>
-    <th className="px-6 py-3 text-left">Admin Access</th>
-    <th className="px-6 py-3 text-left">Login Allowed</th>
-    <th className="px-6 py-3 text-left">Users</th>
-    <th className="px-6 py-3 text-center">Actions</th>
-  </tr>
-</thead>
-
-<tbody className="divide-y divide-gray-200 text-sm">
-  {loading ? (
-    <tr>
-      <td colSpan="7" className="text-center py-6 text-gray-400">
-        Loading designations…
-      </td>
-    </tr>
-  ) : designations.length ? (
-    designations.map((item) => (
-      <tr key={item.id}>
-        <td className="px-6 py-3">{item.name}</td>
-
-        <td className="px-6 py-3">
-          {item.school?.name || "—"}
-        </td>
-
-        <td className="px-6 py-3">
-          {item.priority || "—"}
-        </td>
-
-        <td className="px-6 py-3">
-          {item.is_allowed_for_admin_access === "1" ? "Yes" : "No"}
-        </td>
-
-        <td className="px-6 py-3">
-          {item.is_login_allowed === "1" ? "Yes" : "No"}
-        </td>
-
-        <td className="px-6 py-3">
-          {item.number_of_users || "0"}
-        </td>
-
-        <td className="px-6 py-3 flex justify-center gap-3">
-          {item.options?.length ? (
-            item.options.map((opt, i) => {
-              let Icon;
-              let handler;
-              let styles = "";
-
-              switch (opt.action) {
-                case "view":
-                  Icon = List;
-                  handler = () => openEditModal(item);
-                  styles = "bg-green-100 text-green-600 hover:bg-green-200";
-                  break;
-
-                case "edit":
-                  Icon = Edit2;
-                  handler = () => openEditModal(item);
-                  styles = "bg-blue-100 text-blue-600 hover:bg-blue-200";
-                  break;
-
-                case "delete":
-                  Icon = Trash2;
-                  handler = () => handleDelete(item);
-                  styles = "bg-red-100 text-red-600 hover:bg-red-200";
-                  break;
-
-                default:
-                  return null;
-              }
-
-              return (
-                <button
-                  key={i}
-                  onClick={handler}
-                  className={`cursor-pointer p-2 rounded ${styles}`}
-                >
-                  <Icon className="w-4 h-4" />
-                </button>
-              );
-            })
-          ) : (
-            "—"
-          )}
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="7" className="text-center py-6 text-gray-400">
-        No designations found.
-      </td>
-    </tr>
-  )}
-</tbody>
-
+              <thead className="bg-gray-50 text-sm font-semibold text-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left">Priority</th>
+                  <th className="px-6 py-3 text-left">Name</th>
+                  <th className="px-6 py-3 text-left">Role</th>
+                  <th className="px-6 py-3 text-left">Login Access</th>
+                  <th className="px-6 py-3 text-left">Departments</th>
+                  <th className="px-6 py-3 text-left">Admin Access</th>
+                  <th className="px-6 py-3 text-left">Number of Staffs</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
+                </tr>
+              </thead>
 
               <tbody className="divide-y divide-gray-200 text-sm">
                 {loading ? (
                   <tr>
-
                     <td colSpan="6" className="text-center py-6 text-gray-400">
                       <div className="flex justify-center items-center py-12">
                         <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
@@ -297,68 +255,77 @@ export default function SchoolDesignationManagement({ Context, config }) {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          <span className="text-gray-700 text-sm font-medium">Loading Parent Data...</span>
+                          <span className="text-gray-700 text-sm font-medium">Loading Designation ...</span>
                         </div>
                       </div>
                     </td>
                   </tr>
                 ) : designations.length ? (
-                  designations.map((p) => {
-                    // console.log('p_______________', p?.options);
+                  designations.map((item) => (
+                    <tr key={item.id}>
+                      {/* Priority */}
+                      <td className="px-6 py-3">{item.priority || "—"}</td>
 
-                    return (
-                      <tr key={p.id}>
-                        <td className="px-6 py-3">{p.name}</td>
-                        <td className="px-6 py-3">{p.gender}</td>
-                        <td className="px-6 py-3">
-                          {/* {p.calling_numbers?.join(", ") || "—"} */}
-                          {p.phone || "—"}
-                        </td>
-                        <td className="px-6 py-3">
-                          {p.students?.length ? (
-                            <div className="flex flex-col gap-2">
-                              {p.students.map(s => (
-                                <div key={s.id} className="flex items-center gap-3">
+                      {/* Name */}
+                      <td className="px-6 py-3">{item.name}</td>
 
-                                  {/* Student Image */}
-                                  <img
-                                    src={
-                                      s.image_url && s.image_url.trim() !== ""
-                                        ? s.image_url
-                                        : "/placeholder-student.png"
-                                    }
-                                    alt={s.name}
-                                    className="w-10 h-10 rounded-full object-cover border"
-                                    onError={(e) => {
-                                      e.target.src = "/placeholder-student.png"
-                                    }}
-                                  />
+                      {/* Role */}
+                      <td className="px-6 py-3">
+                        {item.role?.name || "—"}
+                      </td>
 
-                                  {/* Student Info */}
-                                  <div className="flex flex-col leading-tight">
-                                    <span className="font-medium">{s.name}</span>
-                                    <span className="text-sm text-gray-600">
-                                      {s.class}
-                                      {s.roll_number ? ` | Roll ${s.roll_number}` : ""}
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                      {s.relation_with_parent}
-                                    </span>
-                                  </div>
+                      {/* Login Access Badge */}
+                      <td className="px-6 py-3">
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${item.is_login_allowed === "1"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-600"
+                            }`}
+                        >
+                          {item.is_login_allowed === "1" ? "Yes" : "No"}
+                        </span>
+                      </td>
 
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
+                      {/* Departments - badge list */}
+                      <td className="px-6 py-3 flex flex-wrap gap-2">
+                        {item.departments?.length ? (
+                          item.departments.map((dep) => (
+                            <span
+                              key={dep.id}
+                              className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md"
+                            >
+                              {dep.name}
+                            </span>
+                          ))
+                        ) : (
+                          "—"
+                        )}
+                      </td>
 
-                        <td className="px-6 py-3">{p.platform_id || "—"}</td>
+                      {/* Admin Access Badge */}
+                      <td className="px-6 py-3">
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${item.is_allowed_for_admin_access === "1"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-600"
+                            }`}
+                        >
+                          {item.is_allowed_for_admin_access === "1" ? "Allowed" : "No"}
+                        </span>
+                      </td>
 
-                        <td className="px-6 py-3 flex justify-center gap-3">
-                          {p.options?.length > 0 ? (
-                            p?.options?.map((opt, i) => {
+                      {/* Number of Staffs */}
+                      <td className="px-6 py-3">
+                        {item.number_of_users || "0"}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-3 flex justify-center gap-3">
+                        {item.options?.length ? (
+                          item.options
+                            ?.filter(opt => opt.action !== "view")   // removes the view option entirely
+                            .map((opt, i) => {
+
                               let Icon;
                               let handler;
                               let styles = "";
@@ -366,19 +333,19 @@ export default function SchoolDesignationManagement({ Context, config }) {
                               switch (opt.action) {
                                 case "view":
                                   Icon = List;
-                                  handler = () => openEditModal(p);
+                                  handler = () => openEditModal(item);
                                   styles = "bg-green-100 text-green-600 hover:bg-green-200";
                                   break;
 
                                 case "edit":
                                   Icon = Edit2;
-                                  handler = () => openEditModal(p);
+                                  handler = () => setIsEditingDesignation(item);
                                   styles = "bg-blue-100 text-blue-600 hover:bg-blue-200";
                                   break;
 
                                 case "delete":
                                   Icon = Trash2;
-                                  handler = () => handleDelete(p);
+                                  handler = () => handleDelete(item);
                                   styles = "bg-red-100 text-red-600 hover:bg-red-200";
                                   break;
 
@@ -396,20 +363,44 @@ export default function SchoolDesignationManagement({ Context, config }) {
                                 </button>
                               );
                             })
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-
-                      </tr>
-                    )
-                  })
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                    </tr>
+                  ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center py-6 text-gray-400">
-                      No designations found
+                    <td colSpan="8" className="text-center py-6 text-gray-400">
+                      <div className="flex flex-col items-center gap-3">
+                        <span>No designations found.</span>
+
+                        <button
+                          onClick={() =>
+                            setFilters({
+                              name: "",
+                              role_id: "",
+                              department_id: "",
+                              has_login_access: "",
+                              isSearch: true
+                            })
+                          }
+                          className="flex items-center justify-center gap-2 px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"
+                        >
+                          <FaFilter size={16} />
+                          <span>Clear Filters</span>
+
+                          {getFilterCount() > 0 && (
+                            <span className="bg-blue-500 text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
+                              {getFilterCount()}
+                            </span>
+                          )}
+                        </button>
+                      </div>
                     </td>
                   </tr>
+
+
                 )}
               </tbody>
             </table>
@@ -422,7 +413,7 @@ export default function SchoolDesignationManagement({ Context, config }) {
               {/* Prev */}
               <button
                 disabled={page === 1}
-                onClick={() => fetchParents(page - 1)}
+                onClick={() => fetchDesignation(page - 1)}
                 className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
               >
                 Prev
@@ -463,7 +454,7 @@ export default function SchoolDesignationManagement({ Context, config }) {
                     ) : (
                       <button
                         key={p}
-                        onClick={() => fetchParents(p)}
+                        onClick={() => fetchDesignation(p)}
                         className={`px-3 py-1 rounded ${p === page
                           ? "bg-blue-600 text-white"
                           : "bg-gray-200 hover:bg-gray-300"
@@ -480,7 +471,7 @@ export default function SchoolDesignationManagement({ Context, config }) {
               {/* Next */}
               <button
                 disabled={page >= totalPages}
-                onClick={() => fetchParents(page + 1)}
+                onClick={() => fetchDesignation(page + 1)}
                 className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
               >
                 Next
@@ -489,19 +480,25 @@ export default function SchoolDesignationManagement({ Context, config }) {
           )}
 
           {/* Modal */}
-          {/* <ParentEditModal
-            updateParents={updateParents}
-            open={editingParent}
-            onClose={() => setEditingParent(false)}
-            editingParent={editingParent}
-          /> */}
+
+          <SchoolDesignationEditModal
+            context={Context}
+            config={config}
+            onUpdate={editSchoolDesignation}
+            editingDesingation={isEditingDesignation}
+            open={isEditingDesignation}
+            onClose={() => setIsEditingDesignation(null)}
+          />
 
 
-          {/* <ParentCreateModal
-            addParents={addParents}
+          <SchoolDesignationCreateModal
+            context={Context}
+            config={config}
+
+            onCreate={addSchoolDesignation}
             open={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-          /> */}
+          />
 
         </div>
       </div>
@@ -510,13 +507,28 @@ export default function SchoolDesignationManagement({ Context, config }) {
 
 
 
-      {parentToDelete && (
+      {designationToDelete && (
         <ConfirmationDialogueBox
-          title="Delete Parent?"
-          description={`Are you sure you want to delete "${parentToDelete?.name}"?`}
-          // onConfirm={confirmDelete}
-          onCancel={() => setParentToDelete(null)}
+          title="Delete Designation?"
+          description={`Are you sure you want to delete "${designationToDelete?.name}"?`}
+          onConfirm={handleDesignationDelete}
+          onCancel={() => setDesignationToDelete(null)}
         />
+      )}
+
+
+
+      {/* Success/Error Notifications */}
+      {success && (
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{success}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{error}</span>
+        </div>
       )}
     </>
   );

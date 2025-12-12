@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, List, Notebook } from "lucide-react";
-// import ParentCreateModal from "./ParentCreateModal";
-// import ParentFilterPanel from "./ParentFilterPanel";
-// import ParentEditModal from "./ParentEditModal";
-import { getSchoolRoles, addParents, updateParents } from "../../api/roles";
-import { IoPeopleSharp } from "react-icons/io5";
+import { Plus, Edit2, Trash2, Notebook } from "lucide-react";
+import SchoolRolesCreateModal from "./SchoolRolesCreateModal";
+import SchoolRolesEditModal from "./SchoolRolesEditModal";
+import SchoolRolesFilterPanel from "./SchoolRolesFilterPanel";
+import { getSchoolRoles, addSchoolRoles, deleteSchoolRoles, editSchoolRoles } from "../../api/roles";
 import { FaFilter } from "react-icons/fa";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
-import { VscSymbolClass } from "react-icons/vsc";
+// ==================================================================
 
 export default function SchoolRolesManagement({ Context, config }) {
   const [filters, setFilters] = useState({
     name: "",
-    mobile: "",
+    has_admin_access: "",
+    is_teaching_staff: "",
+    is_enabled: "",
     isSearch: false
 
   });
@@ -20,14 +21,18 @@ export default function SchoolRolesManagement({ Context, config }) {
 
   const [schoolRoles, setSchoolRoles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [total, setTotal] = useState(0);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingParent, setEditingParent] = useState(null);
-  const [parentToDelete, setParentToDelete] = useState(null);
+
+  const [editingSchoolRoles, setEditingSchoolRoles] = useState(null);
+  const [roleToDelete, setRoleToDelete] = useState(null);
 
   const fetchSchoolRoles = async (pageNumber = 1) => {
     try {
@@ -37,6 +42,7 @@ export default function SchoolRolesManagement({ Context, config }) {
       const res = await getSchoolRoles(
         Context?.profileId,
         Context?.session,
+        filters
 
       );
       // console.log("___", res.data.results);
@@ -60,24 +66,18 @@ export default function SchoolRolesManagement({ Context, config }) {
     // filters?.mobile,
 
   ]);
-  console.log('schoolRoles++++++__++', schoolRoles);
 
   const openAddModal = () => {
-    // setEditingParent(null);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (parent) => {
-    setEditingParent(parent);
-    // setIsModalOpen(true);
-  };
 
   const handleDelete = (parent) => {
     console.log(parent);
 
     // if (!window.confirm("Delete this parent?")) return;
     // setSchoolRoles(parent);
-    setParentToDelete(parent)
+    setRoleToDelete(parent)
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -87,7 +87,10 @@ export default function SchoolRolesManagement({ Context, config }) {
   };
 
   const getFilterCount = () => {
-    return (filters?.name ? 1 : 0) + (filters?.mobile ? 1 : 0);
+    return (filters?.name ? 1 : 0) +
+      (filters?.is_teaching_staff ? 1 : 0) +
+      (filters?.is_enabled ? 1 : 0) +
+      (filters?.has_admin_access ? 1 : 0)
   };
 
 
@@ -115,7 +118,53 @@ export default function SchoolRolesManagement({ Context, config }) {
     });
 
   };
-  // console.log('lo aaya filters ___________', filters);
+
+
+
+
+
+
+
+  const handleRoleDelete = async () => {
+    setSubmitted(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      if (!roleToDelete?.id) {
+        setError("Invalid department selected");
+        setSubmitted(false);
+        return;
+      }
+
+      const resp = await deleteSchoolRoles(
+        Context?.profileId,
+        Context?.session,
+        roleToDelete?.id
+      );
+
+      if (resp?.data?.success) {
+        setSuccess(resp?.data?.results?.message || "Role deleted successfully");
+
+        setTimeout(() => {
+          setSuccess(null);
+          // setDepartmentToDelete(null);
+          window.location.reload(); // keeping your pattern
+        }, 700);
+
+        setSubmitted(false);
+      } else {
+        setError(resp?.data?.results?.message || "Failed to delete Role");
+        setSubmitted(false);
+      }
+    } catch (err) {
+      console.error("Role delete error:", err);
+      setError(err.message || "Something went wrong while deleting Role");
+      setSubmitted(false);
+    }
+  };
+
+
 
   return (
     <>
@@ -164,31 +213,29 @@ export default function SchoolRolesManagement({ Context, config }) {
                 className="cursor-pointer flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-accent text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
                 <Plus className="w-5 h-5" />
-                <span>Add Parent</span>
+                <span>Add School Role</span>
               </button>
 
             </div>
           </div>
-          {/* <ParentFilterPanel
+          <SchoolRolesFilterPanel
             setFilters={setFilters}
             filters={filters}
             config={config}
             isFilterPanelOpen={isFilterPanelOpen}
-
             setIsFilterPanelOpen={setIsFilterPanelOpen}
-            // staffStatus={staffStatus}
-            // accountStatus={accountStatus}
             toggleFilter={toggleFilter}
 
-          /> */}
+          />
           <div className="overflow-x-auto bg-white shadow rounded-lg">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 text-sm font-semibold text-gray-700">
                 <tr>
                   <th className="px-6 py-3 text-left">Name</th>
-                  <th className="px-6 py-3 text-left">Teaching Staff</th>
-                  <th className="px-6 py-3 text-left">Admin Access</th>
-                  <th className="px-6 py-3 text-left">School</th>
+                  <th className="px-6 py-3 text-left">Is Teaching Staff</th>
+                  <th className="px-6 py-3 text-left">Is Bus Conductor</th>
+                  <th className="px-6 py-3 text-left">Description</th>
+                  <th className="px-6 py-3 text-left">Number of Designations</th>
                   <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -196,71 +243,78 @@ export default function SchoolRolesManagement({ Context, config }) {
               <tbody className="divide-y divide-gray-200 text-sm">
                 {loading ? (
                   <tr>
-                    <td colSpan="5" className="text-center py-8">
-                      <div className="flex justify-center items-center gap-3">
-                        <svg
-                          className="animate-spin h-5 w-5 text-blue-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <span className="text-gray-700 font-medium">Loading...</span>
+                    <td colSpan="6" className="text-center py-6 text-gray-400">
+                      <div className="flex justify-center items-center py-12">
+                        <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
+                          <svg className="animate-spin h-5 w-5 text-blue-500"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10"
+                              stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 
+                    1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span className="text-gray-700 text-sm font-medium">
+                            Loading School Roles...
+                          </span>
+                        </div>
                       </div>
                     </td>
                   </tr>
-                ) : schoolRoles.length ? (
+                ) : schoolRoles?.length ? (
                   schoolRoles.map(role => (
                     <tr key={role.id}>
                       <td className="px-6 py-3 font-medium">{role.name || "—"}</td>
 
                       <td className="px-6 py-3">
-                        {role.is_teaching_staff === "1" ? "Yes" : "No"}
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${role.is_teaching_staff === "1"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-600"
+                            }`}
+                        >
+                          {role.is_teaching_staff === "1" ? "Yes" : "No"}
+                        </span>
                       </td>
 
                       <td className="px-6 py-3">
-                        {role.has_admin_access === "1" ? "Yes" : "No"}
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${role.is_bus_conductor === "1"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-600"
+                            }`}
+                        >
+                          {role.is_bus_conductor === "1" ? "Yes" : "No"}
+                        </span>
                       </td>
 
                       <td className="px-6 py-3">
-                        {role.school?.full_name || "—"}
+                        {role.description || "—"}
                       </td>
 
                       <td className="px-6 py-3">
-                        <div className="flex justify-center gap-3">
-                          {role.options?.map((opt, i) => {
-                            let Icon, handler, cls = "";
+                        {role.number_of_designations || 0}
+                      </td>
+
+                      <td className="px-6 py-3 flex justify-center gap-3">
+                        {role.options
+                          ?.filter(opt => opt.action !== "view")
+                          ?.map((opt, i) => {
+                            let Icon;
+                            let handler;
+                            let styles;
 
                             switch (opt.action) {
-                              case "view":
-                                Icon = List;
-                                handler = () => onView(role);
-                                cls = "bg-green-100 text-green-600 hover:bg-green-200";
-                                break;
-
                               case "edit":
                                 Icon = Edit2;
-                                handler = () => onEdit(role);
-                                cls = "bg-blue-100 text-blue-600 hover:bg-blue-200";
+                                handler = () => setEditingSchoolRoles(role);
+                                styles = "bg-blue-100 text-blue-600 hover:bg-blue-200";
                                 break;
 
                               case "delete":
                                 Icon = Trash2;
-                                handler = () => onDelete(role);
-                                cls = "bg-red-100 text-red-600 hover:bg-red-200";
+                                handler = () => handleDelete(role);
+                                styles = "bg-red-100 text-red-600 hover:bg-red-200";
                                 break;
 
                               default:
@@ -271,22 +325,18 @@ export default function SchoolRolesManagement({ Context, config }) {
                               <button
                                 key={i}
                                 onClick={handler}
-                                className={`p-2 rounded ${cls}`}
+                                className={`cursor-pointer p-2 rounded ${styles}`}
                               >
                                 <Icon className="w-4 h-4" />
                               </button>
                             );
                           })}
-                        </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan="5"
-                      className="text-center py-8 text-gray-400 font-medium"
-                    >
+                    <td colSpan="6" className="text-center py-8 text-gray-400 font-medium">
                       No roles found
                     </td>
                   </tr>
@@ -369,20 +419,23 @@ export default function SchoolRolesManagement({ Context, config }) {
             </div>
           )}
 
-          {/* Modal */}
-          {/* <ParentEditModal
-            updateParents={updateParents}
-            open={editingParent}
-            onClose={() => setEditingParent(false)}
-            editingParent={editingParent}
-          /> */}
 
+          <SchoolRolesEditModal
+            onUpdate={editSchoolRoles}
+            editingSchoolRoles={editingSchoolRoles}
+            context={Context}
+            open={editingSchoolRoles}
+            onClose={() => setEditingSchoolRoles(null)}
+          />
 
-          {/* <ParentCreateModal
-            addParents={addParents}
+          <SchoolRolesCreateModal
+            onCreate={addSchoolRoles}
+            context={Context}
             open={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-          /> */}
+          />
+
+
 
         </div>
       </div>
@@ -391,14 +444,32 @@ export default function SchoolRolesManagement({ Context, config }) {
 
 
 
-      {parentToDelete && (
+      {roleToDelete && (
         <ConfirmationDialogueBox
-          title="Delete Parent?"
-          description={`Are you sure you want to delete "${parentToDelete?.name}"?`}
-          // onConfirm={confirmDelete}
-          onCancel={() => setParentToDelete(null)}
+          title="Delete Role?"
+          description={`Are you sure you want to delete "${roleToDelete?.name}"?`}
+          onConfirm={handleRoleDelete}
+          onCancel={() => setRoleToDelete(null)}
         />
       )}
+
+
+
+
+
+      {/* Success/Error Notifications */}
+      {success && (
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{success}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{error}</span>
+        </div>
+      )}
+
     </>
   );
 }

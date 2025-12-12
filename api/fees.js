@@ -149,7 +149,7 @@ export const postFee = async (
 
 
 
-  console.log('======== payload ==========', profileId, payload);
+  // console.log('======== payload ==========', profileId, payload);
 
   return axios.post(`${API_BASE_URL}/api`,
     {

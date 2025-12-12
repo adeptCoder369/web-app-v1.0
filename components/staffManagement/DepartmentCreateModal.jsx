@@ -56,8 +56,8 @@ export default function DepartmentCreateModal({
 
       let resp;
       console.log(payload);
-      
-      
+
+
 
       resp = await onCreate(
         context?.profileId,
@@ -110,10 +110,10 @@ export default function DepartmentCreateModal({
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-white">
-                  {editingDept ? "Edit Department" : "Create New Department"}
+                  {"Create New Department"}
                 </h2>
                 <p className="text-blue-100 text-sm">
-                  {editingDept ? "Update department information" : "Add a new department to your organization"}
+                  {"Add a new department to your organization"}
                 </p>
               </div>
             </div>
@@ -143,12 +143,12 @@ export default function DepartmentCreateModal({
                 />
               </div>
 
-              <div>
+              <div className="md:col-span-2 w-full">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Department Code (Multiple Allowed)
                 </label>
 
-                <div className="relative">
+                <div className="relative w-full">
                   <div
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white cursor-pointer flex flex-wrap gap-2 min-h-[46px] items-center"
                     onClick={() => setOpenCodeDropdown(prev => !prev)}
@@ -182,7 +182,7 @@ export default function DepartmentCreateModal({
                   </div>
 
                   {openCodeDropdown && (
-                    <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-56 overflow-y-auto z-20">
+                    <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-56 overflow-y-auto z-20 w-full">
                       {products?.length > 0 ? (
                         products.map((prod) => {
                           const selected = form.productId.includes(prod.id);
@@ -221,6 +221,7 @@ export default function DepartmentCreateModal({
 
 
 
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Description
@@ -247,10 +248,10 @@ export default function DepartmentCreateModal({
             </button>
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={submitted}
+              className="cursor-pointer px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {isSubmitting ? (
+              {submitted ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>Saving...</span>
@@ -258,7 +259,7 @@ export default function DepartmentCreateModal({
               ) : (
                 <>
                   <Briefcase className="w-4 h-4" />
-                  <span>{editingDept ? "Update Department" : "Create Department"}</span>
+                  <span>{ "Create Department"}</span>
                 </>
               )}
             </button>

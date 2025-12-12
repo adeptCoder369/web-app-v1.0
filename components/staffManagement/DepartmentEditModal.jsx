@@ -13,7 +13,8 @@ export default function DepartmentEditModal({
 
   const [form, setForm] = useState({
     name: "",
-    productId: [""],
+    product_ids: [""],
+    products: [""],
 
     description: ""
   });
@@ -26,12 +27,26 @@ export default function DepartmentEditModal({
 
   useEffect(() => {
     if (editingDept) {
-      setForm(editingDept);
+      setForm({
+        id: editingDept.id,
+        name: editingDept.name || "",
+        description: editingDept.description || "",
+        product_ids: editingDept.product_ids || [],
+        products: editingDept.products || []
+      });
     } else {
-      setForm({ name: "", productId: "", description: "" });
+      setForm({
+        name: "",
+        description: "",
+        product_ids: [],
+        products: []
+      });
     }
     setError("");
   }, [editingDept, open]);
+
+
+  // console.log('editingDept+++', form);
 
   const update = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
 
@@ -42,10 +57,13 @@ export default function DepartmentEditModal({
 
     try {
       const payload = {
-        // id: form.id || null,
+        id: form.id || null,
         name: form.name?.trim() || "",
-        productId: form.productId || [],
+        product_ids: form.product_ids || [],
+        products: form.products || [],
+
         description: form.description || ""
+
       };
 
       if (!payload.name) {
@@ -55,9 +73,10 @@ export default function DepartmentEditModal({
       }
 
       let resp;
-      console.log(payload);
-      
-      
+      // console.log('payload====_)', payload);
+      // console.log('form====_)', editingDept);
+
+
 
       resp = await onUpdate(
         context?.profileId,
@@ -65,6 +84,7 @@ export default function DepartmentEditModal({
         payload
       );
 
+      console.log('res====_)', resp);
       // If your API returns success like your parent example
       if (resp?.data?.success) {
         setSuccess(resp?.data?.results?.message || "Department saved successfully");
@@ -100,7 +120,7 @@ export default function DepartmentEditModal({
         className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
         onClick={handleBackdropClick}
       >
-        <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
+        <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
 
           {/* Header with Gradient */}
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5 flex justify-between items-center">
@@ -110,16 +130,16 @@ export default function DepartmentEditModal({
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-white">
-                  { "Edit Department" }
+                  {"Edit Department"}
                 </h2>
                 <p className="text-blue-100 text-sm">
-                  {"Update department information" }
+                  {"Update department information"}
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-lg hover:bg-white/20 flex items-center justify-center transition-colors"
+              className=" cursor-pointer w-8 h-8 rounded-lg hover:bg-white/20 flex items-center justify-center transition-colors"
             >
               <X className="w-5 h-5 text-white" />
             </button>
@@ -143,9 +163,9 @@ export default function DepartmentEditModal({
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Department Code (Multiple Allowed)
+              <div className="md:col-span-2 w-full">
+                <label className="text-sm font-semibold text-gray-700 mb-2">
+                  Products (Multiple Allowed)
                 </label>
 
                 <div className="relative">
@@ -153,8 +173,8 @@ export default function DepartmentEditModal({
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white cursor-pointer flex flex-wrap gap-2 min-h-[46px] items-center"
                     onClick={() => setOpenCodeDropdown(prev => !prev)}
                   >
-                    {form.productId?.length > 0 ? (
-                      form.productId.map((id) => {
+                    {form.product_ids?.length > 0 ? (
+                      form.product_ids.map((id) => {
                         const product = products.find(p => p.id === id);
                         return (
                           <span
@@ -166,8 +186,8 @@ export default function DepartmentEditModal({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 update(
-                                  "productId",
-                                  form.productId.filter(pid => pid !== id)
+                                  "product_ids",
+                                  form.product_ids.filter(pid => pid !== id)
                                 );
                               }}
                             >
@@ -185,23 +205,21 @@ export default function DepartmentEditModal({
                     <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-56 overflow-y-auto z-20">
                       {products?.length > 0 ? (
                         products.map((prod) => {
-                          const selected = form.productId.includes(prod.id);
+                          const selected = form.product_ids.includes(prod.id);
                           return (
                             <div
                               key={prod.id}
                               onClick={() => {
                                 if (selected) {
                                   update(
-                                    "productId",
-                                    form.productId.filter(pid => pid !== prod.id)
+                                    "product_ids",
+                                    form.product_ids.filter(pid => pid !== prod.id)
                                   );
                                 } else {
-                                  update("productId", [...form.productId, prod.id]);
+                                  update("product_ids", [...form.product_ids, prod.id]);
                                 }
                               }}
-                              className={`px-4 py-2 cursor-pointer text-sm ${selected
-                                ? "bg-blue-50 text-blue-700 font-medium"
-                                : "hover:bg-gray-100"
+                              className={`px-4 py-2 cursor-pointer text-sm ${selected ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100"
                                 }`}
                             >
                               {prod.name}
@@ -247,10 +265,10 @@ export default function DepartmentEditModal({
             </button>
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={submitted}
+              className="cursor-pointer px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {isSubmitting ? (
+              {submitted ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>Saving...</span>
@@ -258,7 +276,7 @@ export default function DepartmentEditModal({
               ) : (
                 <>
                   <Briefcase className="w-4 h-4" />
-                  <span>{ "Update Department" }</span>
+                  <span>{"Update Department"}</span>
                 </>
               )}
             </button>

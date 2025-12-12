@@ -8,6 +8,7 @@ import { getCookie } from 'cookies-next';
 export const getDepartments = async (
   profileId,
   sessionId,
+  payload
 
 ) => {
 
@@ -27,7 +28,16 @@ export const getDepartments = async (
 
   };
 
-
+  // Only include "type" if feeType has a real value
+  if (payload?.name && payload.name.trim() !== "") {
+    requestBody.name = payload.name;
+  }
+   if (payload?.code && payload.code.trim() !== "") {
+    requestBody.code = payload.code;
+  }
+   if (payload?.product_id && payload.product_id.trim() !== "") {
+    requestBody.product_id = payload.product_id;
+  }
   return axios.post(`${API_BASE_URL}/api`, requestBody);
 
 
@@ -42,8 +52,6 @@ export const addDepartments = async (
 
   let resolvedGuid = getCookie("guid");
   let resolvedUserId = getCookie("id");
-
-  console.log('products__', payload);
 
   const requestBody = {
     "api": "department.add",
@@ -74,25 +82,56 @@ export const editDepartments = async (
   payload
 
 ) => {
+  console.log('payload====_)', payload);
 
   let resolvedGuid = getCookie("guid");
   let resolvedUserId = getCookie("id");
 
-  console.log('products__', payload);
 
   const requestBody = {
-    "api": "department.add",
+    "api": "department.edit",
     guid: resolvedGuid,
     logged_in_user_account_id: resolvedUserId,
     user_account_id: profileId,
     client_id: sessionId,
+    id: payload?.id,
 
     name: payload?.name,
     description: payload?.description,
-    product_ids: payload?.productId,
+    product_ids: payload?.product_ids,
+    products: payload?.products,
     "platform": "web"
 
 
+
+  };
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+
+
+};
+//========================================================================================================
+
+export const deleteDepartments = async (
+  profileId,
+  sessionId,
+  id
+
+) => {
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+  const requestBody = {
+    "api": "department.delete",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    "platform": "web",
+    id,
 
   };
 
