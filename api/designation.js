@@ -56,7 +56,7 @@ export const addSchoolDesignation = async (
   payload
 
 ) => {
-  console.log('payload', payload);
+  console.log('payload======', payload);
 
   let resolvedGuid = getCookie("guid");
   let resolvedUserId = getCookie("id");
@@ -69,9 +69,9 @@ export const addSchoolDesignation = async (
     user_account_id: profileId,
     client_id: sessionId,
     name: payload?.name,
-    role: payload?.role_id,
-    adminAccess: payload?.adminAccess,
-    loginAccess: payload?.loginAccess,
+    school_role_id: payload?.role_id,
+    is_allowed_for_admin_access: payload?.adminAccess ? "1" : "0",
+    is_login_allowed: payload?.loginAccess ? "1" : "0",
     department_ids: payload?.department_ids,
     platform: "web",
     "version_code": "1.2.4",
@@ -104,10 +104,11 @@ export const editSchoolDesignation = async (
     logged_in_user_account_id: resolvedUserId,
     user_account_id: profileId,
     client_id: sessionId,
+    id: payload?.id,
     name: payload?.name,
-    role: payload?.role_id,
-    adminAccess: payload?.adminAccess,
-    loginAccess: payload?.loginAccess,
+    school_role_id: payload?.role_id,
+    is_allowed_for_admin_access: payload?.is_allowed_for_admin_access,
+    is_login_allowed: payload?.is_login_allowed,
     department_ids: payload?.department_ids,
     platform: "web",
     "version_code": "1.2.4",
@@ -116,7 +117,7 @@ export const editSchoolDesignation = async (
   };
 
 
-  return axios.post(`${API_BASE_URL}/api`, requestBody);
+  return  axios.post(`${API_BASE_URL}/api`, requestBody);
 
 
 };

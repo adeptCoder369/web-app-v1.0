@@ -53,7 +53,7 @@ export default function SchoolDesignationCreateModal({
       );
 
       if (resp?.data?.success) {
-        setSuccess("Role saved successfully");
+        setSuccess("Designation saved successfully");
         setTimeout(() => {
           setSuccess(null);
           onClose();
@@ -102,7 +102,7 @@ export default function SchoolDesignationCreateModal({
                 <Building2 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-white">Create Role</h2>
+                <h2 className="text-xl font-semibold text-white">Create Designation</h2>
                 <p className="text-blue-100 text-sm">Add a new staff role</p>
               </div>
             </div>
@@ -154,10 +154,10 @@ export default function SchoolDesignationCreateModal({
               </div>
             </div>
 
-            {/* School Role */}
+            {/* School Designation */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                School Role
+                School Designation
               </label>
               <select
                 value={form.role_id}
@@ -236,7 +236,7 @@ export default function SchoolDesignationCreateModal({
             <button
               onClick={handleSubmit}
               disabled={submitted}
-              className="px-6 py-2.5 rounded-xl bg-blue-600 text-white flex items-center gap-2"
+              className="cursor-pointer px-6 py-2.5 rounded-xl bg-blue-600 text-white flex items-center gap-2"
             >
               {submitted ? (
                 <>
@@ -246,7 +246,7 @@ export default function SchoolDesignationCreateModal({
               ) : (
                 <>
                   <Briefcase className="w-4 h-4" />
-                  Create Role
+                  Create Designation
                 </>
               )}
             </button>

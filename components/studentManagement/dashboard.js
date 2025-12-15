@@ -221,7 +221,7 @@ const StudentMangementDashboard = ({
     parents: [
       { name: '', gender: 'MALE', relation: "FATHER", qualification: '', annualIncome: '', phones: [''] },
       { name: '', gender: 'FEMALE', relation: "MOTHER", qualification: '', annualIncome: '', phones: [''] },
-      // { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
+      { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
     ],
     smsRegisteredNumber: "",
     emergencyContactNumber: ""
@@ -281,8 +281,8 @@ const StudentMangementDashboard = ({
       };
 
 
-      // console.log('====== payload___________________ : ', payload)
-      // return
+      console.log('====== payload___________________ : ', payload)
+      return
       // Example: Call your addStaff API or controller function
       let res = await addStudent(
         Context?.profileId,

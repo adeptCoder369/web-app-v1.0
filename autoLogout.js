@@ -22,7 +22,7 @@ export default function IdleTimeContainer({ children, onIdle }) {
     <IdleTimerProvider
       ref={idleTimerRef}
       timeout={1000 * 60 * 60 * 1} // 2 hours
-      // timeout={1000 * 60 } // 2 hours
+      // timeout={10 * 60 } 
       onIdle={handleIdle}
       onActive={handleActive}
       onAction={handleAction}

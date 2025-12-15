@@ -4,7 +4,7 @@ import { X, Briefcase, Building2 } from "lucide-react";
 export default function SchoolDesignationEditModal({
   open,
   onClose,
-  onCreate,
+  onUpdate,
   context,
   config,
   editingDesingation
@@ -64,21 +64,21 @@ export default function SchoolDesignationEditModal({
         is_login_allowed: form.loginAccess ? "1" : "0"
       };
 
-      const resp = await onCreate(
+      const resp = await onUpdate(
         context?.profileId,
         context?.session,
         payload
       );
 
       if (resp?.data?.success) {
-        setSuccess("Role updated successfully");
+        setSuccess("Designation updated successfully");
         setTimeout(() => {
           setSuccess(null);
           onClose();
           window.location.reload();
         }, 700);
       } else {
-        setError(resp?.data?.results?.message || "Failed to save role");
+        setError(resp?.data?.results?.message || "Failed to save Designation");
       }
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -252,7 +252,7 @@ export default function SchoolDesignationEditModal({
             <button
               onClick={handleSubmit}
               disabled={submitted}
-              className="px-6 py-2.5 rounded-xl bg-blue-600 text-white flex items-center gap-2"
+              className="cursor-pointer px-6 py-2.5 rounded-xl bg-blue-600 text-white flex items-center gap-2"
             >
               {submitted ? (
                 <>

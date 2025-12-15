@@ -76,6 +76,7 @@ export default function Layout({ children, dashboardData, stateChanged }) {
         <ConfirmationDialogueBox
           title="Hey, You Still There?"
           description="You have been idle for a while. Do you want to log out?"
+          onConfirm={()=>setShowIdleDialogue(false)}
           onCancel={() => setShowIdleDialogue(false)}
         />
       )}
