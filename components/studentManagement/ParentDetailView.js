@@ -16,7 +16,7 @@ export default function ParentInfoViewTab({
   if (!studentDetail || !studentDetail.parents) return null;
 
 
-  console.log(studentDetail.parents);
+  console.log(studentDetail.siblings);
 
   const basePayload = {
     user_account_id: profile,
@@ -133,6 +133,49 @@ export default function ParentInfoViewTab({
             </div>
           </div>
         ))}
+      {studentDetail?.siblings.length > 0 && (
+        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
+          <div className="flex items-center mb-4">
+            <Users className="h-5 w-5 text-indigo-600 mr-2" />
+            <h3 className="text-lg font-semibold text-gray-800">
+              Siblings
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            {studentDetail.siblings.map((sib) => (
+              <div
+                key={sib.id}
+                className="flex items-center justify-between bg-white rounded-lg p-4 border"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {sib.name}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    {sib.admission_number && `Admission No: ${sib.admission_number}`}
+                    {sib.roll_number && ` • Roll: ${sib.roll_number}`}
+                  </p>
+                </div>
+
+                {sib.image_url ? (
+                  <img
+                    src={sib.image_url}
+                    alt={sib.name}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                    N/A
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

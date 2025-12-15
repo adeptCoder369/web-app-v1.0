@@ -476,7 +476,7 @@ const StudentProfile = ({
             {[
               { id: 'basic', label: 'Basic Details', icon: User },
               { id: 'personal', label: 'Personal Details', icon: User },
-              { id: 'parents', label: 'Parents', icon: Users },
+              { id: 'parents', label: 'Family', icon: Users },
               { id: 'academic', label: 'Academic Info', icon: Book },
               { id: 'document', label: 'Document Info', icon: Book }
             ].map((tab) => (

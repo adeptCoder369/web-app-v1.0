@@ -166,7 +166,8 @@ const StudentMangementDashboard = ({
 
 
 
-  const classesOptions = config?.classes || [];
+  const classesOptions = config?.standards || [];
+  const classes = config?.classes || [];
   const schoolOptions = config?.school || [];
   const houses = config?.houses || [];
   const genderOptions = config?.gender_students || [];
@@ -223,6 +224,8 @@ const StudentMangementDashboard = ({
       { name: '', gender: 'FEMALE', relation: "MOTHER", qualification: '', annualIncome: '', phones: [''] },
       { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
     ],
+    siblings: [],
+
     smsRegisteredNumber: "",
     emergencyContactNumber: ""
 
@@ -283,6 +286,8 @@ const StudentMangementDashboard = ({
 
       console.log('====== payload ___________________ : ', payload)
       // Example: Call your addStaff API or controller function
+
+      
       let res = await addStudent(
         Context?.profileId,
         Context?.session,
@@ -291,6 +296,7 @@ const StudentMangementDashboard = ({
 
         payload
       );
+
       // console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
 
       if (!res?.data?.success) {
@@ -429,7 +435,7 @@ const StudentMangementDashboard = ({
                   <BasicInfoForm
                     formData={formData}
                     setFormData={setFormData}
-                    classes={classesOptions}
+                    classes={classes}
                     genderOptions={genderOptions}
                   />}
                 {currentFormStep === 'personal' &&

@@ -11,10 +11,11 @@ import { getCookie } from "cookies-next";
 export const getStudentList = async (
   profileId,
   sessionId,
-  payload = {}
+  payload = {},
+  page,
+  limit,
 ) => {
 
-  console.log('payload', payload);
 
   const resolvedGuid = getCookie("guid");
   const resolvedUserId = getCookie("id");
@@ -28,6 +29,8 @@ export const getStudentList = async (
     user_account_id: profileId,
     client_id: sessionId,
     platform: "web",
+    page,
+    limit,
   };
 
 
@@ -90,7 +93,7 @@ export const getStudentList = async (
   if (payload?.is_registered) {
     requestBody.is_registered = payload.is_registered;
   }
-    if (payload?.with_out_any_phone_number) {
+  if (payload?.with_out_any_phone_number) {
     requestBody.with_out_any_phone_number = payload.with_out_any_phone_number;
   }
 
@@ -201,7 +204,7 @@ export const addStudent = async (
   //   gender: p.gender,
   //   phones: p.phones?.filter((ph) => ph && ph.trim() !== "") || [],
   //   emails: p.emails?.filter((em) => em && em.trim() !== "") || [],
- 
+
   // })));
 
   return axios.post(`${API_BASE_URL}/api`, {
@@ -261,31 +264,16 @@ export const addStudent = async (
       // qualification: p.qualification,
       // annual_income: p.annualIncome
     })) || [],
+    "siblings": (payload?.siblings || []).map((s) => ({
+      name: s.name || null,
+      admission_number: s.admission_number || null, // if you store it later
+      class_id: s.classId || null,
+      roll_number: s.roll_number || null, // optional
+      image_url: s.image_url || null
+    })),
 
-
-    // "parents": [
-    //   {
-    //     "relation_with_student": payload?.relation_with_student,
-    //     "name": payload?.name,
-    //     "gender": payload?.gender,
-    //     "phones": [
-    //       payload?.phones,
-    //     ],
-    //     "emails": [
-    //       payload?.email,
-    //     ]
-    //   },
-    //   {
-    //     "relation_with_student": payload?.relation_with_student,
-    //     "name": payload?.name,
-    //     "gender": payload?.gender,
-    //     "phones": [],
-    //     "emails": []
-    //   }
-    // ],
     "registered_phone_for_sms": payload?.smsRegisteredNumber,
-    "emergency_contact_number": payload?.emergencyContactNumber
-,
+    "emergency_contact_number": payload?.emergencyContactNumber,
 
 
 

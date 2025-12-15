@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Trash2, Phone, Mail, Shield, User2, Transgender, PhoneCall } from 'lucide-react';
 import { TiSortAlphabeticallyOutline } from "react-icons/ti";
 import { FaGenderless } from 'react-icons/fa';
@@ -7,14 +7,15 @@ import { BiRupee } from 'react-icons/bi';
 import { FaUsers, FaUserGraduate } from "react-icons/fa";
 import { useState } from "react";
 
-const FamilyInfoForm = ({ formData, setFormData, genderOptions,classes ,studentsByClass = {}, handleChange }) => {
-  
-    const [selectedClass, setSelectedClass] = useState("");
+const FamilyInfoForm = ({ formData, setFormData, genderOptions, classes, studentsByClass = {}, handleChange }) => {
 
-  
-  
-  
-  
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState("");
+
+const siblings = formData.siblings || [];
+
+
+
   const handleParentChange = (index, field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -66,6 +67,65 @@ const FamilyInfoForm = ({ formData, setFormData, genderOptions,classes ,students
       parents: prev.parents.filter((_, i) => i !== index)
     }));
   };
+
+
+
+  const classesList = useMemo(() => {
+    if (!Array.isArray(classes)) return [];
+
+    return classes.flatMap((standard) =>
+      Array.isArray(standard.classes) ? standard.classes : []
+    );
+  }, [classes]);
+
+  const selectedClassObj = classesList.find(
+    (cls) => cls.id === selectedClass
+  );
+
+  const availableStudents = selectedClassObj?.students || [];
+
+  console.log('selectedClass ===', selectedClass);
+  const handleAddSibling = () => {
+    if (!selectedClass || !selectedStudent) return;
+
+    const student = availableStudents.find(
+      (s) => s.id === selectedStudent
+    );
+    if (!student) return;
+
+    setFormData((prev) => {
+      const existing = prev.siblings || [];
+
+      const alreadyAdded = existing.some(
+        (sib) => sib.studentId === student.id
+      );
+      if (alreadyAdded) return prev;
+
+      return {
+        ...prev,
+        siblings: [
+          ...existing,
+          {
+            studentId: student.id,
+            name: student.name,
+            classId: selectedClass,
+            className: selectedClassObj.name,
+          },
+        ],
+      };
+    });
+
+    setSelectedStudent("");
+  };
+
+const handleRemoveSibling = (studentId) => {
+  setFormData((prev) => ({
+    ...prev,
+    siblings: (prev.siblings || []).filter(
+      (sib) => sib.studentId !== studentId
+    ),
+  }));
+};
 
   return (
     <div className="space-y-6">
@@ -240,32 +300,32 @@ const FamilyInfoForm = ({ formData, setFormData, genderOptions,classes ,students
           Sibling Information
         </h3>
 
+
+
+
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Select Class */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Select Class
             </label>
-            <div className="relative">
-              <FaUserGraduate className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <select
-                value={selectedClass}
-                onChange={(e) => {
-                  setSelectedClass(e.target.value);
-                  handleChange("siblingClass", e.target.value);
-                }}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 
-                shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                transition duration-200 hover:border-gray-400"
-              >
-                <option value="">Select class</option>
-                {classes.map((cls) => (
-                  <option key={cls.id} value={cls.id}>
-                    {cls.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedClass}
+              onChange={(e) => {
+                setSelectedClass(e.target.value);
+                setSelectedStudent("");
+              }}
+              className="w-full rounded-lg border px-3 py-2"
+            >
+              <option value="">Select class</option>
+              {classesList.map((cls) => (
+                <option key={cls.id} value={cls.id}>
+                  {cls.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Select Student */}
@@ -273,28 +333,67 @@ const FamilyInfoForm = ({ formData, setFormData, genderOptions,classes ,students
             <label className="block text-sm font-medium text-gray-700">
               Select Student
             </label>
-            <div className="relative">
-              <FaUsers className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <select
-                value={formData.siblingStudentId || ""}
-                onChange={(e) => handleChange("siblingStudentId", e.target.value)}
-                disabled={!selectedClass}
-                className={`w-full pl-10 pr-4 py-2 rounded-lg border bg-white text-gray-800 shadow-sm
-                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                transition duration-200 hover:border-gray-400
-                ${!selectedClass ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50" : "border-gray-300"}`}
-              >
-                <option value="">Select student</option>
-                {selectedClass &&
-                  studentsByClass[selectedClass]?.map((stu) => (
-                    <option key={stu.id} value={stu.id}>
-                      {stu.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
+            <select
+              value={selectedStudent}
+              onChange={(e) => setSelectedStudent(e.target.value)}
+              disabled={!selectedClass}
+              className="w-full rounded-lg border px-3 py-2 disabled:bg-gray-100"
+            >
+              <option value="">Select student</option>
+              {availableStudents.map((stu) => (
+                <option key={stu.id} value={stu.id}>
+                  {stu.name} {stu.roll_number && `(${stu.roll_number})`}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleAddSibling}
+            disabled={!selectedClass || !selectedStudent}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+          >
+            + Add Sibling
+          </button>
+        </div>
+
+
+
+   {siblings.length > 0 && (
+  <div className="mt-6 space-y-3">
+    <h4 className="text-sm font-semibold text-gray-700">
+      Added Siblings
+    </h4>
+
+    {siblings.map((sib) => (
+      <div
+        key={sib.studentId}
+        className="flex items-center justify-between bg-gray-50 border rounded-lg px-4 py-2"
+      >
+        <div>
+          <p className="text-sm font-medium text-gray-800">
+            {sib.name}
+          </p>
+          <p className="text-xs text-gray-500">
+            Class: {sib.className}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => handleRemoveSibling(sib.studentId)}
+          className="text-red-500 hover:text-red-700 text-sm"
+        >
+          Remove
+        </button>
+      </div>
+    ))}
+  </div>
+)}
+
+
       </div>
 
 
