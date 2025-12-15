@@ -1,6 +1,6 @@
 'use client';
 
-import { List, User, MoreVertical, GraduationCap, School } from "lucide-react";
+import { List, MoreVertical, GraduationCap, School, IdCard, MessageSquare } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Loader from '../../components/ui/status/LoaderWIthoutBgBlurr';
 import StudentFilterPanel from './StudentFilterPanel';
@@ -43,8 +43,8 @@ export const StudentList = ({
 
 
 
+  // console.log('---- student ----', students);
   const toggleFilter = (filterType, value, event) => {
-    // console.log('---- values ----', filterType, value, event);
 
     if (event) {
       event.stopPropagation();
@@ -158,7 +158,7 @@ export const StudentList = ({
       window.location.href = option.redirect_url;
     }
     if (option.api) {
-      console.log(`Call API: ${option.api} for student ${studentId}`);
+      // console.log(`Call API: ${option.api} for student ${studentId}`);
       // you can integrate your API call here
     }
     setOpenMenu(null);
@@ -268,7 +268,7 @@ export const StudentList = ({
                     </div>
                   ) : (
                     <div className="relative h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm border-2 border-white">
-                      {/* <span className="text-white font-bold text-xs">{getInitials(student?.name ? student?.name : "")}</span> */}
+                      <span className="text-white font-bold text-xs">{getInitials(student?.name ? student?.name : "")}</span>
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
                     </div>
                   )}
@@ -321,12 +321,41 @@ export const StudentList = ({
                     </div>
                   )}
 
-                  {student?.school && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <School className="h-4 w-4 text-green-500 flex-shrink-0" />
-                      <span className="text-xs truncate">{student?.school}</span>
+                  <div className="flex flex-col gap-1 text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <IdCard className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                      <span className="text-xs truncate">
+                        Admission No:{" "}
+                        {student?.admission_number ? (
+                          <span className="font-medium text-gray-800">
+                            {student.admission_number}
+                          </span>
+                        ) : (
+                          <span className="italic text-gray-400">
+                            Not assigned
+                          </span>
+                        )}
+                      </span>
                     </div>
-                  )}
+
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-green-500 flex-shrink-0" />
+                      <span className="text-xs truncate">
+                        SMS Reg:{" "}
+                        {student?.registered_phone_for_sms ? (
+                          <span className="font-medium text-gray-800">
+                            {student.registered_phone_for_sms}
+                          </span>
+                        ) : (
+                          <span className="italic text-gray-400">
+                            Not available
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+
                 </div>
               </div>
 

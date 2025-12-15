@@ -281,8 +281,7 @@ const StudentMangementDashboard = ({
       };
 
 
-      console.log('====== payload___________________ : ', payload)
-      return
+      console.log('====== payload ___________________ : ', payload)
       // Example: Call your addStaff API or controller function
       let res = await addStudent(
         Context?.profileId,

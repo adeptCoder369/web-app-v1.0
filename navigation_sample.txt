@@ -84,11 +84,34 @@ function getSideMenu() {
                     "sub_menu" => array(
                         array("name" => "All Standards", "permission" => "standard.getList", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "standards", "sub_menu" => array()),
                         array("name" => "All Classes", "permission" => "classRoom.getList", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "classes", "sub_menu" => array()),
-                        array("name" => "Class Details", "permission" => "classRoom.getList", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "#", "sub_menu" => array(
-                                array("name" => "All", "permission" => "classRoom.getList", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "client/classes?date=" . date('Y-m-d'), "sub_menu" => array()),
-                                array("name" => "With App Users", "permission" => "classRoom.getList", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "client/classes?&app_users=1", "sub_menu" => array()))),
+                        array(
+                            "name" => "Class Details",
+                            "permission" => "classRoom.getList",
+                            "download" => false, 
+                            "icon" => "side-menu-icons/one.png",
+                            "url" => "#",
+                            "sub_menu" => array(
+                                array(
+                                    "name" => "All",
+                                     "permission" => "classRoom.getList",
+                                      "download" => false,
+                                       "icon" => "side-menu-icons/one.png",
+                                 "url" => "client/classes?date=" . date('Y-m-d'), "sub_menu" => array()),
+                                array(
+                                    "name" => "With App Users",
+                                     "permission" => "classRoom.getList",
+                                      "download" => false,
+                                       "icon" => "side-menu-icons/one.png",
+                                 "url" => "client/classes?&app_users=1", 
+                                 "sub_menu" => array()))),
                         array("name" => "Class Change", "permission" => "client.getClassChange", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "#", "sub_menu" => array(
-                                array("name" => ".xls", "permission" => "client.getClassChange", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "client/class-change?id=" . $clientId . "&format=SOFT COPY", "sub_menu" => array()),
+                                array(
+                                    "name" => ".xls",
+                                     "permission" => "client.getClassChange",
+                                      "download" => false, 
+                                      "icon" => "side-menu-icons/one.png",
+                                       "url" => "client/class-change?id=" . $clientId . "&format=SOFT COPY",
+                                        "sub_menu" => array()),
 //                                array("name" => ".pdf", "permission" => "client.getClassChange", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "client/class-change?id=" . $clientId . "&format=HARD COPY", "sub_menu" => array()),
                                 array("name" => "Student Renew", "permission" => "classRoom.setStudentRenewList", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "student-renew", "sub_menu" => array()))),
                         array("name" => "Bulk Promotion", "permission" => "client.getPromotionList", "download" => false, "icon" => "side-menu-icons/one.png", "url" => "bulk-promotion", "sub_menu" => array()),

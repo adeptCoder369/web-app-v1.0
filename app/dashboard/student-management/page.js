@@ -1,5 +1,3 @@
-
-import { getStudentList } from '../../../api/student';
 import StudentMangementDashboard from '../../../components/studentManagement/dashboard';
 import { cookies } from 'next/headers';
 // =============================================================
@@ -10,13 +8,11 @@ import { cookies } from 'next/headers';
   const cookyGuid = cookieStore.get('guid').value
   const cookyId = cookieStore.get('id').value
   // -----------------------------------------------------------
-  const standardListData = await getStudentList(resolvedParams.profile, resolvedParams.session, cookyGuid, cookyId)
 
   // =============================================================
   return (
 
     <StudentMangementDashboard
-      // students={standardListData.results.items}
       profile={resolvedParams.profile}
       session={resolvedParams.session}
       school={resolvedParams.school}

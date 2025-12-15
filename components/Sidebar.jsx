@@ -4,7 +4,10 @@ import { ChevronDown, ChevronRight, Star, } from 'lucide-react';
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { getCookie } from "cookies-next";
+import { getSessionCache } from "../utils/sessionCache";
 // ===============================================================
+const context = getSessionCache("dashboardContext");
 
 // Navigation menu structure based on your PHP code
 const menuItems = [
@@ -45,8 +48,19 @@ const menuItems = [
       {
         name: "Class Details",
         subMenu: [
-          { name: "All", url: "/class-details" },
-          { name: "With App Users", url: "/class-details" },
+          {
+            name: "All",
+            url: "/class-details",
+            onClick: (item) => handleDownload(item, 'classDetailsAll')
+
+          },
+          {
+            name: "With App Users",
+            url: "/class-details",
+            onClick: (item) => handleDownload(item, 'classDetailsWithAppUsers')
+
+          },
+
           // {
           //   name: "More Levels",
           //   subMenu: [
@@ -66,7 +80,12 @@ const menuItems = [
       {
         name: "Class Change",
         subMenu: [
-          { name: ".xls", url: "/class-details" },
+          {
+            name: ".xls",
+            url: "/class-details",
+            onClick: (item) => handleDownload(item, 'classCHangeXls')
+
+          },
           { name: "Student Renew", url: "/class-details" },
 
         ]
@@ -92,7 +111,7 @@ const menuItems = [
     subMenu: [
       {
         name: "All Students",
-        url: "/dashboard/student-management",
+        url: "/dashboard/student-management?tab=list",
       },
       {
         name: "Add Student",
@@ -110,7 +129,7 @@ const menuItems = [
       },
       {
         name: "Download Student Data",
-        url: "/dashboard/student-management?tab=birthdays"
+        url: "/dashboard/student-management/downloads"
       },
       {
         name: "Verify Image",
@@ -118,7 +137,7 @@ const menuItems = [
       },
       {
         name: "Proof Reading",
-        url: "/dashboard/student-management?tab=birthdays"
+        url: "/dashboard/student-management/proof-reading"
       },
       {
         name: "Parents",
@@ -232,10 +251,82 @@ const menuItems = [
 
 ];
 
+const downloadRoutes = {
+  classDetailsAll: classId => {
+    const portal = getPortalParams();
+
+    return `https://portal.infoeight.com/class/folder`
+      + `?client_id=${portal.client_id}`
+      + `&guid=${portal.guid}`
+      + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+      + `&user_account_id=${portal.user_account_id}`
+      + `&id=${classId}`;
+  },
+
+  classDetailsWithAppUsers: classId => {
+    const portal = getPortalParams();
+
+    return `https://portal.infoeight.com`
+
+      + `/client/classes?&app_users=1`
+      ;
+  },
+
+  classCHangeXl: classId => {
+    const portal = getPortalParams();
+
+    return `https://portal.infoeight.com`
+
+      + `/client/class-change?id=${portal.client_id}&format=SOFT COPY`
+      ;
+  },
+
+
+ classCHangeXls: classId => {
+    const portal = getPortalParams();
+
+    return `https://portal.infoeight.com`
+
+      + `/client/download-students-image?id=${portal.client_id}`
+      ;
+  },
+
+
+
+
+};
+const getPortalParams = () => {
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+  return {
+    client_id: context?.session,
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: context?.profileId,
+  };
+};
+
+const handleDownload = (classData, action) => {
+
+  console.log('classData, action=======', classData, action);
+
+
+  const classId = classData.id;
+
+  const routeFn = downloadRoutes[action];
+  if (!routeFn) {
+    console.warn("Unknown download action:", action);
+    return;
+  }
+
+  const url = routeFn(classId);
+  window.open(url, "_blank");
+};
 // ===============================================================
 export default function Sidebar(props) {
   const router = useRouter()
-
 
 
   const [expandedMenus, setExpandedMenus] = useState({});
@@ -300,6 +391,8 @@ export default function Sidebar(props) {
           style={{ paddingLeft: padding }}
           onClick={() => {
             if (hasChildren) toggleMenu(key);
+            else if (item.onClick) item.onClick(item);  // Add this: call custom onClick if defined
+
             else router.push(item.url);
           }}
         >

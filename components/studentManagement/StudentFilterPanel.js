@@ -294,9 +294,9 @@ const StudentFilterPanel = ({
       focus:border-blue-500 focus:ring focus:ring-blue-200"
         >
           <option value="">All</option>
-          {config?.renewalStatus?.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name}
+          {config?.renewal_status_list.map((r) => (
+            <option key={r} value={r}>
+              {r}
             </option>
           ))}
         </select>

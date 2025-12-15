@@ -297,3 +297,39 @@ export const addStudent = async (
 
   });
 };
+
+
+
+// ==================================================================================================
+
+export const getStudentRecordFields = async (
+  profileId,
+  sessionId,
+  payload = {}
+) => {
+
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+
+  const requestBody = {
+    api: "studentRecord.getFields",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    platform: "web",
+  };
+
+
+
+
+
+
+
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+};
