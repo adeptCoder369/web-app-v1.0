@@ -6,28 +6,56 @@ import Loader from '../../components/ui/status/LoaderWIthoutBgBlurr';
 import StudentFilterPanel from './StudentFilterPanel';
 import { getSessionCache } from "../../utils/sessionCache";
 import { FaFilter } from "react-icons/fa";
+import { getStudentList } from "../../api/student"; // Add this import
 
 export const StudentList = ({
-  students,
+  // Remove students as prop since we'll fetch here
   setSelectedStudent,
   setActiveTab,
-  loading,
+  // Remove loading as prop
   filters,
   setFilters,
   isFilterPanelOpen,
   setIsFilterPanelOpen
-
 }) => {
-
   const config = getSessionCache("dashboardConfig");
+  const context = getSessionCache("dashboardContext");
 
-
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20); // Adjust as needed
+  const [total, setTotal] = useState(0);
 
   const [openMenu, setOpenMenu] = useState(null);
   const menuRef = useRef(null);
 
+  // Fetch students with pagination
+  const fetchStudents = async (pageNumber = 1) => {
+    try {
+      setLoading(true);
+      const res = await getStudentList(
+        context?.profileId,
+        context?.session,
+        filters,
+        pageNumber,
+        limit
+      );
+      if (res?.data?.success) {
+        setStudents(res.data.results.students || []);
+        setTotal(res.data.results.count || 0);
+        setPage(pageNumber);
+      }
+    } catch (err) {
+      console.error("Students fetch error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
+  useEffect(() => {
+    fetchStudents(1);
+  }, [filters?.isSearch]); // Trigger on filter search
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -192,6 +220,8 @@ export const StudentList = ({
       background: `linear-gradient(135deg, rgb(${r}, ${g}, ${b}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`
     };
   };
+
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-8">
@@ -365,6 +395,64 @@ export const StudentList = ({
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
+      {total > 0 && (
+        <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
+          <div className="text-sm text-gray-600">
+            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} students
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => fetchStudents(page - 1)}
+              disabled={page === 1}
+              className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            {/* Dynamic Pages */}
+            <div className="flex gap-1">
+              {(() => {
+                const pages = [];
+                const add = (n) => {
+                  if (!pages.includes(n)) pages.push(n);
+                };
+                const left = Math.max(1, page - 2);
+                const right = Math.min(totalPages, page + 2);
+                add(1);
+                if (left > 2) add("...");
+                for (let i = left; i <= right; i++) add(i);
+                if (right < totalPages - 1) add("...");
+                if (totalPages > 1) add(totalPages);
+                return pages.map((p, i) =>
+                  p === "..." ? (
+                    <span key={i} className="px-3 py-2 text-sm text-gray-500">...</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => fetchStudents(p)}
+                      className={`px-3 py-2 text-sm rounded-lg transition-all ${
+                        p === page
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                );
+              })()}
+            </div>
+            <button
+              onClick={() => fetchStudents(page + 1)}
+              disabled={page === totalPages}
+              className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       <style dangerouslySetInnerHTML={{
         __html: `

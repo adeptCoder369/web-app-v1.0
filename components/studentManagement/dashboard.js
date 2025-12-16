@@ -37,29 +37,10 @@ const tabs = [
   { id: 'birthdays', label: 'Birthdays', icon: FaBirthdayCake }
 ];
 
-const StudentMangementDashboard = ({
-
-  cookyGuid,
-  cookyId,
-
-
-}) => {
+const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
   const searchParams = useSearchParams();
-
-
-
-
-
-
-
-
-
-
-
   const { selectedStudent, setSelectedStudent } = useStudent()
-  // console.log('selectedStudent', selectedStudent);
-
   const [studentListData, setStudentListData] = useState([]);
   const [houses_, setHouses] = useState([]);
   const [isHouseUpdatedOrCreated, setIsHouseUpdatedOrCreated] = useState(false);
@@ -222,7 +203,7 @@ const StudentMangementDashboard = ({
     parents: [
       { name: '', gender: 'MALE', relation: "FATHER", qualification: '', annualIncome: '', phones: [''] },
       { name: '', gender: 'FEMALE', relation: "MOTHER", qualification: '', annualIncome: '', phones: [''] },
-      { name: '', gender: '', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
+      { name: '', gender: 'MALE', relation: "GUARDIAN", qualification: '', annualIncome: '', phones: [''] },
     ],
     siblings: [],
 
@@ -286,8 +267,8 @@ const StudentMangementDashboard = ({
 
       console.log('====== payload ___________________ : ', payload)
       // Example: Call your addStaff API or controller function
+      return
 
-      
       let res = await addStudent(
         Context?.profileId,
         Context?.session,

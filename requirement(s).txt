@@ -1,12 +1,4 @@
-05-12-12 -------------
+correct key for adding the siblings in:
+    "api": "student.add",
 
 
-sidebar not clicking
-DOB -- student add
-house management
-re
-
-
-farther 
-occupation
-standard edit       

@@ -53,7 +53,9 @@ const BasicInfoForm = ({
         {/* Name */}
         <div className="relative">
           <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Name</label>
+            Name <span className="ml-0.5 text-red-500 font-bold">*</span>
+          </label>
+
           <div className="mt-1 relative rounded-md shadow-sm">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <TiSortAlphabeticallyOutline className="h-5 w-5 text-gray-400" />
@@ -75,7 +77,7 @@ const BasicInfoForm = ({
         {/* Gender */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Gender
+            Gender <span className="ml-0.5 text-red-500 font-bold">*</span>
           </label>
           <div className="relative">
             <Transgender className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -118,7 +120,8 @@ const BasicInfoForm = ({
         {/* Roll Number */}
         <div className="relative">
           <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Roll Number</label>
+            Roll Number <span className="ml-0.5 text-red-500 font-bold">*</span>
+            </label>
           <div className="mt-1 relative rounded-md shadow-sm">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <PiListNumbersFill className="h-5 w-5 text-gray-400" />
@@ -178,7 +181,7 @@ const BasicInfoForm = ({
         {/* Class */}
         <div className="relative">
           <label className="block text-sm font-semibold text-gray-700 tracking-wide mb-2">
-            Class</label>
+            Class  <span className="ml-0.5 text-red-500 font-bold">*</span></label>
           <div className="mt-1 relative rounded-md shadow-sm">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <SiGoogleclassroom className="h-5 w-5 text-gray-400" />
@@ -219,7 +222,7 @@ const BasicInfoForm = ({
 
 
 
-     
+
 
       </form>
 

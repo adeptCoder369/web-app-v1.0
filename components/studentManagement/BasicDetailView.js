@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import EditableField from "./EditableField";
 import { patchStudentDetail } from "../../api/student";
+import { BiMobile } from "react-icons/bi";
 
 export default function BasicDetailViewTab({
     studentDetail,
@@ -28,6 +29,8 @@ export default function BasicDetailViewTab({
     setIsUpdated,
     classes
 }) {
+    console.log('studentDetail+++', studentDetail);
+
     if (!studentDetail) return null;
 
     const basePayload = {
@@ -108,6 +111,31 @@ export default function BasicDetailViewTab({
                 isEditable={false}
 
             />
+
+
+            <EditableField
+                label="Contact Number"
+                value={studentDetail?.calling_numbers?.map(cls => cls?.phone) || ""}
+                icon={BiMobile}
+                type="array"
+                options={classes}
+                onSave={(val) => handleSave("calling_numbers", val)}
+                setIsUpdated={setIsUpdated}
+                isEditable={false}
+
+            />
+            <EditableField
+                label="Number Registered for SMS"
+                value={studentDetail?.emergency_contact_number || ""}
+                icon={BiMobile}
+                type="text"
+                options={classes}
+                onSave={(val) => handleSave("emergency_contact_number", val)}
+                setIsUpdated={setIsUpdated}
+                isEditable={false}
+
+            />
+
 
 
         </div>

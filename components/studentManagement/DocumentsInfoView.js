@@ -30,38 +30,38 @@ export default function DocumentsInfoViewTab({
     school_id: school,
     class_id: studentDetail.class?.id,
   };
-const handleSave = async (key, value) => {
-  try {
-    setIsSaving(true);
-    setError('');
-    setSuccess('');
-
-    const res = await patchStudentDetail({ 
-      ...basePayload, 
-      [key]: value 
-    });
-
-    console.log('res==____', res);
-
-    if (!res?.data?.success) {
-      setError(res?.results?.message || 'Failed to update.');
-      return;
-    }
-
-    setSuccess(res?.data?.message || 'Updated');
-
-  } catch (err) {
-    console.error('Save error:', err);
-    setError('Something went wrong while updating.');
-  } finally {
-    setIsSaving(false);
-
-    setTimeout(() => {
+  const handleSave = async (key, value) => {
+    try {
+      setIsSaving(true);
       setError('');
       setSuccess('');
-    }, 4000);
-  }
-};
+
+      const res = await patchStudentDetail({
+        ...basePayload,
+        [key]: value
+      });
+
+      console.log('res==____', res);
+
+      if (!res?.data?.success) {
+        setError(res?.results?.message || 'Failed to update.');
+        return;
+      }
+
+      setSuccess(res?.data?.message || 'Updated');
+
+    } catch (err) {
+      console.error('Save error:', err);
+      setError('Something went wrong while updating.');
+    } finally {
+      setIsSaving(false);
+
+      setTimeout(() => {
+        setError('');
+        setSuccess('');
+      }, 4000);
+    }
+  };
 
 
 
@@ -70,7 +70,7 @@ const handleSave = async (key, value) => {
 
 
   const uploadAndSave = async (key, file) => {
-    console.log('key ---===========', key, file);
+    // console.log('key ---===========', key, file);
     if (!file) return;
     setError(null);
     setUploadingKey(key);
@@ -95,19 +95,25 @@ const handleSave = async (key, value) => {
       });
 
       const result = await resp.json();
+      // console.log('_result====', result,);
 
       if (result?.success && result?.results?.files?.[0]) {
         const uploadedUrl = result.results.files[0].full_url;
-        const relativePath = uploadedUrl.split(
-          "https://infoeight-s3-new.s3.ap-south-1.amazonaws.com/students/demo-model-school-secondary-bankura/"
-        )[1];
+        // console.log('____===========', result.results.files);
+        // const relativePath = uploadedUrl.split(
+        //   "https://infoeight-s3-new.s3.ap-south-1.amazonaws.com/students/demo-model-school-secondary-bankura/"
+        // )[1];
 
-        console.log('relativePath ===========', relativePath);
 
+        console.log('____ uploadedUrl ===========',
+          basePayload,
+          key,
+           uploadedUrl,
+        );
         // Call patch API with the uploaded URL
         await patchStudentDetail({
           ...basePayload,
-          [key]: relativePath,
+          [key]: uploadedUrl,
         });
 
         setIsUpdated((prev) => !prev);

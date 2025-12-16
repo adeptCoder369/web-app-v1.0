@@ -17,6 +17,7 @@ const EditableField = ({
   const [error, setError] = useState(null);
 
   const handleSave = async () => {
+    
     if (type !== "boolean" && !temp) return setError("Cannot be empty");
     try {
       setLoading(true);
@@ -31,6 +32,25 @@ const EditableField = ({
   };
 
   const renderValueDisplay = () => {
+    if (type === "array") {
+  if (!Array.isArray(value) || value.length === 0) {
+    return <p className="text-gray-400 italic">—</p>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {value.map((item, idx) => (
+        <span
+          key={item.id || idx}
+          className="px-3 py-1 text-sm rounded-full bg-blue-50 text-blue-700 border border-blue-200"
+        >
+          {item.value || item}
+        </span>
+      ))}
+    </div>
+  );
+}
+
     if (type === "boolean") {
       const active =
         value === true || value === "1" || value === 1 || value === "true";
