@@ -98,23 +98,21 @@ export default function DocumentsInfoViewTab({
       // console.log('_result====', result,);
 
       if (result?.success && result?.results?.files?.[0]) {
-        const uploadedUrl = result.results.files[0].full_url;
+        // const uploadedUrl = result.results.files[0].full_url;
+        const uploadedUrl = result.results.files[0].url;
         // console.log('____===========', result.results.files);
         // const relativePath = uploadedUrl.split(
         //   "https://infoeight-s3-new.s3.ap-south-1.amazonaws.com/students/demo-model-school-secondary-bankura/"
         // )[1];
 
 
-        console.log('____ uploadedUrl ===========',
-          basePayload,
-          key,
-           uploadedUrl,
-        );
+        console.log('____ uploadedUrl ===========', result?.results?.files[0]);
         // Call patch API with the uploaded URL
-        await patchStudentDetail({
+     const  res=   await patchStudentDetail({
           ...basePayload,
           [key]: uploadedUrl,
         });
+        // console.log('____ res ===========', res);
 
         setIsUpdated((prev) => !prev);
       } else {

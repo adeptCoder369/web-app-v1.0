@@ -219,8 +219,8 @@ const AcademicInfoForm = ({ formData, setFormData }) => {
             </div>
             <input
               type="text"
-              value={formData.address || ''}
-              onChange={(e) => handleChange('address', e.target.value)}
+              value={formData.permanent_address || ''}
+              onChange={(e) => handleChange('permanent_address', e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"              placeholder="Full Address"

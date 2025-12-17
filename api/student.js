@@ -167,7 +167,7 @@ export async function patchStudentDetail(payload) {
 
 
   }
-  // console.log('finalPayloadd', finalPayloadd);
+  console.log('finalPayloadd', payload);
 
   // ==================================================================================================
   const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
@@ -175,6 +175,7 @@ export async function patchStudentDetail(payload) {
 
   try {
     const response = await axios.post(`${API_BASE_URL_}/api`, finalPayloadd);
+    // console.log('response', response);
 
     return response.data;
   } catch (error) {
@@ -275,13 +276,28 @@ export const addStudent = async (
     "registered_phone_for_sms": payload?.smsRegisteredNumber,
     "emergency_contact_number": payload?.emergencyContactNumber,
 
-
+    "previous_board": payload?.previousBoard,
+    "previous_board_roll_number": payload?.previousRollNo,
+    "previous_percentage": payload?.previousPercentage,
+    "previous_working_day": payload?.previousWorkingDays,
+    "permanent_address": payload?.permanent_address,
+    "board_registration_number": payload?.boardRegNo,
+    "year_of_passing": payload?.yearOfPassing,
+    "permanent_education_number": payload?.permanentEduNo,
+    "student_remarks": payload?.studentRemarks,
+    "distance_to_school": payload?.distanceToSchool,
+    "last_attended_school_name": payload?.previousSchool,
 
 
     "birth_certificate": payload?.documents?.birthCertificate?.uploadedUrl,
     "aadhaar_image": payload?.documents?.aadhar?.uploadedUrl,
     "family_photo": payload?.documents?.familyPhoto?.uploadedUrl,
-    "profile_photo": payload?.documents?.profileImage?.uploadedUrl,
+    "image_url": payload?.documents?.profileImage?.uploadedUrl,
+
+    "name_matches_with_aadhaar": payload?.name_matches_with_aadhaar,
+    "date_of_birth_matches_with_aadhaar": payload?.date_of_birth_matches_with_aadhaar,
+    "father_name_matches_with_aadhaar": payload?.father_name_matches_with_aadhaar,
+    "address_matches_with_aadhaar": payload?.address_matches_with_aadhaar,
 
   });
 };

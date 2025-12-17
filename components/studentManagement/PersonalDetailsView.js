@@ -28,16 +28,33 @@ export default function PersonalDetailsViewTab({
 
 
     if (!studentDetail) return null;
-
     const basePayload = {
         user_account_id: profile,
         client_id: session,
         guid: cookyGuid,
         logged_in_user_account_id: cookyId,
+
+        // core identifiers
         id: studentDetail.id,
         school_id: school,
-        class_id: studentDetail.class?.id
+        class_id: studentDetail.class?.id,
+
+        blood_group: studentDetail.blood_group,          // "AB+"
+        email: studentDetail.email,                      // "fi@gmail.com"
+        address: studentDetail.address,                  // "narahi,lucknow"
+        house_id: studentDetail.house_id,                      // null / —
+        mother_tongue: studentDetail.mother_tongue,      // "BENGALI"
+        religion: studentDetail.religion,                // "BUDDHISM"
+        nationality: studentDetail.nationality,          // "INDIAN"
+        is_hyper_active: studentDetail.is_hyper_active,  // "0" -> NO
+        height: studentDetail.height,                    // "12"
+        weight: studentDetail.weight,                    // "12"
+        vision_left: studentDetail.vision_left,          // null / —
+        vision_right: studentDetail.vision_right,        // null / —
+        dental_hygiene: studentDetail.dental_hygiene,    // null / —
+        category: studentDetail.category                 // "OBC"
     };
+
 
     const handleSave = async (key, value) => {
         await patchStudentDetail({ ...basePayload, [key]: value });
@@ -95,31 +112,31 @@ export default function PersonalDetailsViewTab({
 
 
 
-            <EditableField
+            {/* <EditableField
                 label="Phone"
                 value={studentDetail.phone}
                 icon={Phone}
                 type="text"
                 onSave={(val) => handleSave("phone", val)}
                 setIsUpdated={setIsUpdated}
-            />
-            <EditableField
+            /> */}
+            {/* <EditableField
                 label="Locality"
                 value={studentDetail.locality}
                 icon={MapPin}
                 type="text"
                 onSave={(val) => handleSave("locality", val)}
                 setIsUpdated={setIsUpdated}
-            />
+            /> */}
 
-            <EditableField
+            {/* <EditableField
                 label="Landmark"
                 value={studentDetail.landmark}
                 icon={MapPin}
                 type="text"
                 onSave={(val) => handleSave("landmark", val)}
                 setIsUpdated={setIsUpdated}
-            />
+            /> */}
             <EditableField
                 label="Religion"
                 value={studentDetail.religion}
@@ -140,14 +157,14 @@ export default function PersonalDetailsViewTab({
                 setIsUpdated={setIsUpdated}
             />
 
-            <EditableField
+            {/* <EditableField
                 label="Date of Birth"
                 value={studentDetail.date_of_birth}
                 icon={Calendar}
                 type="date"
                 onSave={(val) => handleSave("date_of_birth", val)}
                 setIsUpdated={setIsUpdated}
-            />
+            /> */}
 
             <EditableField
                 label="Is Hyper Active"

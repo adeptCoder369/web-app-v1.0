@@ -16,6 +16,7 @@ import {
     PieChart,
     School,
     Download,
+    Edit,
 
 
 } from 'lucide-react';
@@ -29,6 +30,7 @@ import { Breadcrumbs } from '../ui/Breadcrumb/breadcrumb';
 import { AddStandardModal } from './AddStandardClassModal'
 import { EditClassModal } from './EditClassModal'
 import { QuickStats } from './QuickStats'
+import StandardEditModal from './StandardEditModal'
 import ConfirmationDialogueBox from '../ui/status/Confirmation';
 import { useRouter } from 'next/navigation';
 import { useStudent } from '../../context/studentContext';
@@ -56,7 +58,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [confirmArrangeRole, setConfirmArrangeRole] = useState(false)
     const [openDropdownId, setOpenDropdownId] = useState(null);
-    const [subOpenId, setSubOpenId] = useState(null);
+    const [editStandardModal, setEditStandardModal] = useState(null);
 
     useEffect(() => {
         if (!dashboardConfig) {
@@ -774,18 +776,24 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
                                                         </div>
                                                     </div>
-                                                    {/* 
+
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-sm text-gray-600">Exams: {standardData?.fees?.length}</span>
+                                                            {/* <span className="text-sm text-gray-600">Exams: {standardData?.fees?.length}</span> */}
+                                                            {/* <span className="text-sm text-gray-600">Edit </span> */}
                                                         </div>
 
                                                         <div className="relative">
-                                                            <button className="p-1 text-gray-400 hover:text-gray-600 rounded">
-                                                                <MoreVertical className="w-4 h-4" />
-                                                            </button>
+                                                            <TooltipInfo position='left' text="Edit Standard">
+                                                                <button
+                                                                    onClick={() => setEditStandardModal(standardData)}
+                                                                    className="p-1 text-gray-400 hover:text-gray-600 rounded">
+                                                                    <Edit className="w-4 h-4" />
+                                                                </button>
+                                                            </TooltipInfo>
                                                         </div>
-                                                    </div> */}
+                                                    </div>
+
                                                 </div>
                                             </div>
 
@@ -1184,10 +1192,10 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                         )}
 
                         {/* Quick Stats Summary */}
-                        <QuickStats
+                        {/* <QuickStats
                             standards={standards}
                             stats={stats}
-                        />
+                        /> */}
                     </div >
                 </div >
 
@@ -1205,7 +1213,15 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                     }} />)}
 
 
-
+            {editStandardModal && (
+                <StandardEditModal
+                    config={config}
+                    initialData={editStandardModal}
+                    onSelectStudent={handleSelectStudent}
+                    onClose={() => {
+                        setEditStandardModal(null);
+                        // setSelectedClass(null);
+                    }} />)}
 
             {confirmDelete && (
                 <ConfirmationDialogueBox

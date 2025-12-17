@@ -374,14 +374,26 @@ const StudentProfile = ({
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex items-center space-x-6">
-            <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <User className="h-12 w-12 text-white" />
-              </div>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                <Award className="h-4 w-4 text-white" />
-              </div>
+            <div className="relative w-24 h-24">
+              {studentDetail?.image_url ? (
+                <img
+                  src={studentDetail.image_url}
+                  alt={studentDetail.name || "Student"}
+                  className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+                />
+              ) : (
+                <>
+                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <User className="h-12 w-12 text-white" />
+                  </div>
+
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <Award className="h-4 w-4 text-white" />
+                  </div>
+                </>
+              )}
             </div>
+
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 {isEditingName ? (

@@ -15,8 +15,20 @@ export default function ParentInfoViewTab({
 }) {
   if (!studentDetail || !studentDetail.parents) return null;
 
+  const [parentPhones, setParentPhones] = React.useState({});
 
-  console.log(studentDetail.siblings);
+  React.useEffect(() => {
+    if (!studentDetail?.parents) return;
+
+    const map = {};
+    Object.entries(studentDetail.parents).forEach(([relation, parent]) => {
+      map[relation] = (parent.phones || [])
+        .map(p => typeof p === "object" ? Number(p.phone) : Number(p))
+        .filter(Boolean);
+    });
+
+    setParentPhones(map);
+  }, [studentDetail]);
 
   const basePayload = {
     user_account_id: profile,
@@ -29,24 +41,30 @@ export default function ParentInfoViewTab({
   };
 
   const handleSave = async (relation, key, value) => {
-    // Get existing parent data
     const parent = studentDetail.parents[relation];
 
-    // Build the updated parent object
     const updatedParent = {
       relation_with_student: relation,
       name: parent.name || "",
       gender: parent.gender || "",
-      phones: parent.phones || [],
-      emails: parent.emails || [],
-      ...parent
+      phones: [...(parentPhones[relation] || [])],
+      emails: parent.emails || []
     };
 
-    // Update the correct field
     if (key === "phone") {
-      updatedParent.phones = value ? [value] : [];
-    } else if (key === "email") {
-      updatedParent.emails = value ? [value] : [];
+      const { index, phone } = value;
+
+      if (!phone) {
+        updatedParent.phones.splice(index, 1);
+      } else {
+        updatedParent.phones[index] = Number(phone);
+      }
+
+      // 🔥 keep local state in sync
+      setParentPhones(prev => ({
+        ...prev,
+        [relation]: updatedParent.phones
+      }));
     } else {
       updatedParent[key] = value;
     }
@@ -56,8 +74,13 @@ export default function ParentInfoViewTab({
       parents: [updatedParent]
     };
 
+    console.log("FINAL PAYLOAD", payload);
+
     await patchStudentDetail(payload);
+    setIsUpdated(true);
   };
+
+
 
 
   return (
@@ -86,14 +109,34 @@ export default function ParentInfoViewTab({
                 setIsUpdated={setIsUpdated}
               />
 
-              <EditableField
+              {/* <EditableField
                 label="Phone"
-                value={parent.phone}
+                value={parent?.phones?.map(cls => cls?.phone) || ""}
+
+                // value={parent.phone}
                 icon={Phone}
-                type="text"
+                type="array"
                 onSave={(val) => handleSave(relation, "phone", val)}
                 setIsUpdated={setIsUpdated}
-              />
+              /> */}
+              {(parentPhones[relation] || []).map((phone, idx) => (
+                <EditableField
+                  key={idx}
+                  label={`Phone ${idx + 1}`}
+                  value={phone}
+                  icon={Phone}
+                  type="text"
+                  onSave={(val) =>
+                    handleSave(relation, "phone", {
+                      index: idx,
+                      phone: val
+                    })
+                  }
+                  setIsUpdated={setIsUpdated}
+                />
+              ))}
+
+
 
               <EditableField
                 label="Email"

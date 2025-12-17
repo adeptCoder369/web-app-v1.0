@@ -207,8 +207,35 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
     ],
     siblings: [],
 
+
+    previousSchool: "",
+    scholarship: "",
+    yearOfPassing: "",
+    previousRollNo: "",
+    previousBoard: "",
+    boardRegNo: "",
+    previousPercentage: "",
+    previousWorkingDays: "",
+    permanentEduNo: "",
+    studentRemarks: "",
+    permanent_address: "",
+    distanceToSchool: "",
+
+
+
+
     smsRegisteredNumber: "",
-    emergencyContactNumber: ""
+    emergencyContactNumber: "",
+
+
+
+
+
+    name_matches_with_aadhaar: "",
+    date_of_birth_matches_with_aadhaar: "",
+    father_name_matches_with_aadhaar: "",
+    address_matches_with_aadhaar: "",
+
 
   });
 
@@ -267,7 +294,7 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
       console.log('====== payload ___________________ : ', payload)
       // Example: Call your addStaff API or controller function
-      return
+      
 
       let res = await addStudent(
         Context?.profileId,

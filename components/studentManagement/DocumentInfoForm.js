@@ -49,14 +49,7 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
       const result = await resp.json();
 
       if (result?.success && result?.results?.files?.[0]) {
-        const fullUrl = result.results.files[0].full_url;
-
-        // Extract ONLY the relative path, because that's how your system stores it
-        const relative = fullUrl.split(
-          "https://infoeight-s3-new.s3.ap-south-1.amazonaws.com/students/demo-model-school-secondary-bankura/"
-        )[1];
-
-        // Save both the preview & uploaded relative path
+        const fileUrl = result.results.files[0].url; // ONLY this is stored
         const previewUrl = URL.createObjectURL(file);
 
         setFormData(prev => ({
@@ -66,11 +59,11 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
             [key]: {
               file,
               preview: previewUrl,
-              uploadedUrl: fullUrl,
-              relativePath: relative
+              uploadedUrl: fileUrl // store url, not full_url
             }
           }
         }));
+
       } else {
         setUploadError(`Failed to upload ${file.name}`);
       }
@@ -120,7 +113,7 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
           const docState = formData.documents?.[doc.key];
           const hasFile = !!docState?.file;
           const isLoading = uploading && !docState?.uploadedUrl;
-          const imageUrl = docState?.uploadedUrl || docState?.preview || null;
+          const imageUrl = docState?.preview || null;
 
 
           return (
@@ -287,13 +280,21 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
                 <GrDocumentVerified className="h-5 w-5 text-gray-400" />
               </div>
               <select
-                value={formData.isHyperActive || ''}
-                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                value={formData.name_matches_with_aadhaar || ''}
+                onChange={(e) => handleChange('name_matches_with_aadhaar', e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
                 <option value="">Select options</option>
-                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+                {[{
+                  label: 'Yes',
+                  value: "1"
+                },
+                {
+                  label: 'No',
+                  value: "0"
+                }
+                ]?.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
             </div>
           </div>
@@ -308,13 +309,21 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
                 <GrDocumentVerified className="h-5 w-5 text-gray-400" />
               </div>
               <select
-                value={formData.isHyperActive || ''}
-                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                value={formData.date_of_birth_matches_with_aadhaar || ''}
+                onChange={(e) => handleChange('date_of_birth_matches_with_aadhaar', e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
                 <option value="">Select options</option>
-                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+                {[{
+                  label: 'Yes',
+                  value: "1"
+                },
+                {
+                  label: 'No',
+                  value: "0"
+                }
+                ]?.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
             </div>
           </div>
@@ -329,13 +338,21 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
                 <GrDocumentVerified className="h-5 w-5 text-gray-400" />
               </div>
               <select
-                value={formData.isHyperActive || ''}
-                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                value={formData.father_name_matches_with_aadhaar || ''}
+                onChange={(e) => handleChange('father_name_matches_with_aadhaar', e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
                 <option value="">Select options</option>
-                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+                {[{
+                  label: 'Yes',
+                  value: "1"
+                },
+                {
+                  label: 'No',
+                  value: "0"
+                }
+                ]?.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
             </div>
           </div>
@@ -348,13 +365,21 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
                 <GrDocumentVerified className="h-5 w-5 text-gray-400" />
               </div>
               <select
-                value={formData.isHyperActive || ''}
-                onChange={(e) => handleChange('isHyperActive', e.target.value)}
+                value={formData.address_matches_with_aadhaar || ''}
+                onChange={(e) => handleChange('address_matches_with_aadhaar', e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
                 <option value="">Select options</option>
-                {['Yes', 'No']?.map((f) => <option key={f} value={f}>{f}</option>)}
+                {[{
+                  label: 'Yes',
+                  value: "1"
+                },
+                {
+                  label: 'No',
+                  value: "0"
+                }
+                ]?.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
             </div>
           </div>
