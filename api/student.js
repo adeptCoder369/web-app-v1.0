@@ -265,13 +265,15 @@ export const addStudent = async (
       // qualification: p.qualification,
       // annual_income: p.annualIncome
     })) || [],
-    "siblings": (payload?.siblings || []).map((s) => ({
-      name: s.name || null,
-      admission_number: s.admission_number || null, // if you store it later
-      class_id: s.classId || null,
-      roll_number: s.roll_number || null, // optional
-      image_url: s.image_url || null
-    })),
+    // "siblings": (payload?.siblings || []).map((s) => ({
+    //   name: s.name || null,
+    //   admission_number: s.admission_number || null, // if you store it later
+    //   class_id: s.classId || null,
+    //   roll_number: s.roll_number || null, // optional
+    // })),
+    //   image_url: s.image_url || null
+
+    "sibling_ids": payload?.siblings?.map(s => s.studentId) || [],
 
     "registered_phone_for_sms": payload?.smsRegisteredNumber,
     "emergency_contact_number": payload?.emergencyContactNumber,

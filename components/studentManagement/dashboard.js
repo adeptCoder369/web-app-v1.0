@@ -295,6 +295,7 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
       console.log('====== payload ___________________ : ', payload)
       // Example: Call your addStaff API or controller function
       
+      return
 
       let res = await addStudent(
         Context?.profileId,
@@ -304,7 +305,6 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
         payload
       );
-
       // console.log('====== ↪️↪️↪️↪️↪️↪️↪️↪️↪️↪️  ========s : ', res?.data)
 
       if (!res?.data?.success) {

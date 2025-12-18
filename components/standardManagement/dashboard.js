@@ -47,9 +47,10 @@ const breadcrumbs = [
 ];
 
 // ==========================================================================================
-const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard, setReloadKey }) => {
+const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
     // ---------------------------------------------------------
     const router = useRouter()
+
     const { selectedStudent, setSelectedStudent } = useStudent()
     const context = getSessionCache("dashboardContext");
     const config = getSessionCache("dashboardConfig");
@@ -60,11 +61,11 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
     const [openDropdownId, setOpenDropdownId] = useState(null);
     const [editStandardModal, setEditStandardModal] = useState(null);
 
-    useEffect(() => {
-        if (!dashboardConfig) {
-            reloadDashboard()
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (!dashboardConfig) {
+    //         reloadDashboard()
+    //     }
+    // }, []);
     // ==================================================================
 
     const [addStandardForm, setAddStandardForm] = useState({
@@ -787,7 +788,7 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
                                                             <TooltipInfo position='left' text="Edit Standard">
                                                                 <button
                                                                     onClick={() => setEditStandardModal(standardData)}
-                                                                    className="p-1 text-gray-400 hover:text-gray-600 rounded">
+                                                                    className="cursor-pointer p-1 text-gray-400 hover:text-gray-600 rounded">
                                                                     <Edit className="w-4 h-4" />
                                                                 </button>
                                                             </TooltipInfo>
@@ -1215,7 +1216,9 @@ const StandardsClassesManagementDashboard = ({ dashboardConfig, reloadDashboard,
 
             {editStandardModal && (
                 <StandardEditModal
+                    setReloadKey={setReloadKey}
                     config={config}
+                    context={context}
                     initialData={editStandardModal}
                     onSelectStudent={handleSelectStudent}
                     onClose={() => {

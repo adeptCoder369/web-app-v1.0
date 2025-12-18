@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { School, FileText, Calendar, Hash, MapPin, User2, School2, LucideMapPinned } from 'lucide-react';
 import { IoNewspaper } from 'react-icons/io5';
 import { PiListNumbersFill } from 'react-icons/pi';
@@ -6,6 +6,54 @@ import { FaPercentage } from 'react-icons/fa';
 import { SiRemark } from 'react-icons/si';
 
 const AcademicInfoForm = ({ formData, setFormData }) => {
+  console.log('AcademicInfoForm - formData', formData);
+
+  const fetchData = async () => {
+    setLoading(true); // Set loading to true before fetching data
+    try {
+
+
+      const subjectRes = await getSubjectsList(
+        selectedStandard,
+        context?.profileId,
+        context?.session,
+        cookyGuid,
+        cookyId
+      );
+      console.log('subjectRes', subjectRes)
+
+      const examRes = await getExamList(selectedStandard);
+      setSubjects(subjectRes?.results?.subjects || []);
+      setExams(examRes?.results?.items || []);
+    } catch (error) {
+      setLoading(false); // Set loading to true before fetching data
+
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching data
+    }
+  };
+
+
+
+
+  useEffect(() => {
+
+    fetchData();
+
+  }, [formData]);
+
+
+
+
+
+
+
+  // console.log(' ----- currentSubjects -------', subjects_)
+
+
+
+
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
