@@ -611,7 +611,7 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
                         </div>
 
                         {/* ============================ Stats Cards ============================  */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow  border border-blue-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
                                 {/* Glow / Accent Background */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-indigo-500/10 opacity-0 group-hover:opacity-100 transition duration-500" />
@@ -699,25 +699,18 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
 
 
 
-                            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow  border border-blue-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
-                                {/* Glow / Accent Background */}
+                            {/* <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow  border border-blue-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
                                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-indigo-500/10 opacity-0 group-hover:opacity-100 transition duration-500" />
-
                                 <div className="relative flex items-center gap-4">
-                                    {/* Icon Wrapper */}
                                     <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-100 to-yellow-200 shadow-inner ring-1 ring-white/40">
                                         <PieChart className="w-6 h-6 text-yellow-600" />
                                     </div>
-
-                                    {/* Text Content */}
                                     <div>
                                         <div className="text-2xl font-bold text-gray-900">{stats.occupancyRate}%</div>
-
                                         <div className="text-sm text-gray-600">Occupancy Rate</div>
-
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
 
 

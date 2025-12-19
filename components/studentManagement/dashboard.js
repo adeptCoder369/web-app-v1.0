@@ -37,7 +37,7 @@ const tabs = [
   { id: 'birthdays', label: 'Birthdays', icon: FaBirthdayCake }
 ];
 
-const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
+const   StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
   const searchParams = useSearchParams();
   const { selectedStudent, setSelectedStudent } = useStudent()

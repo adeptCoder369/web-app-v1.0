@@ -195,21 +195,16 @@ const StudentFilterPanel = ({
       {/* ======================= OPTIONAL SUBJECT ======================= */}
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Optional Subject</h3>
-        <select
+        
+         <input
+          type="text"
           value={filters.optional_subject || ""}
           onChange={(e) =>
             setFilters((prev) => ({ ...prev, optional_subject: e.target.value }))
           }
-          className="w-full border border-gray-300 rounded-md p-2 text-gray-700
-      focus:border-blue-500 focus:ring focus:ring-blue-200"
-        >
-          <option value="">All</option>
-          {config?.optionalSubjects?.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+          className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
+        />
+      
       </div>
 
       {/* ======================= GENDER ======================= */}
