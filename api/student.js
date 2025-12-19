@@ -197,6 +197,7 @@ export const addStudent = async (
 
   payload
 ) => {
+  console.log('====== payload ___________________ : ', String(payload?.optionalSubjects.join(',')))
 
 
   // console.log('=======--------------- payload : ', payload?.parents?.map((p) => ({
@@ -207,7 +208,7 @@ export const addStudent = async (
   //   emails: p.emails?.filter((em) => em && em.trim() !== "") || [],
 
   // })));
-
+  
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "student.add",
     "guid": cookyGuid,
@@ -300,6 +301,9 @@ export const addStudent = async (
     "date_of_birth_matches_with_aadhaar": payload?.date_of_birth_matches_with_aadhaar,
     "father_name_matches_with_aadhaar": payload?.father_name_matches_with_aadhaar,
     "address_matches_with_aadhaar": payload?.address_matches_with_aadhaar,
+
+
+    "optional_subject_front_end": String(payload?.optionalSubjects.join(','))
 
   });
 };

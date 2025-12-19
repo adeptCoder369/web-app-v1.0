@@ -237,6 +237,14 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
     address_matches_with_aadhaar: "",
 
 
+
+
+
+
+
+    optionalSubjects: []
+
+
   });
 
   const formSteps = [
@@ -292,10 +300,9 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
       };
 
 
-      console.log('====== payload ___________________ : ', payload)
       // Example: Call your addStaff API or controller function
+
       
-      return
 
       let res = await addStudent(
         Context?.profileId,
@@ -441,6 +448,8 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
               <div className="mb-8">
                 {currentFormStep === 'basic' &&
                   <BasicInfoForm
+                    config={config}
+                    context={context}
                     formData={formData}
                     setFormData={setFormData}
                     classes={classes}

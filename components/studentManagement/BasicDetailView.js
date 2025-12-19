@@ -163,6 +163,25 @@ export default function BasicDetailViewTab({
 
                 />
 
+                <EditableField
+                    label="Optional Subjects"
+                    icon={Languages}
+                    isEditable={false}
+                    value={
+                        <div className="flex flex-wrap gap-2">
+                            {studentDetail?.optional_subject_front_end
+                                ?.split(',')
+                                .map(sub => (
+                                    <span
+                                        key={sub}
+                                        className="px-2 py-1 text-xs rounded-full bg-indigo-50 text-indigo-700 border"
+                                    >
+                                        {sub.trim()}
+                                    </span>
+                                )) || "—"}
+                        </div>
+                    }
+                />
 
 
             </div>

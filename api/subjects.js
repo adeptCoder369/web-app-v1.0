@@ -4,7 +4,7 @@ import { API_BASE_URL } from "../config/server";
 import { getCookie } from "cookies-next";
 
 // ==================================================================================================
-export async function getSubjectsList(selectedStandard, profile, session, cookyGuid, cookyId) {
+export async function getSubjectsList(selectedStandard, profile, session) {
   // console.log(selectedStandard, cookyGuid, profile, session, cookyId);
 
   // ==================================================================================================
