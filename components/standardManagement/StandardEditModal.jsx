@@ -132,7 +132,7 @@ export default function StandardEditModal({
               <h2 className="text-xl md:text-2xl font-bold">Edit Standard</h2>
               <p className="text-blue-100 text-xs md:text-sm mt-1">Adjust configuration settings below</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors">
+            <button onClick={onClose} className="cursor-pointer p-2 hover:bg-white/20 rounded-lg transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -257,13 +257,13 @@ export default function StandardEditModal({
 
         {/* Fixed Footer */}
         <div className="flex-none flex justify-end gap-3 px-8 py-5 border-t border-gray-200 bg-gray-50">
-          <button onClick={onClose} className="px-6 py-2.5 rounded-xl border-2 border-gray-300 font-semibold text-gray-600 hover:bg-gray-100">
+          <button onClick={onClose} className="cursor-pointer px-6 py-2.5 rounded-xl border-2 border-gray-300 font-semibold text-gray-600 hover:bg-gray-100">
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-blue-200"
+            className="cursor-pointer px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-blue-200"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
             {loading ? "Saving..." : "Save Changes"}
