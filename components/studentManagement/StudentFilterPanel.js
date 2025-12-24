@@ -195,8 +195,8 @@ const StudentFilterPanel = ({
       {/* ======================= OPTIONAL SUBJECT ======================= */}
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Optional Subject</h3>
-        
-         <input
+
+        <input
           type="text"
           value={filters.optional_subject || ""}
           onChange={(e) =>
@@ -204,7 +204,7 @@ const StudentFilterPanel = ({
           }
           className="border border-gray-300 rounded-md p-2 w-full focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
-      
+
       </div>
 
       {/* ======================= GENDER ======================= */}
@@ -300,37 +300,47 @@ const StudentFilterPanel = ({
       {/* ======================= RADIO GROUPS ======================= */}
       <div className="col-span-4 border-t pt-4 flex flex-wrap gap-6">
 
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="notUsingApp"
-            checked={filters.non_app_user === true}
-            onChange={() => setFilters((prev) => ({ ...prev, non_app_user: true }))}
-          />
-          Not Using App
-        </label>
+        {/* ======================= FILTER TOGGLES ======================= */}
+        <div className="col-span-4 border-t pt-4 flex flex-wrap gap-4">
 
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="registeredStudents"
-            checked={filters.is_registered === true}
-            onChange={() =>
-              setFilters((prev) => ({ ...prev, is_registered: true }))
+          {[
+            {
+              key: "non_app_user",
+              label: "Not Using App"
+            },
+            {
+              key: "is_registered",
+              label: "Registered Students"
+            },
+            {
+              key: "with_out_any_phone_number",
+              label: "Without any phone number"
             }
-          />
-          Registered Students
-        </label>
+          ].map(({ key, label }) => (
+            <label
+              key={key}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border cursor-pointer text-sm transition
+        ${filters[key]
+                  ? "bg-blue-50 border-blue-500 text-blue-700"
+                  : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                }`}
+            >
+              <input
+                type="checkbox"
+                className="hidden"
+                checked={!!filters[key]}
+                onChange={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    [key]: !prev[key]
+                  }))
+                }
+              />
+              <span>{label}</span>
+            </label>
+          ))}
 
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="withoutPhone"
-            checked={filters.with_out_any_phone_number === true}
-            onChange={() => setFilters((prev) => ({ ...prev, with_out_any_phone_number: true }))}
-          />
-          Without any phone number
-        </label>
+        </div>
 
 
         {/* ======================= SEARCH BUTTON ======================= */}

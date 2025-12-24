@@ -13,7 +13,6 @@ import {
     ChevronRight,
     UserPlus,
     Eye,
-    PieChart,
     School,
     Download,
     Edit,
@@ -186,32 +185,18 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
 
     // === Function(s) ========================================
     const downloadExcel = () => {
-        // For Excel export, we'll create a simple HTML table format that Excel can read
-        const headers = ['Name', 'Subject', 'Description', 'Date', 'Time', 'Total Students', 'Platform'];
-        let htmlContent = '<table><tr>';
-        headers.forEach(header => {
-            htmlContent += `<th>${header}</th>`;
-        });
-        htmlContent += '</tr>';
+            const portal = getPortalParams();
 
-        filteredData.forEach(row => {
-            htmlContent += '<tr>';
-            htmlContent += `<td>${row.name || 'N/A'}</td>`;
-            htmlContent += `<td>${row.subject?.name || 'N/A'}</td>`;
-            htmlContent += `<td>${row.description || 'N/A'}</td>`;
-            htmlContent += `<td>${row.date || 'N/A'}</td>`;
-            htmlContent += `<td>${row.time || 'N/A'}</td>`;
-            htmlContent += `<td>${row.students?.length || 0}</td>`;
-            htmlContent += `<td>${row.info?.platform || 'N/A'}</td>`;
-            htmlContent += '</tr>';
-        });
-        htmlContent += '</table>';
 
-        const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `staff_data_${new Date().toISOString().split('T')[0]}.xlsx`;
-        link.click();
+        const url =`https://portal.infoeight.com/download-student-report`
+                + `?client_id=${portal.client_id}`
+                + `&guid=${portal.guid}`
+                + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+                + `&user_account_id=${portal.user_account_id}`
+                + `&format=SOFT-COPY`; 
+
+        window.open(url, "_blank");
+
         setExportDropdownOpen(false);
     };
 
@@ -423,6 +408,7 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
 
 
     const downloadRoutes = {
+
         folder: classId => {
             const portal = getPortalParams();
 
@@ -732,6 +718,7 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
                             <div className="space-y-4">
                                 {Object.entries(filteredData).map(([standardKey, standardData]) => {
 
+                                    // console.log('filteredData__',filteredData);
 
                                     return (
                                         <div
@@ -766,7 +753,7 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
                                                                 <Users className="w-4 h-4" />
                                                                 {standardData.classes?.reduce((sum, cls) => sum + (cls.students?.length || 0), 0)} Students
                                                             </span>
-                                                            <span className="text-gray-800">|</span>
+                                                            {/* <span className="text-gray-800">|</span> */}
 
                                                         </div>
                                                     </div>
@@ -832,8 +819,17 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
                                                                         </div>
                                                                     </td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                                        {classData.class_teacher?.name}
+                                                                        <div className="font-medium">
+                                                                            {classData.class_teacher?.name}
+                                                                        </div>
+
+                                                                        {classData.class_teacher?.phones?.[0]?.phone_number && (
+                                                                            <div className="text-xs text-gray-500">
+                                                                                {classData.class_teacher.phones[0].phone_number}
+                                                                            </div>
+                                                                        )}
                                                                     </td>
+
 
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                                         <div className="flex items-center gap-2">

@@ -9,7 +9,6 @@ import { getSessionCache } from "../utils/sessionCache";
 // ===============================================================
 const context = getSessionCache("dashboardContext");
 
-// Navigation menu structure based on your PHP code
 const menuItems = [
   {
     name: "DASHBOARD",
@@ -35,16 +34,16 @@ const menuItems = [
     />,
     subMenu: [
       {
-        name: "All Standards",
+        name: "All Standards & Classes",
         url: "/dashboard/standard-management",
 
       },
-      {
-        name: "All Classes",
-        url: "/dashboard/standard-management",
+      // {
+      //   name: "All Classes",
+      //   url: "/dashboard/standard-management",
 
 
-      },
+      // },
       {
         name: "Class Details",
         subMenu: [
@@ -54,12 +53,12 @@ const menuItems = [
             onClick: (item) => handleDownload(item, 'classDetailsAll')
 
           },
-          {
-            name: "With App Users",
-            url: "/class-details",
-            onClick: (item) => handleDownload(item, 'classDetailsWithAppUsers')
+          // {
+          //   name: "With App Users",
+          //   url: "/class-details",
+          //   onClick: (item) => handleDownload(item, 'classDetailsWithAppUsers')
 
-          },
+          // },
 
           // {
           //   name: "More Levels",
@@ -123,18 +122,18 @@ const menuItems = [
         name: "Houses",
         url: "/dashboard/student-management?tab=houses"
       },
-      {
-        name: "Uploads",
-        url: "/dashboard/student-management?tab=birthdays"
-      },
+      // {
+      //   name: "Uploads",
+      //   url: "/dashboard/student-management?tab=birthdays"
+      // },
       {
         name: "Download Student Data",
         url: "/dashboard/student-management/downloads"
       },
-      {
-        name: "Verify Image",
-        url: "/dashboard/student-management?tab=birthdays"
-      },
+      // {
+      //   name: "Verify Image",
+      //   url: "/dashboard/student-management?tab=birthdays"
+      // },
       {
         name: "Proof Reading",
         url: "/dashboard/student-management/proof-reading"
