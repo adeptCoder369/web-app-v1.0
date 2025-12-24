@@ -1,4 +1,4 @@
-# School Management App: Connecting Students, Parents, and the School Ecosystem 🏫
+# School Management App: Connecting Students, Parents, and the School Ecosystems 🏫
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/your-username/your-repo-name/graphs/commit-activity)
