@@ -33,6 +33,7 @@ const PersonalDetailsForm = ({
   categories,
   religions,
   renewalStatus,
+  motherTongues,
   nationality,
   bloodGroups
 }) => {
@@ -249,7 +250,7 @@ const PersonalDetailsForm = ({
                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
                  transition duration-200 placeholder-gray-400 hover:border-gray-400"            >
               <option value="">Select language</option>
-              {religions?.map((r) => <option key={r} value={r}>{r}</option>)}
+              {motherTongues?.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
         </div>
