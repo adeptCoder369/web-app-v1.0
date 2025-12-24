@@ -94,7 +94,7 @@ const DocumentInfoForm = ({ formData, setFormData }) => {
       [field]: value
     }));
   };
-  console.log('filters', formData);
+  // console.log('filters', formData);
   const parentPhones =
     formData?.parents
       ?.flatMap((p) => p?.phones || [])

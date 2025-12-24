@@ -23,7 +23,6 @@ import { FaBirthdayCake } from 'react-icons/fa';
 
 
 const breadcrumbs = [
-  { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Manage Students" },
 ];
@@ -37,7 +36,7 @@ const tabs = [
   { id: 'birthdays', label: 'Birthdays', icon: FaBirthdayCake }
 ];
 
-const   StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
+const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
   const searchParams = useSearchParams();
   const { selectedStudent, setSelectedStudent } = useStudent()
@@ -134,7 +133,7 @@ const   StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
       Context?.session,
     )
 
-    setHouses(repso?.results?.items || []);
+    setHouses(repso?.results?.houses || []);
   }
 
 
@@ -302,7 +301,7 @@ const   StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
       // Example: Call your addStaff API or controller function
 
-      
+
 
       let res = await addStudent(
         Context?.profileId,
@@ -535,6 +534,7 @@ const   StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
                     </button>
                   ) : (
                     <button
+                      disabled={isSaving}
                       onClick={handleSubmit}
                       className="cursor-pointer flex items-center space-x-2 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
                     >
@@ -602,6 +602,7 @@ const   StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
           {activeTab === 'houses' && (
             <>
               <HouseManagement
+
                 houses={houses_}
                 setIsHouseUpdatedOrCreated={setIsHouseUpdatedOrCreated}
               />

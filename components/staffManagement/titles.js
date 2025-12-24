@@ -77,10 +77,6 @@ export default function SchoolTitleManagement({ Context, config }) {
   };
 
   const handleDelete = (title) => {
-    console.log(title);
-
-    // if (!window.confirm("Delete this title?")) return;
-    // setTitle(title);
     setTitleToDelete(title)
   };
 

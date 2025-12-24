@@ -197,7 +197,7 @@ export const addStudent = async (
 
   payload
 ) => {
-  console.log('====== payload ___________________ : ', String(payload?.optionalSubjects.join(',')))
+  console.log('====== payload ___________________ : ', payload?.documents)
 
 
   // console.log('=======--------------- payload : ', payload?.parents?.map((p) => ({

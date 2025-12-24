@@ -21,7 +21,7 @@ export async function getHouseList(profile, session,) {
       logged_in_user_account_id: resolvedUserId,
       "user_account_id": profile,
       "client_id": session,
-      "platform": "android"
+      "platform": "web"
       // "version_code": "1.1.2.18"
     });
 
@@ -136,9 +136,8 @@ export const addHouse = async (
 
   const resolvedGuid = getCookie("guid");
   const resolvedUserId = getCookie("id");
+  console.log('payload___hosyue', payload);
 
-  console.log('=======--------------- payload : ', payload
-  );
 
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "house.add",
@@ -150,7 +149,34 @@ export const addHouse = async (
 
     "name": payload?.name,
     "description": payload?.description,
-    "logo_url": payload?.logo
+    "logo_url": payload?.logo_url
+
+  });
+};
+
+
+//========================================================================================================
+
+export const deleteHouse = async (
+  profile,
+  session,
+
+
+  houseId
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+    "api": "house.delete",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profile,
+    "client_id": session,
+    "platform": "web",
+    "id": houseId
 
   });
 };

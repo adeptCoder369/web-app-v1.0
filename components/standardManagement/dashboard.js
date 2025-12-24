@@ -40,7 +40,6 @@ import ErrorStatus from '../ui/status/Error';
 
 // ==========================================================================================
 const breadcrumbs = [
-    { label: "Home", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
     { label: "Manage Standards & Classes" },
 ];
@@ -227,11 +226,10 @@ const StandardsClassesManagementDashboard = ({ setReloadKey }) => {
             if (res?.success) {
                 setShowSuccess(true);
                 setReloadKey(k => k + 1);
-                setShowEditModal(false);        // close only on success
+                setShowEditModal(false);        
                 setSelectedItem(null);
                 setApiResponse(res?.results?.message || res?.message || 'Added successfully');
 
-                // auto-close success indicator
                 setTimeout(() => setShowSuccess(false), 1500);
             } else {
                 const msg = res?.results?.message || res?.message || 'Failed to add standard. Please try again.';
