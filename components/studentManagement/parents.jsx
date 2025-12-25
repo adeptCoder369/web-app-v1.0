@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, List } from "lucide-react";
 import ParentCreateModal from "./ParentCreateModal";
 import ParentFilterPanel from "./ParentFilterPanel";
+import ParentDetailDrawer from "./ParentDetailDrawer";
 import ParentEditModal from "./ParentEditModal";
-import { getParentsList, addParents, updateParents } from "../../api/parents";
+import { getParentsList, addParents, updateParents, deleteParents } from "../../api/parents";
 import { IoPeopleSharp } from "react-icons/io5";
 import { FaFilter } from "react-icons/fa";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
@@ -26,7 +27,11 @@ export default function ParentManagement({ Context, config }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingParent, setEditingParent] = useState(null);
+  const [parentDetailDrawer, setParentDetailDrawer] = useState(null);
   const [parentToDelete, setParentToDelete] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const fetchParents = async (pageNumber = 1) => {
     try {
@@ -69,14 +74,14 @@ export default function ParentManagement({ Context, config }) {
 
   const openEditModal = (parent) => {
     setEditingParent(parent);
-    // setIsModalOpen(true);
+
   };
 
+  const openDetailSidebarDrawer = (parent) => {
+    setParentDetailDrawer(parent);
+  };
   const handleDelete = (parent) => {
-    console.log(parent);
 
-    // if (!window.confirm("Delete this parent?")) return;
-    // setParents(parent);
     setParentToDelete(parent)
   };
 
@@ -115,14 +120,55 @@ export default function ParentManagement({ Context, config }) {
     });
 
   };
-  // console.log('lo aaya filters ___________', filters);
+
+
+  const handleParentDelete = async () => {
+    setSubmitted(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      if (!parentToDelete?.id) {
+        setError("Invalid department selected");
+        setSubmitted(false);
+        return;
+      }
+
+      const resp = await deleteParents(
+        Context?.profileId,
+        Context?.session,
+        parentToDelete?.id
+      );
+
+      if (resp?.data?.success) {
+        setSuccess(resp?.data?.results?.message || "Parent deleted successfully");
+
+        setTimeout(() => {
+          setSuccess(null);
+
+          window.location.reload(); // keeping your pattern
+        }, 700);
+
+        setSubmitted(false);
+      } else {
+        setError(resp?.data?.results?.message || "Failed to delete Parent");
+        setSubmitted(false);
+      }
+    } catch (err) {
+      console.error("Parent delete error:", err);
+      setError(err.message || "Something went wrong while deleting Parent");
+      setSubmitted(false);
+    }
+  };
+
+
 
   return (
     <>
 
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className=" mx-auto">
           <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
             {/* Left Section: Icon + Title */}
@@ -227,43 +273,82 @@ export default function ParentManagement({ Context, config }) {
                         </td>
                         <td className="px-6 py-3">
                           {p.students?.length ? (
-                            <div className="flex flex-col gap-2">
-                              {p.students.map(s => (
-                                <div key={s.id} className="flex items-center gap-3">
+                            <div className="flex flex-col gap-2.5">
+                              {p.students.map((s, index) => (
+                                <div
+                                  key={s.id}
+                                  className="group relative flex items-center gap-3 p-2.5 rounded-lg bg-gradient-to-r from-blue-50/50 to-indigo-50/50 hover:from-blue-50 hover:to-indigo-50 border border-blue-100/50 hover:border-indigo-200 transition-all duration-200 hover:shadow-sm"
+                                >
+                                  {/* Count Badge (if multiple students) */}
+                                  {p.students.length > 1 && (
+                                    <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm border-2 border-white">
+                                      {index + 1}
+                                    </div>
+                                  )}
 
                                   {/* Student Image */}
-                                  <img
-                                    src={
-                                      s.image_url && s.image_url.trim() !== ""
-                                        ? s.image_url
-                                        : "/placeholder-student.png"
-                                    }
-                                    alt={s.name}
-                                    className="w-10 h-10 rounded-full object-cover border"
-                                    onError={(e) => {
-                                      e.target.src = "/placeholder-student.png"
-                                    }}
-                                  />
+                                  <div className="relative flex-shrink-0">
+                                    <img
+                                      src={
+                                        s.image_url && s.image_url.trim() !== ""
+                                          ? s.image_url
+                                          : "/placeholder-student.png"
+                                      }
+                                      alt={s.name}
+                                      className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-md group-hover:scale-105 transition-transform duration-200"
+                                      onError={(e) => {
+                                        e.target.src = "/placeholder-student.png"
+                                      }}
+                                    />
+                                    {/* Active indicator */}
+                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                                  </div>
 
                                   {/* Student Info */}
-                                  <div className="flex flex-col leading-tight">
-                                    <span className="font-medium">{s.name}</span>
-                                    <span className="text-sm text-gray-600">
-                                      {s.class}
-                                      {s.roll_number ? ` | Roll ${s.roll_number}` : ""}
-                                    </span>
-                                    <span className="text-xs text-gray-500">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-semibold text-gray-900 truncate">{s.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-600">
+                                      <span className="px-2 py-0.5 bg-white rounded-md border border-gray-200 font-medium">
+                                        {s.class}
+                                      </span>
+                                      {s.roll_number && (
+                                        <>
+                                          <span className="text-gray-400">•</span>
+                                          <span className="font-medium">Roll {s.roll_number}</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Relation Badge */}
+                                  <div className="flex-shrink-0">
+                                    <span className="inline-flex px-2.5 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full border border-indigo-200">
                                       {s.relation_with_parent}
                                     </span>
                                   </div>
 
                                 </div>
                               ))}
+
+                              {/* Summary footer (if multiple students) */}
+                              {p.students.length > 1 && (
+                                <div className="flex items-center justify-between px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-100 mt-1">
+                                  <span className="text-xs font-semibold text-indigo-700">
+                                    Total Students
+                                  </span>
+                                  <span className="text-xs font-bold text-indigo-900 bg-white px-2 py-0.5 rounded-full">
+                                    {p.students.length}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           ) : (
-                            "—"
+                            <span className="text-gray-400 text-sm font-medium">—</span>
                           )}
                         </td>
+
 
                         <td className="px-6 py-3">{p.platform_id || "—"}</td>
 
@@ -277,7 +362,7 @@ export default function ParentManagement({ Context, config }) {
                               switch (opt.action) {
                                 case "view":
                                   Icon = List;
-                                  handler = () => openEditModal(p);
+                                  handler = () => openDetailSidebarDrawer(p);
                                   styles = "bg-green-100 text-green-600 hover:bg-green-200";
                                   break;
 
@@ -317,8 +402,30 @@ export default function ParentManagement({ Context, config }) {
                   })
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center py-6 text-gray-400">
-                      No parents found
+                    <td colSpan="8" className="text-center py-6 text-gray-400">
+                      <div className="flex flex-col items-center gap-3">
+                        <span>No Parents found.</span>
+
+                        <button
+                          onClick={() =>
+                            setFilters({
+                              name: "",
+
+                              isSearch: prev => !prev
+                            })
+                          }
+                          className="flex items-center justify-center gap-2 px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"
+                        >
+                          <FaFilter size={16} />
+                          <span>Clear Filters</span>
+
+                          {getFilterCount() > 0 && (
+                            <span className="bg-blue-500 text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
+                              {getFilterCount()}
+                            </span>
+                          )}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -419,17 +526,40 @@ export default function ParentManagement({ Context, config }) {
       </div>
 
 
+      <ParentDetailDrawer
+        parentDetailDrawer={parentDetailDrawer}
+        context={Context}
+        onClose={() => setParentDetailDrawer(null)}
 
+      />
 
 
       {parentToDelete && (
         <ConfirmationDialogueBox
           title="Delete Parent?"
           description={`Are you sure you want to delete "${parentToDelete?.name}"?`}
-          // onConfirm={confirmDelete}
+          onConfirm={handleParentDelete}
           onCancel={() => setParentToDelete(null)}
         />
       )}
+
+
+
+
+
+      {/* Success/Error Notifications */}
+      {success && (
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{success}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{error}</span>
+        </div>
+      )}
+
     </>
   );
 }

@@ -232,7 +232,7 @@ export default function SchoolTitleManagement({ Context, config }) {
               <tbody className="divide-y divide-gray-200 text-sm">
                 {loading ? (
                   <tr>
-                     <td colSpan="6" className="text-center py-6 text-gray-400">
+                    <td colSpan="6" className="text-center py-6 text-gray-400">
                       <div className="flex justify-center items-center py-12">
                         <div className="flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2">
                           {/* Note: Replaced static image with an illustrative loading icon for better UX */}

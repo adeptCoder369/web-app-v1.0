@@ -119,14 +119,14 @@ export default function ParentCreateModal({
       };
 
       if (addParents) {
-        console.log('payload', payload);
-
+        
         const resp = await addParents(
           context?.profileId,
           context?.session,
           payload
         );
-
+        
+        console.log('resp____', resp,resp?.data?.results?.message);
         if (resp?.data?.success) {
           setSuccess(resp.data?.results?.message || "Parent saved successfully");
           setTimeout(() => {

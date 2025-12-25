@@ -142,3 +142,71 @@ export const updateParents = async (
 };
 
 
+
+
+
+//========================================================================================================
+
+export const deleteParents = async (
+  profileId,
+  sessionId,
+
+  parentId
+) => {
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+    "api": "studentParent.delete",
+
+    "guid": resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    "platform": "web",
+    "version_code": "1.2.4",
+
+    "id": parentId
+
+
+  });
+};
+
+
+
+//========================================================================================================
+
+export const getParentsDetails = async (
+  profileId,
+  sessionId,
+
+  parentId
+) => {
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+    "api": "studentParent.getDetails",
+
+    "guid": resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    "platform": "web",
+    "version_code": "1.2.4",
+
+    "id": parentId
+
+
+  });
+};
