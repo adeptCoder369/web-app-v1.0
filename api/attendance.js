@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { API_BASE_URL } from "../config/server";
+import { getCookie } from "cookies-next";
 
 
 //========================================================================================================
@@ -34,29 +35,28 @@ export const markAttendance = async (
   profile,
   session,
   selectedDate,
-  cookyGuid,
   selectedClassId,
-  cookyId,) => {
+  attendancePayload,
+  hasAttendance
+) => {
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
 
 
 
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "classRoom.markAttendance",
-    "guid": cookyGuid,
-    "logged_in_user_account_id": "885283",
-    "user_account_id": profile,
-    "client_id": session,
+    "guid": resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profile,
+    client_id: session,
     "platform": "WEB",
     "id": selectedClassId,
     "date": selectedDate,
-    "is_updated": true,
-    "attendance": {
-      "PRESENT": [
-        1060369
-      ],
-      "ABSENT": [],
-      "LEAVE": []
-    }
+    "is_updated": hasAttendance,
+    "attendance": attendancePayload
   });
 };
 //========================================================================================================

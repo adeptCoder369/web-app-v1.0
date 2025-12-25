@@ -12,7 +12,6 @@ import { FaDownload, FaFileExcel } from 'react-icons/fa';
 
 
 const breadcrumbs = [
-  { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Manage Attendance" },
 ];
@@ -31,10 +30,7 @@ export default function AttendanceDashboard({
   const config = getSessionCache("dashboardConfig");
   const context = getSessionCache("dashboardContext");
 
-  // console.log(config?.config?.classes,'--- config');
-
-
-
+  // console.log(config?.standards, '--- config');
 
 
 
@@ -56,9 +52,10 @@ export default function AttendanceDashboard({
   });
 
 
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   // ==================================================================================================
-  // const { setAuthStates, id, setGuid, guid } = useAuthContext();
   const { getAttendance, attendanceData } = useAttendance(
     profile = context?.profileId,
     session = context?.session,
@@ -68,7 +65,6 @@ export default function AttendanceDashboard({
     cookyId,
   );
 
-  // console.log('guid== -----------',  guid);
 
   // ==================================================================================================
 
@@ -89,113 +85,75 @@ export default function AttendanceDashboard({
   const presentStudents = attendanceData?.attendance?.PRESENT ?? []; // Use ?? [] to default to an empty array
   const absentStudents = attendanceData?.attendance?.ABSENT ?? [];   // Use ?? [] to default to an empty array
   const leavesStudents = attendanceData?.attendance?.LEAVE ?? []; // Use ?? [] to default to an empty array
+  const hasAttendance =
+    presentStudents.length > 0 ||
+    absentStudents.length > 0 ||
+    leavesStudents.length > 0;
 
 
-  const allStudents = [...presentStudents, ...absentStudents, ...leavesStudents];
-  // console.log('presentStudents ==========', presentStudents);
-  // console.log('absentStudents ==========', absentStudents);
+  const classFromConfig = config?.standards
+    ?.flatMap(standard => standard.classes ?? [])
+    ?.find(cls => cls.id === selectedClassId);
 
-  // You can then get the total count from this combined array:
+  const configStudents = classFromConfig?.students ?? [];
+
+
+  const allStudents = hasAttendance
+    ? [...presentStudents, ...absentStudents, ...leavesStudents]
+    : configStudents;
+  // const allStudents = [...presentStudents, ...absentStudents, ...leavesStudents];
+
   const totalMarkedStudentsCount = allStudents?.length;
 
 
-  // Calculate total students who are either present or absent
-  // Ensure both are arrays before attempting to get their length
-  // const totalStudents = (presentStudents?.length ?? 0) + (absentStudents?.length ?? 0);
-
-
-
-
-  // Filter students based on selected class
-  // const allStudents = mockStudents?.filter(student => student.classId === selectedClassId);
-  // const allStudents = allMarkedStudents
-
-  // Initialize attendance for filtered students when class or date changes
-  // console.log('studentAttendance==========', studentAttendance);
-  // useEffect(() => {
-  //   const initialAttendanceState = {};
-  //   allStudents?.forEach(student => {
-  //     // Corrected logic: Use the 'initialAttendance' field already determined
-  //     // in the 'allStudents' array.
-  //     initialAttendanceState[student.id] = student.initialAttendance || 'absent'; // Default to 'absent' if initialAttendance isn't set
-  //   });
-
-  //   setStudentAttendance(initialAttendanceState);
-  // }, [selectedDate]);
-
-  // Use this useEffect to initialize studentAttendance state
   useEffect(() => {
     const initialAttendanceState = {};
 
-    // Iterate over the students relevant to the currently selected class
-    allStudents.forEach(student => {
-      let status = 'absent'; // Default to 'absent'
+    if (hasAttendance) {
+      allStudents.forEach(student => {
+        let status = 'absent';
 
-      if (presentStudents.some(s => s.id === student.id)) {
-        status = 'present';
-      } else if (leavesStudents.some(s => s.id === student.id)) {
-        status = 'leave';
-      }
-      // No 'else if (absentStudents.some(...))' needed here, as 'absent' is the default
-      // if not found in present or leave. If absentStudents is specifically
-      // for *marked* absences, and you want to ensure students not explicitly
-      // present/leave but *not* in absentStudents are treated differently (e.g., 'unmarked'),
-      // then you'd adjust the default and add another condition.
-      // But for typical P/A/L, this order (P > L > A(default)) is common.
+        if (presentStudents.some(s => s.id === student.id)) {
+          status = 'present';
+        } else if (leavesStudents.some(s => s.id === student.id)) {
+          status = 'leave';
+        }
 
-      initialAttendanceState[student.id] = status; // CORRECT: Assign status to student.id as key
-    });
+        initialAttendanceState[student.id] = status;
+      });
+    } else {
+      // attendance not taken yet
+      configStudents.forEach(student => {
+        initialAttendanceState[student.id] = 'present';
+      });
+    }
 
     setStudentAttendance(initialAttendanceState);
   }, [
-    selectedClassId, // Important: Changes filteredStudents
-    selectedDate,    // Important: Changes attendanceData
-    attendanceData,  // Important: `presentStudents`, `absentStudents`, `leavesStudents` change when this updates
+    selectedClassId,
+    selectedDate,
+    attendanceData,
   ]);
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  // CRITICAL: Added missing dependencies that are used inside this effect
-  // Dependencies:
-  // - selectedClassId: When the class changes, we need to re-initialize for the new set of students.
-  // - selectedDate: When the date changes, attendanceData will change, requiring re-initialization.
-  // - attendanceData: This is crucial as it contains the present, absent, and leave lists.
-  // - filteredStudents: Ensures the effect re-runs if the list of students for the class changes (though
-  //                     selectedClassId usually covers this, being explicit doesn't hurt).
-
-  // console.log('attendanceSummary==========', attendanceSummary,studentAttendance);
-  // console.log('presentStudents==========', studentAttendance);
 
 
-  // Added allStudents to dependencies
-  // Calculate attendance summary whenever studentAttendance changes
   useEffect(() => {
-    // let present = 0;
-    // let absent = 0;
-    // let leave = 0;
-    // const total = allStudents.length;
+    if (hasAttendance) {
+      setAttendanceSummary({
+        present: presentStudents.length,
+        absent: absentStudents.length,
+        leave: leavesStudents.length,
+        total: presentStudents.length + absentStudents.length,
+      });
+    } else {
+      setAttendanceSummary({
+        present: configStudents.length,
+        absent: 0,
+        leave: 0,
+        total: configStudents.length,
+      });
+    }
+  }, [attendanceData, selectedDate, selectedClassId]);
 
-    // allStudents.forEach(student => {
-    //   const status = studentAttendance[student.id];
-    //   if (status === 'present') {
-    //     present++;
-    //   } else if (status === 'absent') {
-    //     absent++;
-    //   } else if (status === 'leave') {
-    //     leave++;
-    //   }
-    // });
-
-    setAttendanceSummary({
-      present: presentStudents?.length,
-      absent: absentStudents?.length,
-      leave: leavesStudents?.length,
-      total: presentStudents?.length + absentStudents?.length,
-    });
-
-
-
-    // setAttendanceSummary({ present, absent, leave, total });
-  }, [selectedDate, attendanceData]);
-  // }, [studentAttendance, allStudents]);
 
   // Handle attendance status change for a student
   const handleAttendanceChange = (studentId, status) => {
@@ -213,30 +171,59 @@ export default function AttendanceDashboard({
   };
 
   const handleTakeAttendanceAndSendSMS = async () => {
-    console.log("Taking attendance and sending SMS to parents...");
-
     setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const attendancePayload = {
+        PRESENT: [],
+        ABSENT: [],
+        LEAVE: [],
+      };
 
-    const repsonse = await markAttendance(
-      profile,
-      session,
-      selectedDate,
-      cookyGuid,
-      selectedClassId,
-      cookyId,
+      Object.entries(studentAttendance).forEach(([studentId, status]) => {
+        if (status === 'present') attendancePayload.PRESENT.push(Number(studentId));
+        if (status === 'absent') attendancePayload.ABSENT.push(Number(studentId));
+        if (status === 'leave') attendancePayload.LEAVE.push(Number(studentId));
+      });
 
-    )
-    console.log(repsonse.data);
+      console.log('____attendancePayload', hasAttendance);
 
-    setIsSubmitting(false);
+      // return
+      const resp = await markAttendance(
+        profile,
+        session,
+        selectedDate,
+        selectedClassId,
+        attendancePayload,
+        hasAttendance
+      )
+      if (resp?.data?.success) {
+        setSuccess(resp?.data?.results?.message || "Title deleted successfully");
+
+        setTimeout(() => {
+          setSuccess(null);
+
+          window.location.reload(); // keeping your pattern
+        }, 700);
+
+        setIsSubmitting(false);
+      } else {
+        setError(resp?.data?.results?.message || "Failed to delete Title");
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error("Title delete error:", err);
+      setError(err.message || "Something went wrong while deleting department");
+      setIsSubmitting(false);
+    }
 
   };
 
-
-  // console.log("Initializing allStudents:", attendanceData); // Debugging
-
-  // Calculate attendance percentage
   const attendancePercentage = attendanceSummary.total > 0 ? Math.round((attendanceSummary.present / attendanceSummary.total) * 100) : 0;
+
+
+
   // ==================================================================================================
 
   return (
@@ -257,7 +244,7 @@ export default function AttendanceDashboard({
 
         <div className="min-h-screen bg-gray-50 p-6 shadow-md rounded">
           {/* Header Section */}
-          <div className="max-w-7xl mx-auto">
+          <div className=" mx-auto">
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
@@ -265,38 +252,15 @@ export default function AttendanceDashboard({
                     <ReceiptTextIcon className="w-8 h-8 text-blue-600" />
                     Daily Attendance Management
                   </h1>
-                  <p className="text-gray-600">              Mark attendance and notify parents instantly</p>
-
+                  <p className="text-gray-600">
+                    Mark attendance and notify parents instantly
+                  </p>
                 </div>
-                {/* <div className="flex gap-3">
-
-
-
-                  <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                    <Upload className="w-4 h-4" />
-                    Import Data
-                  </button>
-                  <button
-                    onClick={() => {
-                      setModalType('standard');
-                      setShowAddModal(true);
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Standard
-                  </button>
-                </div> */}
               </div>
             </div>
-
-
-
-
-
           </div>
 
-          <div className="max-w-6xl mx-auto">
+          <div className=" mx-auto">
             {/* Controls Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
               {/* Class Selection Card */}
@@ -415,65 +379,80 @@ export default function AttendanceDashboard({
 
 
 
-              <div className="p-6">
+              <div className="p-4">
                 {allStudents?.length === 0 ? (
-                  <div className="text-center py-12">
-                    <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg font-medium">No students found for this class.</p>
+                  <div className="text-center py-10">
+                    <AlertCircle className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-500 text-base font-medium">
+                      No students found for this class.
+                    </p>
                   </div>
                 ) : (
-                  <div className="grid gap-4">
-                    {allStudents?.map((student, index) => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {allStudents.map(student => (
                       <div
                         key={student.id}
-                        className="group relative bg-gray-50 rounded-2xl p-6 border-2 border-transparent hover:border-blue-200 hover:bg-blue-50/30 transition-all duration-300"
+                        className="group relative bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all duration-200"
                       >
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                          <div className="flex items-center space-x-4">
-                            <div className="flex-shrink-0">
-                              <div className="w-12 h-12 bg-gradient-to-r from-[#15487d] to-[#007aff] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                                {student.roll_number}
-                              </div>
+                        <div className="flex items-center justify-between gap-4">
+                          {/* LEFT: Avatar + Name */}
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-full shadow overflow-hidden flex items-center justify-center bg-gradient-to-r from-[#15487d] to-[#007aff] flex-shrink-0">
+                              {student.image_url ? (
+                                <img
+                                  src={student.image_url}
+                                  alt={student.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-white font-bold text-sm">
+                                  {student.roll_number}
+                                </span>
+                              )}
                             </div>
-                            <div>
-                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+
+                            <div className="min-w-0">
+                              <h4 className="text-base font-semibold text-gray-900 truncate">
                                 {student.name}
                               </h4>
-                              <p className="text-sm text-gray-600 font-medium">Roll No: {student.roll_number}</p>
+                              <p className="text-xs text-gray-600 font-medium">
+                                Roll No: {student.roll_number}
+                              </p>
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-2">
+                          {/* RIGHT: Attendance buttons */}
+                          <div className="flex gap-2 flex-shrink-0">
                             <button
                               onClick={() => handleAttendanceChange(student.id, 'present')}
-                              className={`group/btn flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 transform hover:scale-105 ${studentAttendance[student.id] === 'present'
-                                ? 'bg-green-500 text-white shadow-lg shadow-green-500/30'
-                                : 'bg-white text-green-600 border-2 border-green-200 hover:bg-green-50 hover:border-green-300'
+                              className={`flex items-center px-3 py-2 rounded-lg font-semibold text-xs transition-all ${studentAttendance[student.id] === 'present'
+                                  ? 'bg-green-500 text-white shadow'
+                                  : 'bg-white text-green-600 border border-green-200 hover:bg-green-50'
                                 }`}
                             >
-                              <CheckCircle className="h-4 w-4 mr-1.5" />
+                              <CheckCircle className="h-4 w-4 mr-1" />
                               Present
                             </button>
 
                             <button
                               onClick={() => handleAttendanceChange(student.id, 'absent')}
-                              className={`group/btn flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 transform hover:scale-105 ${studentAttendance[student.id] === 'absent'
-                                ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
-                                : 'bg-white text-red-600 border-2 border-red-200 hover:bg-red-50 hover:border-red-300'
+                              className={`flex items-center px-3 py-2 rounded-lg font-semibold text-xs transition-all ${studentAttendance[student.id] === 'absent'
+                                  ? 'bg-red-500 text-white shadow'
+                                  : 'bg-white text-red-600 border border-red-200 hover:bg-red-50'
                                 }`}
                             >
-                              <XCircle className="h-4 w-4 mr-1.5" />
+                              <XCircle className="h-4 w-4 mr-1" />
                               Absent
                             </button>
 
                             <button
                               onClick={() => handleAttendanceChange(student.id, 'leave')}
-                              className={`group/btn flex items-center px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 transform hover:scale-105 ${studentAttendance[student.id] === 'leave'
-                                ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/30'
-                                : 'bg-white text-yellow-600 border-2 border-yellow-200 hover:bg-yellow-50 hover:border-yellow-300'
+                              className={`flex items-center px-3 py-2 rounded-lg font-semibold text-xs transition-all ${studentAttendance[student.id] === 'leave'
+                                  ? 'bg-yellow-500 text-white shadow'
+                                  : 'bg-white text-yellow-600 border border-yellow-200 hover:bg-yellow-50'
                                 }`}
                             >
-                              <MinusCircle className="h-4 w-4 mr-1.5" />
+                              <MinusCircle className="h-4 w-4 mr-1" />
                               Leave
                             </button>
                           </div>
@@ -505,7 +484,7 @@ export default function AttendanceDashboard({
                   ) : (
                     <>
                       <Send className="h-6 w-6 mr-3 group-hover:translate-x-1 transition-transform duration-200" />
-                      Take Attendance & Send SMS
+                      {hasAttendance ? "Update Attendance & Send SMS" : "Take Attendance & Send SMS"}
                     </>
                   )}
                 </div>
@@ -518,6 +497,18 @@ export default function AttendanceDashboard({
         </div>
       </div>
 
+      {/* Success/Error Notifications */}
+      {success && (
+        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{success}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
+          <span className="text-sm font-medium">{error}</span>
+        </div>
+      )}
 
 
     </Layout>
