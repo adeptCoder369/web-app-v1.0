@@ -63,3 +63,39 @@ export const getMonthWiseBirthdayList = async (
 
 };
 //========================================================================================================
+
+export const sendBirthdayWishes = async (
+  profileId,
+  sessionId,
+  selectedStudent,
+  selectedUserId
+
+) => {
+
+  let resolvedGuid = getCookie("guid");
+  let resolvedUserId = getCookie("id");
+
+
+  const requestBody = {
+    "api": "client.getMonthWiseBirthdayList",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    platform: "web",
+    "version_code": "1.2.4",
+    id: sessionId,
+
+    "student_ids": selectedStudent
+    ,
+    "user_ids": selectedUserId
+
+
+  };
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+
+
+};
+//========================================================================================================
