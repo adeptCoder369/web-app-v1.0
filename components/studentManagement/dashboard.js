@@ -16,11 +16,13 @@ import { useStudent } from '../../context/studentContext';
 import HouseManagement from './houseList';
 import ParentManagement from './parents';
 import Birthdays from './birthdays';
+import Siblings from './siblings';
 import { getHouseList } from '../../api/houses';
 import { useSearchParams } from "next/navigation";
 import { IoPeopleSharp } from 'react-icons/io5';
 import { FaBirthdayCake } from 'react-icons/fa';
-
+import { RiParentFill } from 'react-icons/ri';
+// =============================================================================================================================
 
 const breadcrumbs = [
   { label: "Dashboard", href: "/dashboard" },
@@ -33,8 +35,10 @@ const tabs = [
   { id: 'view', label: 'View Profile', icon: User },
   { id: 'houses', label: 'Houses', icon: House },
   { id: 'parents', label: 'Parents', icon: IoPeopleSharp },
-  { id: 'birthdays', label: 'Birthdays', icon: FaBirthdayCake }
+  { id: 'birthdays', label: 'Birthdays', icon: FaBirthdayCake },
+  { id: 'siblings', label: 'Siblings', icon: RiParentFill }
 ];
+// =============================================================================================================================
 
 const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
@@ -144,6 +148,7 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
 
 
+  // =============================================================================================================================
 
 
   const classesOptions = config?.standards || [];
@@ -379,6 +384,7 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
 
 
+  // =============================================================================================================================
 
 
   return (
@@ -630,6 +636,15 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
             </>
           )}
 
+          {activeTab === 'siblings' && (
+            <>
+              <Siblings
+                context={Context}
+                config={config}
+              />
+            </>
+          )}
+
 
 
 
@@ -658,5 +673,7 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
     </Layout>
   );
 };
+// =============================================================================================================================
 
 export default StudentMangementDashboard;
+// =============================================================================================================================

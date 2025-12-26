@@ -142,10 +142,10 @@ const menuItems = [
         name: "Parents",
         url: "/dashboard/student-management?tab=parents"
       },
-      // {
-      //   name: "Siblings",
-      //   url: "/dashboard/student-management?tab=birthdays"
-      // },
+      {
+        name: "Siblings",
+        url: "/dashboard/student-management?tab=siblings"
+      },
       {
         name: "Birthdays",
         url: "/dashboard/student-management?tab=birthdays"

@@ -7,7 +7,6 @@ import { cookies } from 'next/headers';
   const cookieStore = await cookies();
   const cookyGuid = cookieStore.get('guid').value
   const cookyId = cookieStore.get('id').value
-  // -----------------------------------------------------------
 
   // =============================================================
   return (
