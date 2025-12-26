@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Users, User, Phone, Home, Filter, Search, ChevronDown } from "lucide-react";
 import { getSiblingsList } from '../../api/siblings';
-
+// ==============================================================
 export default function Siblings({ context, config }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,6 +10,7 @@ export default function Siblings({ context, config }) {
   const [selectedClassId, setSelectedClassId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  // ==============================================================
 
   const classOptions = React.useMemo(() => {
     return (
@@ -22,6 +23,7 @@ export default function Siblings({ context, config }) {
       ) || []
     );
   }, [config?.standards]);
+  // ==============================================================
 
   const fetchSiblings = async () => {
     try {
@@ -43,14 +45,36 @@ export default function Siblings({ context, config }) {
   useEffect(() => {
     fetchSiblings();
   }, [selectedClassId]);
+  // ==============================================================
 
   const filteredData = React.useMemo(() => {
     if (!searchTerm) return data;
-    return data.filter(group =>
-      group.student?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      group.siblings?.some(sib => sib.name?.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+
+    const q = searchTerm.toLowerCase();
+
+    return data.filter(group => {
+      // student
+      const studentMatch =
+        group.student?.name?.toLowerCase().includes(q) ||
+        group.student?.registered_phone_form_sms?.includes(q);
+
+      // parents
+      const parentMatch = group.parents?.some(p =>
+        p.name?.toLowerCase().includes(q) ||
+        p.phone?.includes(q)
+      );
+
+      // siblings
+      const siblingMatch = group.siblings?.some(sib =>
+        sib.name?.toLowerCase().includes(q) ||
+        sib.registered_phone_form_sms?.includes(q)
+      );
+
+      return studentMatch || parentMatch || siblingMatch;
+    });
   }, [data, searchTerm]);
+
+  // ==============================================================
 
   if (loading) {
     return (
@@ -82,6 +106,7 @@ export default function Siblings({ context, config }) {
       </div>
     );
   }
+  // ==============================================================
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50">
@@ -92,7 +117,7 @@ export default function Siblings({ context, config }) {
         <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-fuchsia-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-8">
+      <div className="relative  mx-auto px-6 py-8">
         {/* HEADER */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-3">
@@ -133,7 +158,7 @@ export default function Siblings({ context, config }) {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by student name..."
+              placeholder="Search by student, parent name or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
@@ -179,6 +204,10 @@ export default function Siblings({ context, config }) {
             )}
           </div>
         </div>
+
+
+
+
         </div>
 
         {/* EMPTY STATE */}
