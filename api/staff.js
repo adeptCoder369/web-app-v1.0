@@ -10,12 +10,14 @@ export const getStaffApi = async ({
   profileId,
   sessionId,
 
-  params
+  params,
+  page,
+  limit
 
 }) => {
 
 
-  // console.log('======= payload : ', params);
+  console.log('======= page : ', page);
   let resolvedGuid = getCookie("guid");
   let resolvedUserId = getCookie("id");
 
@@ -27,7 +29,9 @@ export const getStaffApi = async ({
     user_account_id: profileId,
     client_id: sessionId,
     "platform": "web",
-    ...params
+    ...params,
+    page,
+    limit:20,
 
   });
 };
@@ -100,7 +104,7 @@ export const addStaff = async (
     "user_title_id": payload?.title,
     "name": payload?.name,
     "gender": payload?.gender,
-    "school_designation_id": payload?.school,
+    "school_designation_id": payload?.designation,
     "class_id": payload?.class,
     "date_of_birth": payload?.dateOfBirth,
     "joining_date": payload?.joiningDate,
@@ -112,6 +116,8 @@ export const addStaff = async (
     "mother_name": payload?.motherName,
     "aadhaar_number": payload?.aadhaar,
     "address": payload?.currentAddress,
+    "page": page,
+    "limit": limit
   });
 };
 

@@ -18,11 +18,14 @@ export const StaffList = ({
 
   const Context = getSessionCache("dashboardContext");
 
-
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalCount, setTotalCount] = useState(0); // Store total from API
   const [staff, setStaff] = useState([]);
 
   const [selectedData, setSelectedData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [openMenu, setOpenMenu] = useState(null);
   const [viewMode, setViewMode] = useState('overview');
@@ -74,10 +77,10 @@ export const StaffList = ({
     appType: ""
   });
 
-  const { getStaff, stadffData, isLoading } = useStaff()
-
+  const { getStaff, stadffData, } = useStaff()
 
   const fetchData = async () => {
+    setIsLoading(true); // 🟢 Start Loading
     try {
       const rawParams = {
         user_title_id: filters?.title || undefined,
@@ -94,28 +97,37 @@ export const StaffList = ({
         school_designation_ids: filters.designations?.length > 0 ? filters.designations : undefined,
       };
 
-      // ✅ Remove undefined, null, empty string, or empty array values
       const params = Object.fromEntries(
-        Object.entries(rawParams).filter(
-          ([_, v]) =>
-            v !== undefined &&
-            v !== null &&
-            v !== "" &&
-            !(Array.isArray(v) && v.length === 0)
+        Object.entries(rawParams).filter(([_, v]) =>
+          v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && v.length === 0)
         )
       );
 
-      // 🔹 Call API with only valid params
-      const data = await getStaff(Context?.profileId, Context?.session, params);
+      const response = await getStaff(
+        Context?.profileId,
+        Context?.session,
+        params,
+        page,
+        limit
+      );
+      // console.log('hua reoad ====================================');
 
-      setStaff(data?.data?.data?.results?.users || []);
-      setIsFilterPanelOpen(false)
+      // ✅ FIX: Update both the staff list and the total count
+      // Adjust "response?.data?.total" based on your actual API structure
+      const results = response?.data?.data?.results;
+      setStaff(results?.users || []);
+      console.log('staff<<', results?.users[0].name);
+
+      setTotalCount(results?.count || 0); // This will set it to 129
+      setIsFilterPanelOpen(false);
     } catch (err) {
       console.error("❌ Failed to fetch staff data:", err);
+    } finally {
+      setIsLoading(false); // 🔴 Stop Loading regardless of success or failure
     }
   };
 
-console.log(isPermittedClassPermissionUpdated,'isPermittedClassPermissionUpdated');
+  // console.log(isPermittedClassPermissionUpdated,'isPermittedClassPermissionUpdated');
 
 
 
@@ -123,9 +135,9 @@ console.log(isPermittedClassPermissionUpdated,'isPermittedClassPermissionUpdated
 
   useEffect(() => {
     fetchData();
-    // if (filters.depositStartDate && filters.depositEndDate) {
-    // }
   }, [
+    page, // CRITICAL: Re-fetch when page changes
+    limit,
     filters.joinedDate,
     filters.status,
     filters?.title,
@@ -137,6 +149,10 @@ console.log(isPermittedClassPermissionUpdated,'isPermittedClassPermissionUpdated
     isPermittedClassPermissionUpdated
   ]);
 
+  // ✅ FIX: Reset to page 1 when any filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
 
   // console.log('filters =============', filters?.gender);
 
@@ -357,6 +373,10 @@ console.log(isPermittedClassPermissionUpdated,'isPermittedClassPermissionUpdated
         setFilters={setFilters}
         filters={filters}
         setIsPermittedClassPermissionUpdated={setIsPermittedClassPermissionUpdated}
+        currentPage={page}
+        setCurrentPage={setPage}
+        totalCount={totalCount}
+        itemsPerPage={limit}
       />
 
     </>

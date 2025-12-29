@@ -11,7 +11,7 @@ const breadcrumbs = [
   { label: "Manage Staff" },
 ];
 
-// ===================================================================
+// =============================================================
 export default async function StudentProfile({ params }) {
   // =============================================================
   const resolvedParams = await params;

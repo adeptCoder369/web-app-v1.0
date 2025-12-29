@@ -31,14 +31,16 @@ export const useStaff = () => {
   const getStaff = async (
     profileId,
     sessionId,
-    params
+    params,
+    page
   ) => {
     try {
 
       const data = await getStaffMutation.mutateAsync({
         profileId,
         sessionId,
-        params
+        params,
+        page
       });
 
       return { success: true, data };

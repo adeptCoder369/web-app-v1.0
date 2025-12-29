@@ -33,7 +33,7 @@ const tabs = [
   { id: 'schoolDesignation', label: 'Designation', icon: Captions },
   { id: 'schoolTitles', label: 'Titles', icon: Captions },
   { id: 'subjectClassMapping', label: 'Subject Class Mapping', icon: MdClass },
-  { id: 'designationPermission', label: 'Revoke Designation Permission', icon: GrUserAdmin  },
+  { id: 'designationPermission', label: 'Revoke Designation Permission', icon: GrUserAdmin },
 ];
 
 const StaffMangementDashboard = ({
@@ -197,17 +197,14 @@ const StaffMangementDashboard = ({
   const handleSubmit = async () => {
     setIsSaving(true);
     try {
-      // Prepare the payload for your API
       const payload = {
         ...formData,
         school: Context?.schoolId
-        // You can transform or validate fields here if needed
       };
 
 
-      console.log('====== payload : ', payload)
+      
 
-      // Example: Call your addStaff API or controller function
       let res = await addStaff(
         profile = Context?.profileId,
         session = Context?.session,
@@ -221,7 +218,6 @@ const StaffMangementDashboard = ({
         setError(res?.data?.results?.message || 'Failed to save staff data. Please try again.');
 
       }
-      // Optionally, reset the form or go back to the list tab
       if (res?.data?.success) {
         console.log('====== res sddddssssssssssss: ', res?.data)
 
@@ -542,7 +538,7 @@ const StaffMangementDashboard = ({
             </>
           )}
 
-           {activeTab === 'designationPermission' && (
+          {activeTab === 'designationPermission' && (
             <>
               <PermissionsViewer
                 Context={Context}
