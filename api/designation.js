@@ -8,6 +8,7 @@ import { getCookie } from 'cookies-next';
 export const getSchoolDesignation = async (
   profileId,
   sessionId,
+  page,
   payload
 
 ) => {
@@ -24,6 +25,8 @@ export const getSchoolDesignation = async (
     client_id: sessionId,
     platform: "web",
     "version_code": "1.2.4",
+    page: page,
+    limit: 20
 
 
   };
@@ -117,7 +120,7 @@ export const editSchoolDesignation = async (
   };
 
 
-  return  axios.post(`${API_BASE_URL}/api`, requestBody);
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
 
 
 };

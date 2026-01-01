@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Notebook } from "lucide-react";
+import { Plus, Edit2, Trash2, Notebook, CheckCircle2, X, AlertCircle } from "lucide-react";
 import SchoolRolesCreateModal from "./SchoolRolesCreateModal";
 import SchoolRolesEditModal from "./SchoolRolesEditModal";
 import SchoolRolesFilterPanel from "./SchoolRolesFilterPanel";
@@ -8,7 +8,7 @@ import { FaFilter } from "react-icons/fa";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
 // ==================================================================
 
-export default function SchoolRolesManagement({ Context, config ,setActiveTab}) {
+export default function SchoolRolesManagement({ Context, config, setActiveTab }) {
   const [filters, setFilters] = useState({
     name: "",
     has_admin_access: "",
@@ -457,20 +457,35 @@ export default function SchoolRolesManagement({ Context, config ,setActiveTab}) 
 
 
 
+      {/* Floating Notifications */}
+      <div className="fixed top-6 right-6 flex flex-col gap-3 z-[60]">
+        {error && (
+          <div className="bg-white border-l-4 border-red-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-red-600 shrink-0">
+              <AlertCircle size={20} />
+            </div>
+            <div className="pr-4">
+              <p className="text-sm font-bold text-slate-900">Wait a minute</p>
+              <p className="text-xs font-medium text-slate-500">{error}</p>
+            </div>
+            <button onClick={() => setError(null)} className="text-slate-300 hover:text-slate-500">
+              <X size={16} />
+            </button>
+          </div>
+        )}
 
-      {/* Success/Error Notifications */}
-      {success && (
-        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
-          <span className="text-sm font-medium">{success}</span>
-        </div>
-      )}
-
-      {error && (
-        <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 animate-in fade-in slide-in-from-right-1">
-          <span className="text-sm font-medium">{error}</span>
-        </div>
-      )}
-
+        {success && (
+          <div className="bg-white border-l-4 border-green-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-green-600 shrink-0">
+              <CheckCircle2 size={20} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900">Done!</p>
+              <p className="text-xs font-medium text-slate-500">{success}</p>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 }

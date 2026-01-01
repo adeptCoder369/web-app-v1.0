@@ -18,6 +18,8 @@ export default function SchoolDesignationManagement({ Context, config }) {
     isSearch: false
 
   });
+
+
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
 
   const [designations, setDesignations] = useState([]);
@@ -40,10 +42,11 @@ export default function SchoolDesignationManagement({ Context, config }) {
     try {
       setLoading(true);
 
-
+      const currentOffset = (pageNumber - 1) * limit;
       const res = await getSchoolDesignation(
         Context?.profileId,
         Context?.session,
+        pageNumber,
         filters
 
       );
@@ -59,16 +62,15 @@ export default function SchoolDesignationManagement({ Context, config }) {
       setLoading(false);
     }
   };
+// Re-fetch when page changes or search is triggered
+useEffect(() => {
+  fetchDesignation(page);
+}, [page, filters?.isSearch]);
 
-  useEffect(() => {
-    fetchDesignation(1);
-  }, [
-    filters?.isSearch,
-    // filters?.mobile,
-
-  ]);
-  // console.log('filters++', filters);
-
+// Reset to page 1 when filters are modified
+useEffect(() => {
+  setPage(1);
+}, [filters.name, filters.role_id, filters.department_id, filters.has_login_access]);
   const openAddModal = () => {
     // setEditingParent(null);
     setIsModalOpen(true);
@@ -405,79 +407,79 @@ export default function SchoolDesignationManagement({ Context, config }) {
               </tbody>
             </table>
           </div>
+{total > 0 && (
+  <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4 px-2">
+    {/* Info Text */}
+    <p className="text-sm font-medium text-gray-500">
+      Showing <span className="text-blue-600">{(page - 1) * limit + 1}</span> to{" "}
+      <span className="text-blue-600">{Math.min(page * limit, total)}</span> of{" "}
+      <span className="font-bold text-gray-900">{total}</span> designations
+    </p>
 
-          {/* Pagination */}
-          {total > 0 && (
-            <div className="flex items-center gap-2 mt-4">
+    {/* Page Controls */}
+    <div className="flex items-center space-x-2">
+      <button
+        disabled={page === 1 || loading}
+        onClick={() => setPage(page - 1)}
+        className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
+      >
+        <span className="sr-only">Previous</span>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
 
-              {/* Prev */}
+      <div className="flex items-center gap-1">
+        {(() => {
+          const pages = [];
+          const totalPages = Math.ceil(total / limit);
+          
+          // Logic to show 1 ... 4 5 6 ... 10
+          if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else {
+            pages.push(1);
+            if (page > 3) pages.push("...");
+            if (page > 2 && page < totalPages - 1) pages.push(page - 1);
+            if (page !== 1 && page !== totalPages) pages.push(page);
+            if (page < totalPages - 1 && page > 2) pages.push(page + 1);
+            if (page < totalPages - 2) pages.push("...");
+            pages.push(totalPages);
+          }
+
+          return pages.map((p, i) => (
+            p === "..." ? (
+              <span key={`gap-${i}`} className="px-3 text-gray-400 font-bold">...</span>
+            ) : (
               <button
-                disabled={page === 1}
-                onClick={() => fetchDesignation(page - 1)}
-                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                key={`p-${p}`}
+                onClick={() => setPage(p)}
+                className={`w-10 h-10 rounded-xl font-bold transition-all shadow-sm ${
+                  p === page
+                    ? "bg-blue-600 text-white shadow-blue-200"
+                    : "bg-white text-gray-600 hover:border-blue-300 border border-gray-100"
+                }`}
               >
-                Prev
+                {p}
               </button>
+            )
+          ));
+        })()}
+      </div>
 
-              {/* Dynamic Pages */}
-              <div className="flex gap-1">
-                {(() => {
-                  const pages = [];
-                  const totalPages = Math.ceil(total / limit);
-
-                  const add = (n) => {
-                    if (!pages.includes(n)) pages.push(n);
-                  };
-
-                  // calculate window
-                  const left = Math.max(1, page - 2);
-                  const right = Math.min(totalPages, page + 2);
-
-                  // always page 1
-                  add(1);
-
-                  // gap before window
-                  if (left > 2) add("...");
-
-                  // window pages
-                  for (let i = left; i <= right; i++) add(i);
-
-                  // gap after window
-                  if (right < totalPages - 1) add("...");
-
-                  // always last page
-                  if (totalPages > 1) add(totalPages);
-
-                  return pages.map((p, i) =>
-                    p === "..." ? (
-                      <span key={i} className="px-3 py-1 text-gray-500">...</span>
-                    ) : (
-                      <button
-                        key={p}
-                        onClick={() => fetchDesignation(p)}
-                        className={`px-3 py-1 rounded ${p === page
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 hover:bg-gray-300"
-                          }`}
-                      >
-                        {p}
-                      </button>
-                    )
-                  );
-                })()}
-              </div>
-
-
-              {/* Next */}
-              <button
-                disabled={page >= totalPages}
-                onClick={() => fetchDesignation(page + 1)}
-                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-          )}
+      <button
+        disabled={page >= Math.ceil(total / limit) || loading}
+        onClick={() => setPage(page + 1)}
+        className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
+      >
+        <span className="sr-only">Next</span>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+)}
 
           {/* Modal */}
 

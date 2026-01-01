@@ -42,7 +42,7 @@ export const getSchoolRoles = async (
   }
 
 
-    if (payload?.is_enabled) {
+  if (payload?.is_enabled) {
     requestBody.is_enabled = payload.is_enabled;
   }
 
@@ -73,13 +73,15 @@ export const addSchoolRoles = async (
     platform: "web",
     "version_code": "1.2.4",
     name: payload?.name,
-    is_teaching_staff: payload?.is_teaching_staff,
-    is_bus_conductor: payload?.is_bus_conductor,
+    is_teaching_staff: payload?.isTeachingStaff,
+    is_bus_conductor: payload?.isBusConductor,
     description: payload?.description,
 
 
   };
 
+  console.log('requestBody', requestBody);
+  
 
   return axios.post(`${API_BASE_URL}/api`, requestBody);
 

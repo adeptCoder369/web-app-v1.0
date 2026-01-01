@@ -1,29 +1,37 @@
-import React, { useState, useEffect } from "react";
-import { X, Briefcase, Building2 } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Briefcase, Building2, ChevronDown, Check, AlertCircle, Loader2, Search } from "lucide-react";
 
 export default function DepartmentEditModal({
   open,
   onClose,
   editingDept = null,
-
   onUpdate,
-  products,
+  products = [],
   context
 }) {
-
   const [form, setForm] = useState({
+    id: null,
     name: "",
-    product_ids: [""],
-    products: [""],
-
+    product_ids: [],
     description: ""
   });
+  const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(null);
-  const [submitted, setSubmitted] = useState(null);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [openCodeDropdown, setOpenCodeDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenCodeDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   useEffect(() => {
     if (editingDept) {
@@ -32,23 +40,17 @@ export default function DepartmentEditModal({
         name: editingDept.name || "",
         description: editingDept.description || "",
         product_ids: editingDept.product_ids || [],
-        products: editingDept.products || []
-      });
-    } else {
-      setForm({
-        name: "",
-        description: "",
-        product_ids: [],
-        products: []
       });
     }
     setError("");
+    setSearchTerm("");
   }, [editingDept, open]);
 
-
-  // console.log('editingDept+++', form);
-
   const update = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSubmit = async () => {
     setSubmitted(true);
@@ -57,13 +59,10 @@ export default function DepartmentEditModal({
 
     try {
       const payload = {
-        id: form.id || null,
-        name: form.name?.trim() || "",
-        product_ids: form.product_ids || [],
-        products: form.products || [],
-
-        description: form.description || ""
-
+        id: form.id,
+        name: form.name?.trim(),
+        product_ids: form.product_ids,
+        description: form.description
       };
 
       if (!payload.name) {
@@ -72,236 +71,211 @@ export default function DepartmentEditModal({
         return;
       }
 
-      let resp;
-      // console.log('payload====_)', payload);
-      // console.log('form====_)', editingDept);
+      const resp = await onUpdate(context?.profileId, context?.session, payload);
 
-
-
-      resp = await onUpdate(
-        context?.profileId,
-        context?.session,
-        payload
-      );
-
-      console.log('res====_)', resp);
-      // If your API returns success like your parent example
       if (resp?.data?.success) {
-        setSuccess(resp?.data?.results?.message || "Department saved successfully");
+        setSuccess(resp?.data?.results?.message || "Changes saved successfully");
         setTimeout(() => {
           setSuccess(null);
           onClose();
-          window.location.reload(); // reload after successful save
-
-        }, 700);
-        setSubmitted(false);
+          window.location.reload();
+        }, 1200);
       } else {
-        setError(resp?.data?.results?.message || "Failed to save department");
+        setError(resp?.data?.results?.message || "Failed to update department");
         setSubmitted(false);
       }
     } catch (err) {
-      console.error("Department submit error:", err);
-      setError(err.message || "Something went wrong while saving department");
+      setError(err.message || "An error occurred during update");
       setSubmitted(false);
-    }
-  };
-
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
     }
   };
 
   if (!open) return null;
 
   return (
-    <>
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
-        onClick={handleBackdropClick}
-      >
-        <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300"
+        onClick={onClose}
+      />
 
-          {/* Header with Gradient */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">
-                  {"Edit Department"}
-                </h2>
-                <p className="text-blue-100 text-sm">
-                  {"Update department information"}
-                </p>
-              </div>
+      {/* Modal Container */}
+      <div className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        
+        {/* Header */}
+        <div className="px-8 py-6 flex justify-between items-center border-b border-slate-100 bg-white">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+              <Building2 className="w-6 h-6 text-white" />
             </div>
-            <button
-              onClick={onClose}
-              className=" cursor-pointer w-8 h-8 rounded-lg hover:bg-white/20 flex items-center justify-center transition-colors"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Edit Department</h2>
+              <p className="text-slate-500 text-sm font-medium">Modify existing department details</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Scrollable Body */}
+        <div className="p-8 space-y-6 max-h-[65vh] overflow-y-auto">
+          
+          {/* Department Name */}
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 ml-1">Department Name</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={e => update("name", e.target.value)}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-800"
+              placeholder="e.g. Humanities & Social Sciences"
+            />
           </div>
 
-          {/* Body */}
-          <div className="p-6 space-y-5 max-h-[calc(100vh-280px)] overflow-y-auto">
-
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Department Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={e => update("name", e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400"
-                  placeholder="e.g., Computer Science & Engineering"
-                />
+          {/* Multi-Select Products with Search */}
+          <div className="space-y-2" ref={dropdownRef}>
+            <label className="text-sm font-bold text-slate-700 ml-1">Associated Products</label>
+            <div className="relative">
+              <div
+                onClick={() => setOpenCodeDropdown(!openCodeDropdown)}
+                className={`w-full px-4 py-2 bg-slate-50 border rounded-2xl cursor-pointer flex flex-wrap gap-2 min-h-[56px] items-center transition-all ${
+                  openCodeDropdown ? "border-blue-500 ring-4 ring-blue-500/10 shadow-sm" : "border-slate-200"
+                }`}
+              >
+                {form.product_ids?.length > 0 ? (
+                  form.product_ids.map((id) => {
+                    const prod = products.find(p => p.id === id);
+                    return (
+                      <span key={id} className="pl-3 pr-1.5 py-1.5 bg-white border border-blue-100 text-blue-600 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-sm animate-in scale-in-95">
+                        {prod?.name || "ID: " + id}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            update("product_ids", form.product_ids.filter(pid => pid !== id));
+                          }}
+                          className="p-1 hover:bg-blue-50 rounded-lg text-blue-300 hover:text-blue-600 transition-colors"
+                        >
+                          <X size={12} strokeWidth={3} />
+                        </button>
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="text-slate-400 font-medium ml-1 text-sm">No products linked...</span>
+                )}
+                <ChevronDown className={`ml-auto w-4 h-4 text-slate-400 transition-transform ${openCodeDropdown ? "rotate-180" : ""}`} />
               </div>
 
-              <div className="md:col-span-2 w-full">
-                <label className="text-sm font-semibold text-gray-700 mb-2">
-                  Products (Multiple Allowed)
-                </label>
-
-                <div className="relative">
-                  <div
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white cursor-pointer flex flex-wrap gap-2 min-h-[46px] items-center"
-                    onClick={() => setOpenCodeDropdown(prev => !prev)}
-                  >
-                    {form.product_ids?.length > 0 ? (
-                      form.product_ids.map((id) => {
-                        const product = products.find(p => p.id === id);
+              {openCodeDropdown && (
+                <div className="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-[1.5rem] shadow-2xl z-30 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                  <div className="p-3 border-b border-slate-50">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input 
+                        className="w-full pl-9 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/10"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-52 overflow-y-auto p-2 custom-scrollbar">
+                    {filteredProducts.length > 0 ? (
+                      filteredProducts.map((prod) => {
+                        const isSelected = form.product_ids.includes(prod.id);
                         return (
-                          <span
-                            key={id}
-                            className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md flex items-center gap-1"
+                          <div
+                            key={prod.id}
+                            onClick={() => {
+                              const next = isSelected 
+                                ? form.product_ids.filter(pid => pid !== prod.id)
+                                : [...form.product_ids, prod.id];
+                              update("product_ids", next);
+                            }}
+                            className={`flex items-center justify-between px-4 py-3 rounded-xl cursor-pointer transition-colors ${
+                              isSelected ? "bg-blue-50 text-blue-700 font-bold" : "hover:bg-slate-50 text-slate-600 font-medium"
+                            }`}
                           >
-                            {product?.name || "Unknown"}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                update(
-                                  "product_ids",
-                                  form.product_ids.filter(pid => pid !== id)
-                                );
-                              }}
-                            >
-                              ✕
-                            </button>
-                          </span>
+                            <span className="text-sm">{prod.name}</span>
+                            {isSelected && <Check size={16} strokeWidth={3} />}
+                          </div>
                         );
                       })
                     ) : (
-                      <span className="text-gray-400 text-sm">Select Products</span>
+                      <div className="py-8 text-center text-slate-400 text-sm italic">No products found</div>
                     )}
                   </div>
-
-                  {openCodeDropdown && (
-                    <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-56 overflow-y-auto z-20">
-                      {products?.length > 0 ? (
-                        products.map((prod) => {
-                          const selected = form.product_ids.includes(prod.id);
-                          return (
-                            <div
-                              key={prod.id}
-                              onClick={() => {
-                                if (selected) {
-                                  update(
-                                    "product_ids",
-                                    form.product_ids.filter(pid => pid !== prod.id)
-                                  );
-                                } else {
-                                  update("product_ids", [...form.product_ids, prod.id]);
-                                }
-                              }}
-                              className={`px-4 py-2 cursor-pointer text-sm ${selected ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100"
-                                }`}
-                            >
-                              {prod.name}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div className="px-4 py-3 text-gray-500 text-sm">
-                          No products available
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
-              </div>
-
-
-
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={form.description}
-                  onChange={e => update("description", e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-gray-900 placeholder-gray-400 resize-none"
-                  rows={4}
-                  placeholder="Brief description of the department's focus and responsibilities..."
-                />
-              </div>
+              )}
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
-            <button
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl border-2 border-gray-300 text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={submitted}
-              className="cursor-pointer px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {submitted ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Briefcase className="w-4 h-4" />
-                  <span>{"Update Department"}</span>
-                </>
-              )}
-            </button>
+          {/* Description */}
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 ml-1">Description</label>
+            <textarea
+              value={form.description}
+              onChange={e => update("description", e.target.value)}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-800 resize-none min-h-[120px]"
+              placeholder="Enter department scope and mission..."
+            />
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:text-slate-700 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitted}
+            className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95"
+          >
+            {submitted ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Check size={18} strokeWidth={3} />
+            )}
+            <span>Update Department</span>
+          </button>
         </div>
       </div>
 
-      {error && (
-        <div className="fixed top-6 right-6 flex items-center bg-red-50 border-l-4 border-red-500 text-red-700 px-5 py-4 rounded-lg shadow-lg z-50 animate-slide-in max-w-md">
-          <div className="flex-1">
-            <p className="font-semibold">Error</p>
-            <p className="text-sm">{error}</p>
+      {/* Dynamic Toasts */}
+      <div className="fixed top-6 right-6 flex flex-col gap-3 z-[60]">
+        {error && (
+          <div className="bg-white border-l-4 border-red-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-red-600 shrink-0">
+              <AlertCircle size={20} />
+            </div>
+            <div className="pr-4">
+              <p className="text-sm font-bold text-slate-900">Update Failed</p>
+              <p className="text-xs font-medium text-slate-500">{error}</p>
+            </div>
+            <button onClick={() => setError(null)} className="text-slate-300 hover:text-slate-500">
+              <X size={16} />
+            </button>
           </div>
-          <button onClick={() => setError(null)} className="ml-4">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-      )}
-
-      {success && (
-        <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow-md z-50">
-          <span>{success}</span>
-        </div>
-      )}
-    </>
-
+        )}
+        {success && (
+          <div className="bg-white border-l-4 border-green-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-green-600 shrink-0">
+              <Check size={20} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900">Saved</p>
+              <p className="text-xs font-medium text-slate-500">{success}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

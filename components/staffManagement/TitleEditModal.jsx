@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { X, Briefcase, Building2 } from "lucide-react";
+import { X, Briefcase, CheckCircle2, AlertCircle, Loader2, PencilLine } from "lucide-react";
 
 export default function TitleEditModal({
   open,
@@ -8,41 +8,34 @@ export default function TitleEditModal({
   context,
   editingTitle
 }) {
-  const [form, setForm] = useState({
-    name: ""
-  });
-
+  const [form, setForm] = useState({ id: "", name: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+
   useEffect(() => {
-    if (editingTitle) {
+    if (editingTitle && open) {
       setForm({
-        id: editingTitle.id,
+        id: String(editingTitle.id),
         name: editingTitle.name || "",
-
       });
+      setError("");
     }
-
-    setError("");
   }, [editingTitle, open]);
+
+  if (!open) return null;
 
   const update = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
 
   const handleSubmit = async () => {
     setSubmitted(true);
     setError(null);
-    setSuccess(null);
 
     try {
-      if (!form.name.trim()) {
-        setError("Name is required");
-        setSubmitted(false);
-        return;
-      }
+      if (!form.name.trim()) throw new Error("Name is required");
 
       const payload = {
-        id: form.id.trim(),
+        id: form.id,
         name: form.name.trim()
       };
 
@@ -53,127 +46,117 @@ export default function TitleEditModal({
       );
 
       if (resp?.data?.success) {
-        setSuccess("Title saved successfully");
+        setSuccess("Title updated successfully");
         setTimeout(() => {
           setSuccess(null);
           onClose();
           window.location.reload();
-        }, 700);
+        }, 800);
       } else {
-        setError(resp?.data?.results?.message || "Failed to save title");
+        setError(resp?.data?.results?.message || "Failed to update title");
       }
     } catch (err) {
-      setError(err.message || "Something went wrong");
+      setError(err.message || "An unexpected error occurred");
     } finally {
       setSubmitted(false);
     }
   };
 
-  const handleBackdropClick = e => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
-  if (!open) return null;
-
   return (
-    <>
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        onClick={handleBackdropClick}
-      >
-        <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity animate-in fade-in duration-300"
+        onClick={onClose} 
+      />
 
-          {/* Header */}
-          <div className="bg-blue-700 px-6 py-5 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">Edit Title</h2>
-                <p className="text-blue-100 text-sm">Update title details</p>
-              </div>
+      {/* Modal Container */}
+      <div className="relative w-full max-w-md bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden border border-slate-100 animate-in zoom-in-95 duration-200">
+        
+        {/* Header */}
+        <div className="px-8 pt-8 pb-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+              <PencilLine className="w-5 h-5" />
             </div>
-
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-lg hover:bg-white/20 flex items-center justify-center"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
-          </div>
-
-          {/* Body */}
-          <div className="p-6 space-y-5 max-h-[calc(100vh-280px)] overflow-y-auto">
-
-            {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={form.name}
-                onChange={e => update("name", e.target.value)}
-                className="w-full px-4 py-2.5 border rounded-xl"
-                placeholder="e.g., Assistant Teacher"
-              />
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">Edit Title</h2>
+              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.1em]">Management Console</p>
             </div>
-
           </div>
-
-          {/* Footer */}
-          <div className="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
-            <button
-              onClick={onClose}
-              disabled={submitted}
-              className="px-5 py-2.5 rounded-xl border text-gray-700 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={handleSubmit}
-              disabled={submitted}
-              className="cursor-pointer px-6 py-2.5 rounded-xl bg-blue-600 text-white flex items-center gap-2"
-            >
-              {submitted ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Briefcase className="w-4 h-4" />
-                  Save Title
-                </>
-              )}
-            </button>
-          </div>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
+
+        {/* Body */}
+        <div className="px-8 py-6">
+          <div className="space-y-2">
+            <label className="text-[13px] font-bold text-slate-700 ml-1">
+              Title Name <span className="text-rose-500 font-black">*</span>
+            </label>
+            <input
+              type="text"
+              autoFocus
+              value={form.name}
+              onChange={e => update("name", e.target.value)}
+              className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 focus:bg-white transition-all outline-none text-slate-800 font-medium"
+              placeholder="Enter title name..."
+            />
+          </div>
+
+          {/* Inline Error */}
+          {error && (
+            <div className="mt-4 flex items-center gap-2 text-rose-600 bg-rose-50 p-3.5 rounded-xl border border-rose-100 animate-in slide-in-from-top-1">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <p className="text-xs font-bold leading-tight">{error}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            disabled={submitted}
+            className="px-5 py-2.5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-50"
+          >
+            Discard
+          </button>
+          
+          <button
+            onClick={handleSubmit}
+            disabled={submitted}
+            className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95"
+          >
+            {submitted ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              <>
+                <Briefcase className="w-4 h-4" />
+                Save Changes
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Success Overlay */}
+        {success && (
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center z-20 animate-in fade-in duration-300">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4 scale-110 border border-emerald-100">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">{success}</h3>
+            <p className="text-slate-400 text-xs font-medium">Reloading workspace...</p>
+          </div>
+        )}
       </div>
-
-      {/* Error Toast */}
-      {error && (
-        <div className="fixed top-6 right-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-5 py-4 rounded-lg shadow-lg z-50">
-          <div className="flex justify-between items-start gap-4">
-            <div>
-              <p className="font-semibold">Error</p>
-              <p className="text-sm">{error}</p>
-            </div>
-            <button onClick={() => setError(null)}>
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Success Toast */}
-      {success && (
-        <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow z-50">
-          {success}
-        </div>
-      )}
-    </>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Briefcase, Building2 } from "lucide-react";
+import { X, Briefcase, Building2, CheckCircle2, AlertCircle, Loader2, PlusCircle } from "lucide-react";
 
 export default function SchoolRolesCreateModal({
   open,
@@ -24,17 +24,18 @@ export default function SchoolRolesCreateModal({
     setSubmitted(true);
     setError(null);
     setSuccess(null);
+  console.log('form', form.isBusConductor);
 
     try {
       const payload = {
         name: form.name?.trim(),
-        isTeachingStaff: form.isTeachingStaff,
-        isBusConductor: form.isBusConductor,
+        isTeachingStaff: form.isTeachingStaff ? "1" : "0",
+        isBusConductor: form.isBusConductor ? "1" : "0",
         description: form.description
       };
 
       if (!payload.name) {
-        setError("Role name is required");
+        setError("Please provide a name for the new role");
         setSubmitted(false);
         return;
       }
@@ -42,174 +43,175 @@ export default function SchoolRolesCreateModal({
       const resp = await onCreate(
         context?.profileId,
         context?.session,
-        payload
-      );
+        payload);
 
       if (resp?.data?.success) {
-        setSuccess(resp?.data?.results?.message || "Role saved successfully");
+        setSuccess(resp?.data?.results?.message || "Role created successfully");
         setTimeout(() => {
           setSuccess(null);
           onClose();
           window.location.reload();
-        }, 700);
-        setSubmitted(false);
+        }, 1200);
       } else {
-        setError(resp?.data?.results?.message || "Failed to save role");
+        setError(resp?.data?.results?.message || "Failed to create role");
         setSubmitted(false);
-          
       }
     } catch (err) {
-      setError(err.message || "Something went wrong while saving role");
+      setError(err.message || "An unexpected error occurred");
       setSubmitted(false);
     }
-  };
-
-  const handleBackdropClick = e => {
-    if (e.target === e.currentTarget) onClose();
   };
 
   if (!open) return null;
 
   return (
-    <>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
-        onClick={handleBackdropClick}
-      >
-        <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95">
-          
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">Create Role</h2>
-                <p className="text-blue-100 text-sm">Add a new staff role</p>
-              </div>
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300"
+        onClick={onClose}
+      />
+
+      {/* Modal Card */}
+      <div className="relative w-full max-w-lg bg-white rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+
+        {/* Header */}
+        <div className="px-8 py-7 flex justify-between items-center bg-white border-b border-slate-100">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+              <PlusCircle className="w-6 h-6 text-white" />
             </div>
-
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-lg hover:bg-white/20 flex items-center justify-center"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">New School Role</h2>
+              <p className="text-slate-500 text-sm font-medium">Define a new staff designation</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-          {/* Body */}
-          <div className="p-6 space-y-5 max-h-[calc(100vh-280px)] overflow-y-auto">
-            <div className="space-y-5">
+        {/* Body */}
+        <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
 
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Role Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={e => update("name", e.target.value)}
-                  className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Assistant Teacher"
-                />
-              </div>
-
-              {/* Teaching Staff */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={form.isTeachingStaff}
-                  onChange={e => update("isTeachingStaff", e.target.checked)}
-                  className="w-5 h-5"
-                />
-                <label className="text-sm font-medium text-gray-700">
-                  Is Teaching Staff
-                </label>
-              </div>
-
-              {/* Bus Conductor */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={form.isBusConductor}
-                  onChange={e => update("isBusConductor", e.target.checked)}
-                  className="w-5 h-5"
-                />
-                <label className="text-sm font-medium text-gray-700">
-                  Is Bus Conductor
-                </label>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={form.description}
-                  onChange={e => update("description", e.target.value)}
-                  className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"
-                  rows={4}
-                  placeholder="Describe the responsibilities..."
-                />
-              </div>
+          {/* Input: Role Name */}
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 ml-1">
+              Role Name <span className="text-red-500">*</span>
+            </label>
+            <div className="relative group">
+              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <input
+                type="text"
+                value={form.name}
+                onChange={e => update("name", e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-800"
+                placeholder="e.g. Department Head"
+              />
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
-            <button
-              onClick={onClose}
-              disabled={submitted}
-              className="px-5 py-2.5 rounded-xl border text-gray-700 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
+          {/* Category Selection Grid */}
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-slate-700 ml-1">Role Classification</label>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => update("isTeachingStaff", !form.isTeachingStaff)}
+                className={`p-4 rounded-2xl border-2 transition-all flex flex-col gap-3 text-left ${form.isTeachingStaff
+                    ? "border-blue-500 bg-blue-50/50 ring-4 ring-blue-500/5"
+                    : "border-slate-100 bg-white hover:border-slate-200"
+                  }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${form.isTeachingStaff ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-400"}`}>
+                  <CheckCircle2 size={16} />
+                </div>
+                <p className={`text-sm font-bold ${form.isTeachingStaff ? "text-blue-900" : "text-slate-700"}`}>Teaching Staff</p>
+              </button>
 
-            <button
-              onClick={handleSubmit}
-              disabled={submitted}
-              className="cursor-pointer px-6 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
-            >
-              {submitted ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Briefcase className="w-4 h-4" />
-                  Create Role
-                </>
-              )}
-            </button>
+              <button
+                onClick={() => update("isBusConductor", !form.isBusConductor)}
+                className={`p-4 rounded-2xl border-2 transition-all flex flex-col gap-3 text-left ${form.isBusConductor
+                    ? "border-blue-500 bg-blue-50/50 ring-4 ring-blue-500/5"
+                    : "border-slate-100 bg-white hover:border-slate-200"
+                  }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${form.isBusConductor ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-400"}`}>
+                  <CheckCircle2 size={16} />
+                </div>
+                <p className={`text-sm font-bold ${form.isBusConductor ? "text-blue-900" : "text-slate-700"}`}>Bus Conductor</p>
+              </button>
+            </div>
           </div>
+
+          {/* Input: Description */}
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 ml-1">Responsibilities / Description</label>
+            <textarea
+              value={form.description}
+              onChange={e => update("description", e.target.value)}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-800 resize-none min-h-[100px]"
+              placeholder="Enter role details..."
+            />
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-6 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            disabled={submitted}
+            className="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:text-slate-700 transition-colors"
+          >
+            Discard
+          </button>
+
+          <button
+            onClick={handleSubmit}
+            disabled={submitted}
+            className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95"
+          >
+            {submitted ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <CheckCircle2 size={18} />
+            )}
+            <span>Save Role</span>
+          </button>
         </div>
       </div>
 
-      {/* Error Toast */}
-      {error && (
-        <div className="fixed top-6 right-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-5 py-4 rounded-lg shadow-lg z-50">
-          <div className="flex justify-between items-start gap-4">
-            <div>
-              <p className="font-semibold">Error</p>
-              <p className="text-sm">{error}</p>
+      {/* Floating Notifications */}
+      <div className="fixed top-6 right-6 flex flex-col gap-3 z-[60]">
+        {error && (
+          <div className="bg-white border-l-4 border-red-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-red-600 shrink-0">
+              <AlertCircle size={20} />
             </div>
-            <button onClick={() => setError(null)}>
-              <X className="w-5 h-5" />
+            <div className="pr-4">
+              <p className="text-sm font-bold text-slate-900">Wait a minute</p>
+              <p className="text-xs font-medium text-slate-500">{error}</p>
+            </div>
+            <button onClick={() => setError(null)} className="text-slate-300 hover:text-slate-500">
+              <X size={16} />
             </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Success Toast */}
-      {success && (
-        <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow z-50">
-          {success}
-        </div>
-      )}
-    </>
+        {success && (
+          <div className="bg-white border-l-4 border-green-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-green-600 shrink-0">
+              <CheckCircle2 size={20} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900">Done!</p>
+              <p className="text-xs font-medium text-slate-500">{success}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

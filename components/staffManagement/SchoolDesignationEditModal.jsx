@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { X, Briefcase, Building2 } from "lucide-react";
+import { X, Briefcase, Building2, ShieldCheck, Key, Loader2, Edit3, Check } from "lucide-react";
 
 export default function SchoolDesignationEditModal({
   open,
@@ -23,24 +23,32 @@ export default function SchoolDesignationEditModal({
   const [success, setSuccess] = useState(null);
   const [submitted, setSubmitted] = useState(false);
 
-  // Prefill when editing
+  // Sync form with editing data
   useEffect(() => {
     if (editingDesingation) {
       setForm({
         id: editingDesingation.id,
         name: editingDesingation.name || "",
         department_ids: editingDesingation.department_ids || [],
-        role_id: editingDesingation.role?.id || "",
+        role_id: editingDesingation.role?.id || editingDesingation.role_id || "",
         priority: editingDesingation.priority || "",
         adminAccess: editingDesingation.is_allowed_for_admin_access === "1",
         loginAccess: editingDesingation.is_login_allowed === "1"
       });
     }
-
     setError("");
   }, [editingDesingation, open]);
 
   const update = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const toggleDepartment = (id) => {
+    setForm(prev => ({
+      ...prev,
+      department_ids: prev.department_ids.includes(id)
+        ? prev.department_ids.filter(d => d !== id)
+        : [...prev.department_ids, id]
+    }));
+  };
 
   const handleSubmit = async () => {
     setSubmitted(true);
@@ -49,7 +57,7 @@ export default function SchoolDesignationEditModal({
 
     try {
       if (!form.name.trim()) {
-        setError("Name is required");
+        setError("Designation name is required");
         setSubmitted(false);
         return;
       }
@@ -64,11 +72,7 @@ export default function SchoolDesignationEditModal({
         is_login_allowed: form.loginAccess ? "1" : "0"
       };
 
-      const resp = await onUpdate(
-        context?.profileId,
-        context?.session,
-        payload
-      );
+      const resp = await onUpdate(context?.profileId, context?.session, payload);
 
       if (resp?.data?.success) {
         setSuccess("Designation updated successfully");
@@ -76,221 +80,191 @@ export default function SchoolDesignationEditModal({
           setSuccess(null);
           onClose();
           window.location.reload();
-        }, 700);
+        }, 1200);
       } else {
-        setError(resp?.data?.results?.message || "Failed to save Designation");
+        setError(resp?.data?.results?.message || "Failed to update designation");
+        setSubmitted(false);
       }
     } catch (err) {
-      setError(err.message || "Something went wrong");
-    } finally {
+      setError(err.message || "An error occurred");
       setSubmitted(false);
     }
   };
 
-  const handleBackdropClick = e => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
   if (!open) return null;
 
-  const toggleDepartment = id => {
-    setForm(prev => ({
-      ...prev,
-      department_ids: prev.department_ids.includes(id)
-        ? prev.department_ids.filter(d => d !== id)
-        : [...prev.department_ids, id]
-    }));
-  };
-
   return (
-    <>
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        onClick={handleBackdropClick}
-      >
-        <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300"
+        onClick={onClose}
+      />
 
-          {/* Header */}
-          <div className="bg-blue-700 px-6 py-5 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">
-                  Edit Designation
-                </h2>
-                <p className="text-blue-100 text-sm">Update this staff role</p>
-              </div>
+      {/* Modal Card */}
+      <div className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        
+        {/* Header */}
+        <div className="px-8 py-6 flex justify-between items-center border-b border-slate-100">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center border border-amber-100">
+              <Edit3 className="w-6 h-6 text-amber-600" />
             </div>
-
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-lg hover:bg-white/20 flex items-center justify-center"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
-          </div>
-
-          {/* Body */}
-          <div className="p-6 space-y-5 max-h-[calc(100vh-280px)] overflow-y-auto">
-
-            {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Name <span className="text-red-500">*</span>
-              </label>
+              <h2 className="text-xl font-bold text-slate-900">Edit Designation</h2>
+              <p className="text-slate-500 text-sm font-medium">Update permissions and details for this role</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Scrollable Body */}
+        <div className="p-8 space-y-8 max-h-[65vh] overflow-y-auto custom-scrollbar">
+          
+          {/* Basic Info Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-sm font-bold text-slate-700 ml-1">Designation Name</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={e => update("name", e.target.value)}
-                className="w-full px-4 py-2.5 border rounded-xl"
-                placeholder="Designation name"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium"
               />
             </div>
 
-            {/* Department Multi Select */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Departments
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {config?.departments?.map(dep => (
-                  <button
-                    key={dep.id}
-                    onClick={() => toggleDepartment(dep.id)}
-                    className={`px-3 py-2 rounded-lg border text-sm ${
-                      form.department_ids.includes(dep.id)
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-gray-100 text-gray-700 border-gray-300"
-                    }`}
-                  >
-                    {dep.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* School Role */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                School Role
-              </label>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 ml-1">System Role</label>
               <select
                 value={form.role_id}
                 onChange={e => update("role_id", e.target.value)}
-                className="w-full px-4 py-2.5 border rounded-xl bg-white"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium cursor-pointer"
               >
-                <option value="">Select</option>
+                <option value="">Select Role</option>
                 {config?.roles?.map(r => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
+                  <option key={r.id} value={r.id}>{r.name}</option>
                 ))}
               </select>
             </div>
 
-            {/* Priority */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Priority
-              </label>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 ml-1">Priority Level</label>
               <input
                 type="number"
                 value={form.priority}
                 onChange={e => update("priority", e.target.value)}
-                className="w-full px-4 py-2.5 border rounded-xl"
-                placeholder="1, 2, 3..."
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium"
               />
             </div>
+          </div>
 
-            {/* Admin Access */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Admin Access
-              </label>
-              <div
-                onClick={() => update("adminAccess", !form.adminAccess)}
-                className={`w-fit cursor-pointer px-4 py-2 rounded-full text-sm font-medium ${
-                  form.adminAccess
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {form.adminAccess ? "Enabled" : "Disabled"}
-              </div>
-            </div>
-
-            {/* Login Access */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Login Access
-              </label>
-              <div
-                onClick={() => update("loginAccess", !form.loginAccess)}
-                className={`w-fit cursor-pointer px-4 py-2 rounded-full text-sm font-medium ${
-                  form.loginAccess
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {form.loginAccess ? "Enabled" : "Disabled"}
-              </div>
+          {/* Department Chips */}
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-slate-700 ml-1 flex items-center gap-2">
+              <Building2 size={16} className="text-slate-400" />
+              Assigned Departments
+            </label>
+            <div className="flex flex-wrap gap-2 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              {config?.departments?.map(dep => {
+                const isSelected = form.department_ids.includes(dep.id);
+                return (
+                  <button
+                    key={dep.id}
+                    onClick={() => toggleDepartment(dep.id)}
+                    className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all flex items-center gap-2 ${
+                      isSelected 
+                      ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-100" 
+                      : "bg-white border-slate-200 text-slate-600 hover:border-blue-300"
+                    }`}
+                  >
+                    {dep.name}
+                    {isSelected && <Check size={14} />}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
-            <button
-              onClick={onClose}
-              disabled={submitted}
-              className="px-5 py-2.5 rounded-xl border text-gray-700 hover:bg-gray-100"
+          {/* Access Control Toggles */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div 
+              onClick={() => update("adminAccess", !form.adminAccess)}
+              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between ${
+                form.adminAccess ? "border-blue-500 bg-blue-50/50" : "border-slate-100 bg-slate-50"
+              }`}
             >
-              Cancel
-            </button>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${form.adminAccess ? "bg-blue-100 text-blue-600" : "bg-slate-200 text-slate-500"}`}>
+                  <ShieldCheck size={20} />
+                </div>
+                <p className="text-sm font-bold text-slate-800">Admin Access</p>
+              </div>
+              <div className={`w-10 h-6 rounded-full relative transition-colors ${form.adminAccess ? "bg-blue-600" : "bg-slate-300"}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${form.adminAccess ? "left-5" : "left-1"}`} />
+              </div>
+            </div>
 
-            <button
-              onClick={handleSubmit}
-              disabled={submitted}
-              className="cursor-pointer px-6 py-2.5 rounded-xl bg-blue-600 text-white flex items-center gap-2"
+            <div 
+              onClick={() => update("loginAccess", !form.loginAccess)}
+              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between ${
+                form.loginAccess ? "border-blue-500 bg-blue-50/50" : "border-slate-100 bg-slate-50"
+              }`}
             >
-              {submitted ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Briefcase className="w-4 h-4" />
-                  Save Changes
-                </>
-              )}
-            </button>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${form.loginAccess ? "bg-blue-100 text-blue-600" : "bg-slate-200 text-slate-500"}`}>
+                  <Key size={20} />
+                </div>
+                <p className="text-sm font-bold text-slate-800">Login Allowed</p>
+              </div>
+              <div className={`w-10 h-6 rounded-full relative transition-colors ${form.loginAccess ? "bg-blue-600" : "bg-slate-300"}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${form.loginAccess ? "left-5" : "left-1"}`} />
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:text-slate-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitted}
+            className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95"
+          >
+            {submitted ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check size={18} />}
+            <span>Save Changes</span>
+          </button>
         </div>
       </div>
 
-      {/* Error Toast */}
-      {error && (
-        <div className="fixed top-6 right-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-5 py-4 rounded-lg shadow-lg z-50">
-          <div className="flex justify-between items-start gap-4">
+      {/* Notifications */}
+      <div className="fixed top-6 right-6 flex flex-col gap-3 z-[60]">
+        {error && (
+          <div className="bg-white border-l-4 border-red-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <X className="text-red-500" size={20} />
             <div>
-              <p className="font-semibold">Error</p>
-              <p className="text-sm">{error}</p>
+              <p className="text-sm font-bold text-slate-900">Update Error</p>
+              <p className="text-xs font-medium text-slate-500">{error}</p>
             </div>
-            <button onClick={() => setError(null)}>
-              <X className="w-5 h-5" />
-            </button>
           </div>
-        </div>
-      )}
-
-      {/* Success Toast */}
-      {success && (
-        <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow z-50">
-          {success}
-        </div>
-      )}
-    </>
+        )}
+        {success && (
+          <div className="bg-white border-l-4 border-green-500 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-4 animate-in slide-in-from-right">
+            <Check className="text-green-500" size={20} />
+            <div>
+              <p className="text-sm font-bold text-slate-900">Updated</p>
+              <p className="text-xs font-medium text-slate-500">{success}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
