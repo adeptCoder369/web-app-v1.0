@@ -31,40 +31,28 @@ export const StaffList = ({
   const [viewMode, setViewMode] = useState('overview');
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [isPermittedClassPermissionUpdated, setIsPermittedClassPermissionUpdated] = useState(false);
-  const [staffStatus, setStudentStatus] = useState([
-    {
-      name: "Receive Daily Notification",
+  const [removedFromClient, setRemovedFromClient] = useState(false);
 
+  const accountStatus = [
+    {
+      label: "Receive Daily Notification",
+      value: "receive_daily_attendance_notification",
     },
     {
-      name: "Has Account",
+      label: "Has Account",
+      value: "has_account",
     },
     {
-
-      name: "Allowed for Admin Accesss",
+      label: "Allowed for Admin Access",
+      value: "is_allowed_for_admin_access",
     },
-
-  ]);
-
-
-  const [accountStatus, setAccountStatus] = useState([
-    {
-      name: "Active",
-
-    },
-    {
-      name: "Disabled",
-    },
-
-
-  ]);
-
+  ];
 
 
   // console.log(Context,'Context');
   const [filters, setFilters] = useState({
     joinedDate: "",
-    status: [],
+    status: "",
     accountStatus: [],
     designations: [],
     title: "",
@@ -74,7 +62,12 @@ export const StaffList = ({
     mobile: "",
     emergencyContact: "",
     isSearch: false,
-    appType: ""
+    appType: "",
+
+
+
+
+
   });
 
   const { getStaff, stadffData, } = useStaff()
@@ -84,17 +77,20 @@ export const StaffList = ({
     try {
       const rawParams = {
         user_title_id: filters?.title || undefined,
-        is_allowed_for_admin_access: filters.status.includes("Allowed for Admin Accesss") ? true : undefined,
-        has_account: filters.status.includes("Has Account") ? true : undefined,
-        receive_daily_attendance_notification: filters.status.includes("Receive Daily Notification") ? true : undefined,
-        join_time: filters.joinedDate || undefined,
-        name: filters.name || undefined,
-        mother_name: filters.motherName || undefined,
-        father_name: filters.fatherName || undefined,
-        phone: filters.mobile || undefined,
-        gender: filters.gender || undefined,
-        emergency_contact_number: filters.emergencyContact || undefined,
-        school_designation_ids: filters.designations?.length > 0 ? filters.designations : undefined,
+        is_allowed_for_admin_access: filters?.accountStatus?.includes("is_allowed_for_admin_access") ? true : undefined,
+        has_account: filters?.accountStatus?.includes("has_account") ? true : undefined,
+        receive_daily_attendance_notification: filters?.accountStatus?.includes("receive_daily_attendance_notification") ? true : undefined,
+        join_time: filters?.joinedDate || undefined,
+        status: filters?.status || undefined,
+        name: filters?.name || undefined,
+        app_user: filters?.appType || undefined,
+        mother_name: filters?.motherName || undefined,
+        father_name: filters?.fatherName || undefined,
+        phone: filters?.mobile || undefined,
+        gender: filters?.gender || undefined,
+        emergency_contact_number: filters?.emergencyContact || undefined,
+        school_designation_ids: filters?.designations?.length > 0 ? filters?.designations : undefined,
+
       };
 
       const params = Object.fromEntries(
@@ -110,13 +106,15 @@ export const StaffList = ({
         page,
         limit
       );
-      // console.log('hua reoad ====================================');
+      // console.log('✅ ✅✅hua reoad ====================================', params);
 
       // ✅ FIX: Update both the staff list and the total count
       // Adjust "response?.data?.total" based on your actual API structure
       const results = response?.data?.data?.results;
+      // console.log('results=============', results);
+
       setStaff(results?.users || []);
-      console.log('staff<<', results?.users[0].name);
+      // console.log('staff<<', results?.users[0].name);
 
       setTotalCount(results?.count || 0); // This will set it to 129
       setIsFilterPanelOpen(false);
@@ -127,12 +125,6 @@ export const StaffList = ({
     }
   };
 
-  // console.log(isPermittedClassPermissionUpdated,'isPermittedClassPermissionUpdated');
-
-
-
-  // console.log(filters);
-
   useEffect(() => {
     fetchData();
   }, [
@@ -140,12 +132,14 @@ export const StaffList = ({
     limit,
     filters.joinedDate,
     filters.status,
+    filters.accountStatus,
     filters?.title,
     filters?.name,
     filters?.isSearch,
     filters?.designations?.length,
     filters?.gender,
     filters?.appType,
+    removedFromClient,
     isPermittedClassPermissionUpdated
   ]);
 
@@ -154,16 +148,6 @@ export const StaffList = ({
     setPage(1);
   }, [filters]);
 
-  // console.log('filters =============', filters?.gender);
-
-
-
-
-  const [sort, setSort] = useState({
-    field: "name",
-    direction: "asc"
-  });
-  const [filteredData, setFilteredData] = useState([]);
 
 
 
@@ -196,14 +180,7 @@ export const StaffList = ({
     });
 
   };
-  const clearFilters = () => {
-    setFilters({
-      modules: [],
-      categories: [],
-      status: []
-    });
-    setSearchTerm("");
-  };
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -216,12 +193,6 @@ export const StaffList = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSort = (field, toggleDirection = false) => {
-    setSort(prev => ({
-      field,
-      direction: toggleDirection && prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
-    }));
-  };
 
 
 
@@ -230,57 +201,16 @@ export const StaffList = ({
 
 
 
-  const handleOptionClick = (studentId, option) => {
-    if (option.alert) {
-      alert(option.alert);
-    }
-    if (option.redirect_url) {
-      window.location.href = option.redirect_url;
-    }
-    if (option.api) {
-      console.log(`Call API: ${option.api} for student ${studentId}`);
-      // you can integrate your API call here
-    }
-    setOpenMenu(null);
-  };
 
-  const getInitials = (name) => {
-    return name
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase())
-      .join('')
-      .slice(0, 2);
-  };
-
-  const getGradientFromColor = (color) => {
-    if (!color || color === "#FFFFFF") {
-      return "bg-gradient-to-br from-white to-gray-50";
-    }
-
-    // Convert hex to RGB and create a gradient
-    const hex = color.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-
-    // Create a lighter version for gradient
-    const lighterR = Math.min(255, r + 30);
-    const lighterG = Math.min(255, g + 30);
-    const lighterB = Math.min(255, b + 30);
-
-    return {
-      background: `linear-gradient(135deg, rgb(${r}, ${g}, ${b}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`
-    };
-  };
   // Handle product click to show details
   const handleRowClick = (product) => {
     // console.log(product)
     setSelectedStaff(product)
     setActiveTab('view')
-    setSelectedData(product);
+    // setSelectedData(product);
     // setShowModal(true)
-    setSelectedData(null); // Reset first
-    setTimeout(() => setSelectedData(product), 0); // Allow state to change
+    // setSelectedData(null); // Reset first
+    // setTimeout(() => setSelectedData(product), 0); // Allow state to change
 
   };
 
@@ -296,40 +226,8 @@ export const StaffList = ({
 
 
   const getFilterCount = () => {
-    return filters?.status?.length + filters?.designations?.length + (filters?.appType ? 1 : 0) + (filters?.gender ? 1 : 0) + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
+    return filters?.status ? 1 : 0 + filters?.accountStatus.length + filters?.designations?.length + (filters?.appType ? 1 : 0) + (filters?.gender ? 1 : 0) + (filters?.joinedDate ? 1 : 0) + (filters?.name ? 1 : 0) + (filters?.title ? 1 : 0) + (filters?.motherName ? 1 : 0) + (filters?.fatherName ? 1 : 0) + (filters?.mobile ? 1 : 0) + (filters?.emergencyContact ? 1 : 0);
   };
-
-  const handleStandardChange = (e) => {
-
-    const stdId = e.target.value;
-    setSelectedStandardId(stdId);
-
-    if (stdId === "all") {
-      setSelectedStandardFees([]); // or merge all fees across standards
-    } else {
-      const selectedStd = config?.standards?.find((s) => s.id === stdId);
-      setSelectedStandardDetails(selectedStd)
-
-      setSelectedStandardFees(selectedStd?.fees || []);
-
-
-      // if (feeCollectionData?.fee_collections.length > 0) {
-      //   feeCollectionData?.fee_collections.find((x => {
-
-      //     return (
-      //       x?.student?.class?.id ===
-      //     )
-      //   }))
-      // }
-
-
-      setSelectedClass(selectedStd?.classes || []);
-
-    }
-  };
-
-
-  // console.log('---- staff ----', staff);
 
   return (
     <>
@@ -345,19 +243,18 @@ export const StaffList = ({
         setViewMode={setViewMode}
       />
 
-      <StaffFiltersSummary
+      {/* <StaffFiltersSummary
         filters={filters}
         toggleFilter={toggleFilter}
         clearFilters={clearFilters}
-      />
+      /> */}
 
       <StaffFilterPanel
         setFilters={setFilters}
         filters={filters}
         config={config}
         isFilterPanelOpen={isFilterPanelOpen}
-        staffStatus={staffStatus}
-        accountStatus={accountStatus}
+        staffStatus={accountStatus}
         toggleFilter={toggleFilter}
 
       />
@@ -365,7 +262,7 @@ export const StaffList = ({
 
 
       <StaffTable
-        columns={['Created By', 'Designation', 'Class & Admin Access', ' Phone', 'Action']}
+        columns={['Name', 'Designation', 'Class & Admin Access', ' Phone', 'Action']}
         staffs={staff}
         handleClassClick={handleRowClick}
         isLoading={isLoading}
@@ -373,6 +270,7 @@ export const StaffList = ({
         setFilters={setFilters}
         filters={filters}
         setIsPermittedClassPermissionUpdated={setIsPermittedClassPermissionUpdated}
+        setRemovedFromClient={setRemovedFromClient}
         currentPage={page}
         setCurrentPage={setPage}
         totalCount={totalCount}

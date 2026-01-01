@@ -16,7 +16,7 @@ import SchoolDesignationManagement from './schoolDesignation';
 import ClassSubjectMapping from './ClassSubjectMapping';
 import PermissionsViewer from './PermissionsViewer';
 import AddBankInfo from './AddBankInfo';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams,useRouter } from 'next/navigation';
 import { VscSymbolClass } from "react-icons/vsc";
 import { MdClass } from 'react-icons/md';
 import { GrUserAdmin } from 'react-icons/gr';
@@ -46,6 +46,7 @@ const StaffMangementDashboard = ({
 
 }) => {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const config = getSessionCache("dashboardConfig");
   const Context = getSessionCache("dashboardContext");
@@ -55,7 +56,7 @@ const StaffMangementDashboard = ({
   const gender_staffs = config?.gender_staffs
   const classes = config?.classes
 
-
+  const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState('list');
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -171,12 +172,24 @@ const StaffMangementDashboard = ({
 
 
 
-  useEffect(() => {
-    const tab = searchParams.get("tab");
-    if (tab) setActiveTab(tab);
-  }, [searchParams]);
+  // useEffect(() => {
+  //   const tab = searchParams.get("tab");
+  //   if (tab) setActiveTab(tab);
+  // }, [searchParams]);
+useEffect(() => {
+  const tab = searchParams.get("tab");
+  if (tab && tabs.some(t => t.id === tab)) {
+    setActiveTab(tab);
+  }
+}, [searchParams]);
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
 
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tabId);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
 
 
@@ -196,73 +209,75 @@ const StaffMangementDashboard = ({
 
   const handleSubmit = async () => {
     setIsSaving(true);
+    setError(null);
+    setSuccess(null);
+
     try {
       const payload = {
         ...formData,
-        school: Context?.schoolId
+        school: Context?.schoolId,
       };
 
-
-      
-
-      let res = await addStaff(
-        profile = Context?.profileId,
-        session = Context?.session,
+      const res = await addStaff(
+        Context?.profileId,
+        Context?.session,
         cookyGuid,
         cookyId,
-
         payload
       );
+
       if (!res?.data?.success) {
-        console.log('====== resaxxx : ', res?.data?.results?.message)
-        setError(res?.data?.results?.message || 'Failed to save staff data. Please try again.');
-
-      }
-      if (res?.data?.success) {
-        console.log('====== res sddddssssssssssss: ', res?.data)
-
-        setFormData({
-          school: '',
-          class: '',
-          name: '',
-          rollNo: '',
-          phone: '',
-          alternatePhone: '',
-          email: '',
-          dateOfBirth: '',
-          aadharCard: '',
-          religion: '',
-          motherTongue: '',
-          nationality: 'Indian',
-          bloodGroup: '',
-          address: '',
-          registrationNumber: '',
-          schoolBus: '',
-          smsNumber: '',
-          // parents: [
-          //   { name: '', gender: '', relation: 'FATHER', phone: '', email: '', occupation: '', address: '' },
-          //   { name: '', gender: '', relation: 'MOTHER', phone: '', email: '', occupation: '', address: '' }
-          // ]
-        });
-        setCurrentFormStep('basic');
-        setActiveTab('list');
-        alert(res?.data?.results?.message);
+        setError(
+          res?.data?.results?.message ||
+          "Failed to save staff data. Please try again."
+        );
+        return;
       }
 
+      // ✅ Success
+      setSuccess(res?.data?.results?.message);
 
+      setFormData({
+        school: "",
+        class: "",
+        name: "",
+        rollNo: "",
+        phone: "",
+        alternatePhone: "",
+        email: "",
+        dateOfBirth: "",
+        aadharCard: "",
+        religion: "",
+        motherTongue: "",
+        nationality: "Indian",
+        bloodGroup: "",
+        address: "",
+        registrationNumber: "",
+        schoolBus: "",
+        smsNumber: "",
+      });
+
+      setCurrentFormStep("basic");
+      setActiveTab("list");
+
+      // Optional UX delay before refresh / navigation
+      setTimeout(() => {
+        setSuccess(null);
+      }, 3000);
 
     } catch (error) {
-      setError(error || 'Failed to save staff data. Please try again.');
+      console.error("Error saving staff:", error);
+      setError("Failed to save staff data. Please try again.");
 
-      alert('Failed to save staff data. Please try again.');
-      console.error('Error saving staff:', error);
     } finally {
       setIsSaving(false);
+
       setTimeout(() => {
-        setError('');
+        setError(null);
       }, 5000);
     }
   };
+
 
   // ===================================================================
 
@@ -276,25 +291,44 @@ const StaffMangementDashboard = ({
       >
         <div className=" mx-auto px-4 py-4 shadow-lg">
           {/* =====================     Navigation Tabs =================================================================== */}
+          <div className="bg-white rounded-xl shadow-sm mb-6 border border-slate-100 overflow-hidden">
+            {/* Container: Horizontal scroll on mobile, flex-wrap or normal flex on desktop */}
+            <div className="flex items-center p-1 overflow-x-auto no-scrollbar scroll-smooth">
+              <div className="flex space-x-1 min-w-max md:min-w-0 md:w-full">
+                {tabs?.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const Icon = tab.icon;
 
-          <div className="bg-white rounded-xl shadow-md mb-4">
-            <div className="flex space-x-1 p-1">
-              {tabs?.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`cursor-pointer flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === tab.id
-                    ? 'bg-blue-500 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                >
-                  <tab.icon className="h-4 w-4 hidden sm:inline" />
-                  <span>{tab.label}</span>
-                </button>
-              ))}
+                  return (
+                    <button
+                      key={tab.id}
+  onClick={() => handleTabChange(tab.id)}
+                      className={`
+              relative flex items-center justify-center gap-2 
+              px-4 py-2.5 rounded-lg text-sm font-semibold 
+              transition-all duration-200 cursor-pointer whitespace-nowrap
+              ${isActive
+                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 ring-1 ring-blue-600'
+                          : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                        }
+            `}
+                    >
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <span>{tab.label}</span>
+
+                      {/* Optional: Active indicator dot for mobile */}
+                      {isActive && (
+                        <span className="absolute -top-1 -right-1 flex h-2 w-2 md:hidden">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-
 
           {activeTab === "add" && (
             <div className="bg-white rounded-xl shadow-md p-6">
@@ -392,6 +426,7 @@ const StaffMangementDashboard = ({
                     formData={formData}
                     setFormData={setFormData}
                     handleInputChange={handleInputChange}
+                    Context={Context}
 
                   />
                 )}
@@ -497,6 +532,7 @@ const StaffMangementDashboard = ({
               <DepartmentManagement
                 Context={Context}
                 config={config}
+                setActiveTab={setActiveTab}
               />
             </>
           )}
@@ -507,6 +543,8 @@ const StaffMangementDashboard = ({
               <SchoolRolesManagement
                 Context={Context}
                 config={config}
+                setActiveTab={setActiveTab}
+
               />
             </>
           )}
@@ -550,10 +588,15 @@ const StaffMangementDashboard = ({
 
           {/* ======================================================================================== */}
 
-
           {error && (
             <div className="fixed top-4 right-4 flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md shadow-md z-50">
               <span>{error}</span>
+            </div>
+          )}
+
+          {success && (
+            <div className="fixed top-4 right-4 flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md shadow-md z-50">
+              <span>{success}</span>
             </div>
           )}
         </div>

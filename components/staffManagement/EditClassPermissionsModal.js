@@ -132,7 +132,24 @@ export default function EditClassPermissionsModal({
             </button>
           </div>
         </div>
+ {selectedIds.size > 0 && (
+            <div className="px-6 py-4 bg-gray-50 border-t">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                Selected Classes ({selectedIds.size}):
+              </h3>
 
+              <div className="flex flex-wrap gap-2">
+                {selectedClasses.map(c => (
+                  <span
+                    key={c.id}
+                    className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+                  >
+                    {c.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         {/* Scrollable Section */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-6">
@@ -212,24 +229,7 @@ export default function EditClassPermissionsModal({
             )}
           </div>
 
-          {selectedIds.size > 0 && (
-            <div className="px-6 py-4 bg-gray-50 border-t">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">
-                Selected Classes ({selectedIds.size}):
-              </h3>
-
-              <div className="flex flex-wrap gap-2">
-                {selectedClasses.map(c => (
-                  <span
-                    key={c.id}
-                    className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
-                  >
-                    {c.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
+         
         </div>
 
         <div className="px-6 py-4 bg-white border-t flex justify-end gap-3 flex-shrink-0">

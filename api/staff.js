@@ -31,7 +31,7 @@ export const getStaffApi = async ({
     "platform": "web",
     ...params,
     page,
-    limit:20,
+    limit: 20,
 
   });
 };
@@ -91,8 +91,8 @@ export const addStaff = async (
 ) => {
 
 
-  console.log('=======--------------- payload : ', payload
-  );
+
+
 
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "user.add",
@@ -101,23 +101,52 @@ export const addStaff = async (
     "user_account_id": profile,
     "client_id": session,
     "platform": "web",
-    "user_title_id": payload?.title,
+
     "name": payload?.name,
+    "user_title_id": payload?.title,
     "gender": payload?.gender,
     "school_designation_id": payload?.designation,
     "class_id": payload?.class,
+
     "date_of_birth": payload?.dateOfBirth,
     "joining_date": payload?.joiningDate,
-    "is_enabled_for_invoice_notification": payload?.invoiceNotificationEnabled,
-    "emails": payload?.email,
-    "phones": payload?.phone,
+    "is_enabled_for_invoice_notification": payload?.invoiceNotificationEnabled ? "1" : "0",
+    "class_coordinator_standard": payload?.classCoordinator ? "1" : "0",
+    "category": payload?.category,
+    "blood_group": payload?.bloodGroup,
+
+    emails: [...(payload?.emails || []), payload?.email].filter(Boolean),
+    phones: [...new Set([...(payload?.phones || []), payload?.phone].filter(Boolean))],
     "emergency_contact_number": payload?.emergencyPhone,
     "father_name": payload?.fatherName,
     "mother_name": payload?.motherName,
-    "aadhaar_number": payload?.aadhaar,
+    "name_of_son": payload?.sonName,
+    "name_of_daughter": payload?.daughterName,
+    "spouse_name": payload?.spouseName,
+    "permanent_address": payload?.permanentAddress,
     "address": payload?.currentAddress,
-    "page": page,
-    "limit": limit
+
+    "aadhaar_number": payload?.aadhaar,
+    pan_number: payload?.pan,
+    employee_id: payload?.employeeId,
+    special_designation: payload?.specialDesignation,
+    date_of_retirement: payload?.retirementDate,
+    type_of_appointment: payload?.appointmentType,
+
+    academic_qualification: payload?.academicQualification,
+    professional_qualification: payload?.professionalQualification,
+    experience: payload?.experience,
+    year_of_passing: payload?.yearOfPassing,
+
+    "bank_details": {
+
+      bank_id: payload?.bank,
+      account_holder_name: payload?.accountHolderName,
+      account_number: payload?.accountNumber,
+      ifsc_code: payload?.ifscCode,
+      branch_name: payload?.branchName
+    }
+
   });
 };
 
@@ -131,19 +160,15 @@ export async function patchStaffDetail(payload) {
 
   let finalPayloadd = {
     "api": "user.edit",
-    logged_in_user_account_id: resolvedUserId,
-    "guid": resolvedGuid,
     "platform": "web",
     ...payload,
   }
-  // console.log('finalPayloadd', finalPayloadd);
+  console.log('finalPayloadd________', finalPayloadd);
 
-  // ==================================================================================================
-  const API_BASE_URL_ = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL;
   // ==================================================================================================
 
   try {
-    const response = await axios.post(`${API_BASE_URL_}/api`, finalPayloadd);
+    const response = await axios.post(`${API_BASE_URL}/api`, finalPayloadd);
 
     return response.data;
   } catch (error) {

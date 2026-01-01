@@ -6,7 +6,9 @@ import {
   FaFileCsv,
   FaChevronLeft,
   FaChevronRight,
-  FaSearch
+  FaSearch,
+  FaPhoneSlash,
+  FaPhoneAlt
 } from "react-icons/fa";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
 import { RiAdminFill } from "react-icons/ri";
@@ -14,12 +16,13 @@ import ConfirmationDialogueBox from "../ui/status/Confirmation";
 import EditClassPermissionsModal from "./EditClassPermissionsModal";
 import SignatureUploadModal from "./UploadSignature";
 import { editClassPermissionsApi, getPermittedClasses, removeFromClientApi } from "../../api/staff";
+import { getCookie } from "cookies-next";
 
 // ============================================================================
 const StaffTable = ({
   staffs = [],
   handleClassClick = () => { },
-  columns = ['Created By', 'Designation', 'Class & Access', 'Contact', 'Action'],
+  columns = ['Name', 'Designation', 'Class & Access', 'Contact', 'Action'],
   isLoading,
   setFilters,
   context,
@@ -29,9 +32,9 @@ const StaffTable = ({
   setCurrentPage,
   totalCount,
   itemsPerPage,
-
+  setRemovedFromClient
 }) => {
-  
+
   // const totalPa'[ges = Math.ceil(totalCount / itemsPerPage);
   // ============================================================================
   const menuItems = [
@@ -123,67 +126,60 @@ const StaffTable = ({
     ) || [];
   }, [staffs, searchTerm]);
 
-// Replace the top totalPages line with this:
-const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
+  // Replace the top totalPages line with this:
+  const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
   // Export functions (kept for completeness, original logic remains)
-  const convertToCSV = (data) => {
-    // Simplified export headers to match staff data structure
-    const headers = ['Full Name', 'Designation', 'Email', 'Phone', 'Admin Access'];
-    const csvContent = [
-      headers.join(','),
-      ...data.map(row => [
-        `"${row.full_name || 'N/A'}"`,
-        `"${row.designation?.name || 'N/A'}"`,
-        `"${row.emails?.[0]?.email || 'N/A'}"`,
-        `"${row.phones?.[0]?.phone || 'N/A'}"`,
-        `"${row.designation?.is_allowed_for_admin_access === '1' ? 'Yes' : 'No'}"`
-      ].join(','))
-    ].join('\n');
-    return csvContent;
+
+
+  const getPortalParams = () => {
+    let resolvedGuid = getCookie("guid");
+    let resolvedUserId = getCookie("id");
+
+
+    return {
+      client_id: context?.session,
+      guid: resolvedGuid,
+      logged_in_user_account_id: resolvedUserId,
+      user_account_id: context?.profileId,
+    };
   };
 
-  const downloadCSV = () => {
-    const csvContent = convertToCSV(filteredData);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `staff_data_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+  // === Function(s) ========================================
+  const downloadSoftCopyXls = () => {
+    const portal = getPortalParams();
+
+
+    const url = `https://portal.infoeight.com/users/download-excel`
+      + `?client_id=${portal.client_id}`
+      + `&guid=${portal.guid}`
+      + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+      + `&user_account_id=${portal.user_account_id}`
+      + `&format=SOFT-COPY`;
+
+    window.open(url, "_blank");
+
     setExportDropdownOpen(false);
   };
 
-  const downloadExcel = () => {
-    // Simplified Excel export for demonstration
-    const headers = ['Full Name', 'Designation', 'Email', 'Phone', 'Admin Access'];
-    let htmlContent = '<table><tr>';
-    headers.forEach(header => {
-      htmlContent += `<th>${header}</th>`;
-    });
-    htmlContent += '</tr>';
 
-    filteredData.forEach(row => {
-      htmlContent += '<tr>';
-      htmlContent += `<td>${row.full_name || 'N/A'}</td>`;
-      htmlContent += `<td>${row.designation?.name || 'N/A'}</td>`;
-      htmlContent += `<td>${row.emails?.[0]?.email || 'N/A'}</td>`;
-      htmlContent += `<td>${row.phones?.[0]?.phone || 'N/A'}</td>`;
-      htmlContent += `<td>${row.designation?.is_allowed_for_admin_access === '1' ? 'Yes' : 'No'}</td>`;
-      htmlContent += '</tr>';
-    });
-    htmlContent += '</table>';
+  // === Function(s) ========================================
+  const downloadSignatureList = () => {
+    const portal = getPortalParams();
 
-    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `staff_data_${new Date().toISOString().split('T')[0]}.xlsx`;
-    link.click();
+
+    const url = `https://portal.infoeight.com/download-staff-signature-list-pdf`
+      + `?client_id=${portal.client_id}`
+      + `&guid=${portal.guid}`
+      + `&logged_in_user_account_id=${portal.logged_in_user_account_id}`
+      + `&user_account_id=${portal.user_account_id}`
+
+
+    window.open(url, "_blank");
+
     setExportDropdownOpen(false);
   };
 
-  // Pagination handlers
-  const goToPage = (page) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  };
+
 
   // Simplified and fixed pagination logic
   const getPageNumbers = () => {
@@ -259,6 +255,8 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
     } catch (err) {
       console.error(err);
       setError("Something went wrong.");
+    } finally {
+      setRemovedFromClient(prev => !prev)
     }
   };
 
@@ -268,9 +266,8 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
     setSuccess(null);
 
     try {
-      const permittedClassIds = updatedClasses?.map(cls => cls?.id)
+      const permittedClassIds = updatedClasses?.map(cls => cls?.id);
 
-      console.error(permittedClassIds);
       const response = await editClassPermissionsApi(
         context?.profileId,
         context?.session,
@@ -278,25 +275,34 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
         permittedClassIds
       );
 
-      console.error(response, 'response==================');
       if (response?.success) {
         setSuccess(`Permissions for ${selectedStaff.full_name} updated successfully.`);
+
+        setTimeout(() => {
+          setSuccess(null);
+        }, 3000);
       } else {
         setError("Failed to update class permissions.");
+
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
       }
 
     } catch (err) {
       console.error(err);
       setError("Something went wrong during update.");
-    } finally {
-      // Close the modal and trigger a refresh of the main table if needed
-      // setEditPermissionStaff(null);
-      setUserPermittedClasses(false);
-      // setSelectedStaff(null);
 
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
+
+    } finally {
+      setUserPermittedClasses(false);
       setIsPermittedClassPermissionUpdated(prev => !prev);
     }
   };
+
 
   // ============================================================================ 
   return (
@@ -343,18 +349,18 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
                   <div className="fixed inset-0 z-40" onClick={() => setExportDropdownOpen(false)} />
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden origin-top-right animate-in fade-in zoom-in-95">
                     <button
-                      onClick={downloadCSV}
+                      onClick={downloadSoftCopyXls}
                       className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
                     >
                       <FaFileCsv className="text-green-600" />
-                      <span>Export as CSV</span>
+                      <span>Soft Copy(.xls)</span>
                     </button>
                     <button
-                      onClick={downloadExcel}
+                      onClick={downloadSignatureList}
                       className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
                     >
                       <FaFileExcel className="text-green-700" />
-                      <span>Export as Excel</span>
+                      <span>Signature List</span>
                     </button>
                   </div>
                 </>
@@ -366,36 +372,42 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
 
       {/* Table - Added overflow-x-auto to the wrapper */}
       <div className="overflow-x-auto w-full">
-  {isLoading ? (
-    /* 1. Show only when API is fetching */
-    <div className="flex justify-center items-center py-20">
-      <div className="flex flex-col items-center gap-4">
-        <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <span className="text-gray-500 text-sm font-medium animate-pulse">Fetching staff records...</span>
-      </div>
-    </div>
-  ) : staffs.length === 0 ? (
-    /* 2. Show only when loading is finished AND no data returned */
-    <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50">
-      <div className="p-4 bg-gray-100 rounded-full mb-4">
-        <FaSearch className="text-4xl text-gray-400" />
-      </div>
-      <h3 className="text-lg font-semibold text-gray-900">No staff records found</h3>
-      <p className="text-gray-500 text-sm max-w-xs text-center mt-1">
-        We couldn't find any results matching your current filters or search term.
-      </p>
-      <button 
-        onClick={() => {setSearchTerm(""); setFilters({});}}
-        className="mt-4 text-blue-600 hover:text-blue-700 font-medium text-sm"
-      >
-        Clear all filters
-      </button>
-    </div>
-       
-      ) : (
+        {isLoading ? (
+          /* 1. Show only when API is fetching */
+          <div className="flex justify-center items-center py-20">
+            <div className="flex flex-col items-center gap-4">
+              <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span className="text-gray-500 text-sm font-medium animate-pulse">Fetching staff records...</span>
+            </div>
+          </div>
+        ) : staffs.length === 0 ? (
+          /* 2. Show only when loading is finished AND no data returned */
+          <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50">
+            <div className="p-4 bg-gray-100 rounded-full mb-4">
+              <FaSearch className="text-4xl text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">No staff records found</h3>
+            <p className="text-gray-500 text-sm max-w-xs text-center mt-1">
+              We couldn't find any results matching your current filters or search term.
+            </p>
+            <button
+              onClick={() => {
+                setSearchTerm(""); setFilters({
+                  modules: [],
+                  categories: [],
+                  status: []
+                });;
+              }}
+              className="mt-4 text-blue-600 hover:text-blue-700 font-medium text-sm"
+            >
+              Clear all filters
+            </button>
+          </div>
+
+        ) : (
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -487,61 +499,111 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
                         </span>
                       </div>
                     </td>
-
                     {/* Contact (Phone) */}
-                    <td className="whitespace-nowrap px-4 py-4 min-w-[120px]">
-                      <div className="text-xs text-gray-500 flex items-center gap-1">
-                        {staff.phones?.[0]?.phone || "N/A"}
-                      </div>
+                    <td className="whitespace-nowrap px-4 py-4 min-w-[160px]">
+                      {staff.phones?.[0]?.phone ? (
+                        <a
+                          href={`tel:${staff.phones[0].phone}`}
+                          className="group flex items-center gap-2.5 w-fit"
+                        >
+                          {/* Icon Container */}
+                          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-200">
+                            <FaPhoneAlt className="text-[10px]" />
+                          </div>
+
+                          {/* Phone Number Text */}
+                          <div className="flex flex-col">
+                            <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
+                              {staff.phones[0].phone}
+                            </span>
+                            <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+                              Mobile
+                            </span>
+                          </div>
+                        </a>
+                      ) : (
+                        <div className="flex items-center gap-2 text-gray-300 italic">
+                          <div className="w-8 h-8 rounded-lg border border-dashed border-gray-200 flex items-center justify-center">
+                            <FaPhoneSlash className="text-xs" />
+                          </div>
+                          <span className="text-xs">No contact</span>
+                        </div>
+                      )}
                     </td>
 
                     {/* Action Menu (Responsive Positioning) */}
                     <td className="relative whitespace-nowrap px-4 py-4 text-right min-w-[100px]">
-                      <div ref={openActionMenu === staff.id ? actionMenuRef : null} className="inline-block">
+                      <div
+                        ref={openActionMenu === staff.id ? actionMenuRef : null}
+                        className="inline-block"
+                      >
+                        {/* Trigger Button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             // Toggle the menu for the specific staff member
                             setOpenActionMenu(openActionMenu === staff.id ? null : staff.id);
                           }}
-                          className="inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
+                          className={`inline-flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ${openActionMenu === staff.id
+                            ? "bg-blue-50 text-blue-600 shadow-sm"
+                            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                            }`}
+                          aria-haspopup="true"
+                          aria-expanded={openActionMenu === staff.id}
                         >
                           <MoreHorizontal className="w-5 h-5" />
                         </button>
 
+                        {/* Dropdown Menu */}
                         {openActionMenu === staff.id && (
                           <>
-                            {/* Dropdown Menu - POSITIONED ABSOLUTELY AND RESPONSIVELY */}
+                            {/* Invisible backdrop to capture clicks outside and close menu */}
+                            <div
+                              className="fixed inset-0 z-10"
+                              onClick={() => setOpenActionMenu(null)}
+                            />
+
                             <div
                               className="
-                                absolute right-4 md:right-0 mt-2 
-                                w-48 
-                                bg-white border border-slate-200/60 
-                                rounded-xl shadow-2xl z-20 py-2 
-                                origin-top-right animate-in fade-in zoom-in-95
-                                whitespace-normal
-                              "
+            absolute right-0 mt-2 w-48 
+            bg-white border border-slate-200/60 
+            rounded-xl shadow-xl z-20 py-1.5 
+            origin-top-right animate-in fade-in zoom-in-95 slide-in-from-top-2
+            ring-1 ring-black ring-opacity-5
+          "
                             >
+                              <div className="px-3 py-2 border-b border-gray-50 mb-1">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider text-left">
+                                  Staff Actions
+                                </p>
+                              </div>
+
                               {menuItems.map((item, i) => {
                                 const Icon = item.icon;
+                                const isDanger = item.variant === "danger";
+
                                 return (
                                   <button
                                     key={i}
                                     className={`
-                                      text-left px-4 py-2.5 text-sm w-full flex items-center gap-2
-                                      transition-colors duration-150
-                                      ${item.variant === "danger"
+                  w-full flex items-center gap-3 px-4 py-2.5 text-sm
+                  transition-colors duration-150 group
+                  ${isDanger
                                         ? "text-red-600 hover:bg-red-50"
-                                        : "text-slate-700 hover:bg-slate-100"
+                                        : "text-slate-700 hover:bg-slate-50"
                                       }
-                                  `}
+                `}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleMenuItemClick(item, staff);
+                                      setOpenActionMenu(null); // Auto-close after click
                                     }}
                                   >
-                                    <Icon className="w-4 h-4 opacity-70 flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{item.label}</span>
+                                    <Icon className={`
+                  w-4 h-4 transition-transform group-hover:scale-110
+                  ${isDanger ? "text-red-500" : "text-slate-400 group-hover:text-blue-500"}
+                `} />
+                                    <span className="font-medium">{item.label}</span>
                                   </button>
                                 );
                               })}
@@ -558,61 +620,60 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
         )}
       </div>
 
-   {/* Pagination */}
-{totalPages > 1 && (
-  <div className="p-4 sm:px-6 sm:py-4 bg-gray-50 border-t border-gray-200">
-    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-      
-     
-      {/* 2. Main Navigation Controls */}
-      <div className="flex items-center gap-2">
-        {/* Previous Button */}
-        <button
-          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-          disabled={currentPage === 1}
-          className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
-          <FaChevronLeft className="w-4 h-4" />
-        </button>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="p-4 sm:px-6 sm:py-4 bg-gray-50 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
 
-        {/* Page Numbers */}
-        <div className="flex items-center gap-1">
-          {getPageNumbers().map((page, index) => (
-            <button
-              key={index}
-              onClick={() => typeof page === 'number' && setCurrentPage(page)}
-              disabled={page === '...'}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                page === currentPage
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : page === '...'
-                  ? 'text-gray-400 cursor-default'
-                  : 'text-gray-600 hover:bg-gray-100 border border-transparent'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+
+            {/* 2. Main Navigation Controls */}
+            <div className="flex items-center gap-2">
+              {/* Previous Button */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <FaChevronLeft className="w-4 h-4" />
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1">
+                {getPageNumbers().map((page, index) => (
+                  <button
+                    key={index}
+                    onClick={() => typeof page === 'number' && setCurrentPage(page)}
+                    disabled={page === '...'}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${page === currentPage
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : page === '...'
+                        ? 'text-gray-400 cursor-default'
+                        : 'text-gray-600 hover:bg-gray-100 border border-transparent'
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <FaChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* 3. Page Info Display */}
+            <div className="text-sm text-gray-600">
+              Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages || 1}</span>
+            </div>
+
+          </div>
         </div>
-
-        {/* Next Button */}
-        <button
-          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-          disabled={currentPage === totalPages || totalPages === 0}
-          className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
-          <FaChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* 3. Page Info Display */}
-      <div className="text-sm text-gray-600">
-        Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages || 1}</span>
-      </div>
-
-    </div>
-  </div>
-)}
+      )}
 
 
       {/* Modals/Dialogs */}
@@ -641,15 +702,13 @@ const totalPages = totalCount > 0 ? Math.ceil(totalCount / itemsPerPage) : 0;
       ) : null}
 
       <SignatureUploadModal
+
         selectedStaff={selectedStaff}
         open={!!signatureUrl}
-        onClose={() => setSignatureUrl(false)}
-        label={`Upload Signature for ${selectedStaff?.full_name || 'Staff'}`}
-        // Removed `key="dfjk"` and `uploadingKey` as they were unused or not standard
-        // fileUrl={signatureUrl} // Pass staff's current signature URL here if available
-        onUpload={async (file) => {
-          console.log("Simulating signature upload for:", selectedStaff.full_name, file);
-          // Actual upload logic goes here
+        onClose={() => {
+          setSignatureUrl(false);
+          // Using location.reload() to refresh the entire browser page
+
         }}
       />
 

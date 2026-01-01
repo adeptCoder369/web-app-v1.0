@@ -10,7 +10,7 @@ const StaffFilterPanel = ({
   staffStatus,
   filters,
   toggleFilter,
-  accountStatus
+
 
 }) => {
   // ===============================================================================
@@ -37,74 +37,84 @@ const StaffFilterPanel = ({
       {/* ===========  Account Status  ========================================================================================= */}
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Account Status</h3>
+
         <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-          {staffStatus?.map((status, index) => (
-            <div key={index} className="flex items-center">
+          {staffStatus?.map((item, index) => {
+            const isSelected = filters.accountStatus.includes(item.value);
+
+            return (
               <button
-                onClick={(e) => toggleFilter("status", status.name, e)}
-                className="flex items-center w-full"
+                key={index}
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    accountStatus: isSelected
+                      ? prev.accountStatus.filter(v => v !== item.value)
+                      : [...prev.accountStatus, item.value],
+                  }))
+                }
+                className="flex items-center w-full text-left"
               >
                 <div
-                  className={`cursor-pointer w-5 h-5 rounded border flex items-center justify-center ${filters.status.includes(status.name)
-                    ? "bg-blue-500 border-blue-500"
-                    : "border-gray-300"
-                    }`}
+                  className={`w-5 h-5 rounded border flex items-center justify-center
+              ${isSelected
+                      ? "bg-blue-500 border-blue-500"
+                      : "border-gray-300"}`}
                 >
-                  {filters?.status?.includes(status.name) && (
-                    <FaCheck size={12} className="text-white" />
-                  )}
+                  {isSelected && <FaCheck size={12} className="text-white" />}
                 </div>
+
                 <span className="ml-3 text-gray-700 flex items-center">
-                  {staffStatusIcons[status.name] && (
+                  {staffStatusIcons[item.label] && (
                     <span className="mr-2">
-                      {staffStatusIcons[status.name]}
+                      {staffStatusIcons[item.label]}
                     </span>
                   )}
-                  {status.name}
+                  {item.label}
                 </span>
               </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
+
       {/* ===========  Active or not  ========================================================================================= */}
       <div>
-        <h3 className="font-medium text-gray-700 mb-3">Status</h3>
-        <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-          {accountStatus?.map((status, index) => (
-            <div key={index} className="flex items-center">
-              <button
-                onClick={(e) => toggleFilter("status", status.name, e)}
-                className="flex items-center w-full"
-              >
-                <div
-                  className={`cursor-pointer w-5 h-5 rounded border flex items-center justify-center ${filters.status.includes(status.name)
-                    ? "bg-blue-500 border-blue-500"
-                    : "border-gray-300"
-                    }`}
-                >
-                  {filters?.status?.includes(status.name) && (
-                    <FaCheck size={12} className="text-white" />
-                  )}
-                </div>
-                <span className="ml-3 text-gray-700 flex items-center">
-                  {staffStatusIcons[status.name] && (
-                    <span className="mr-2">
-                      {staffStatusIcons[status.name]}
-                    </span>
-                  )}
-                  {status.name}
-                </span>
-              </button>
-            </div>
-          ))}
+        <h3 className="font-medium text-gray-700 mb-2">Status</h3>
+
+        <div className="relative">
+          <select
+            value={filters?.status || ""}
+            onChange={(e) =>
+              toggleFilter("status", e.target.value)
+            }
+            className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select status</option>
+
+            {[{
+              name: "Active",
+              value: "ACTIVE"
+            },
+            {
+              name: "Disabled",
+              value: "DISABLED"
+            },
+            ]?.map((status, index) => (
+              <option key={index} value={status?.value}>
+                {status?.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+
       {/* ===========  Title  ========================================================================================= */}
       <div>
         <h3 className="font-medium text-gray-700 mb-3">Title</h3>
         <select
-          value={filters.title || ""}
+          value={filters?.title || ""}
           onChange={(e) => {
             const value = e.target.value;
             if (value === "") {
@@ -146,48 +156,48 @@ const StaffFilterPanel = ({
 
 
 
-{/* =========== Designations ========================================================================================= */}
-<div className="md:col-span-2">
-  <h3 className="font-medium text-gray-700 mb-3">Designations</h3>
-  <div className="flex flex-wrap gap-3">
-    {/* "All" Option */}
-    <label
-      className={`px-3 py-1.5 rounded-full border cursor-pointer transition 
+      {/* =========== Designations ========================================================================================= */}
+      <div className="md:col-span-2">
+        <h3 className="font-medium text-gray-700 mb-3">Designations</h3>
+        <div className="flex flex-wrap gap-3">
+          {/* "All" Option */}
+          <label
+            className={`px-3 py-1.5 rounded-full border cursor-pointer transition 
         ${filters.designations?.length === 0 ? "bg-blue-500 text-white border-blue-500" : "border-gray-300 text-gray-700"}`}
-      onClick={() =>
-        setFilters((prev) => ({
-          ...prev,
-          designations: [], // clear all selections
-        }))
-      }
-    >
-      All
-    </label>
+            onClick={() =>
+              setFilters((prev) => ({
+                ...prev,
+                designations: [], // clear all selections
+              }))
+            }
+          >
+            All
+          </label>
 
-    {/* Individual Designations */}
-    {config?.designations?.map((desig) => {
-      const isSelected = filters.designations?.includes(desig.id);
-      return (
-        <label
-          key={desig.id}
-          className={`px-3 py-1.5 rounded-full border cursor-pointer transition 
+          {/* Individual Designations */}
+          {config?.designations?.map((desig) => {
+            const isSelected = filters.designations?.includes(desig.id);
+            return (
+              <label
+                key={desig.id}
+                className={`px-3 py-1.5 rounded-full border cursor-pointer transition 
             ${isSelected ? "bg-blue-500 text-white border-blue-500" : "border-gray-300 text-gray-700"}`}
-          onClick={() =>
-            setFilters((prev) => {
-              const current = prev.designations || [];
-              const updated = isSelected
-                ? current.filter((d) => d !== desig.id) // remove
-                : [...current, desig.id]; // add
-              return { ...prev, designations: updated };
-            })
-          }
-        >
-          {desig.name}
-        </label>
-      );
-    })}
-  </div>
-</div>
+                onClick={() =>
+                  setFilters((prev) => {
+                    const current = prev.designations || [];
+                    const updated = isSelected
+                      ? current.filter((d) => d !== desig.id) // remove
+                      : [...current, desig.id]; // add
+                    return { ...prev, designations: updated };
+                  })
+                }
+              >
+                {desig.name}
+              </label>
+            );
+          })}
+        </div>
+      </div>
 
 
 

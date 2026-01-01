@@ -406,22 +406,38 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
         <div className=" mx-auto px-4 py-8">
           {/* Navigation Tabs */}
           <Breadcrumbs items={breadcrumbs} />
-          <div className="bg-white rounded-xl shadow-md mb-8">
-            <div className="flex space-x-1 p-1">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`cursor-pointer flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === tab.id
-                    ? 'bg-blue-500 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                >
-                  <tab.icon className="h-4 w-4 hidden sm:inline" />
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </div>
+          <div className="bg-white rounded-xl shadow-sm mb-8 border border-slate-200/60 p-1">
+            {/* The container handles the horizontal scroll on small screens */}
+            <nav
+              className="flex items-center overflow-x-auto no-scrollbar scroll-smooth"
+              aria-label="Tabs"
+            >
+              <div className="flex space-x-1 min-w-full sm:min-w-0">
+                {tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const Icon = tab.icon;
+
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`
+              cursor-pointer flex items-center justify-center space-x-2 
+              px-4 py-2.5 rounded-lg font-semibold text-sm
+              transition-all duration-200 whitespace-nowrap flex-1 sm:flex-none
+              ${isActive
+                          ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-700/10'
+                          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                        }
+            `}
+                    >
+                      <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </nav>
           </div>
 
           {/* Add Student Form */}

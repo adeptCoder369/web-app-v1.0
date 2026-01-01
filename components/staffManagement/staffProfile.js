@@ -503,27 +503,43 @@ const StaffProfile = ({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-lg mb-8">
-          <div className="flex space-x-1 p-1">
-            {[
-              { id: 'basic', label: 'Basic Details', icon: User },
-              { id: 'personal', label: 'Personal Details', icon: User },
-              { id: 'academic', label: 'Academic Info', icon: Book },
-              { id: 'document', label: 'Document Info', icon: Book },
-              { id: 'bank', label: 'Bank Info', icon: CiBank }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === tab.id
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-              >
-                <tab.icon className="h-4 w-4" />
-                <span>{tab.label}</span>
-              </button>
-            ))}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 mb-8 overflow-hidden">
+          <div className="flex p-1 overflow-x-auto no-scrollbar scroll-smooth bg-slate-50/50">
+            <div className="flex space-x-1 min-w-max">
+              {[
+                { id: 'basic', label: 'Basic Details', icon: User },
+                { id: 'personal', label: 'Personal Details', icon: User },
+                { id: 'academic', label: 'Academic Info', icon: Book },
+                { id: 'document', label: 'Document Info', icon: Book },
+                { id: 'bank', label: 'Bank Info', icon: CiBank }
+              ].map((tab) => {
+                const isActive = activeTab === tab.id;
+                const Icon = tab.icon;
+
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
+              flex items-center space-x-2 px-5 py-2.5 rounded-lg text-sm font-semibold
+              transition-all duration-200 whitespace-nowrap cursor-pointer
+              ${isActive
+                        ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-200/60'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
+                      }
+            `}
+                  >
+                    <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                    <span>{tab.label}</span>
+
+                    {/* Active Indicator Underline (Mobile optimized) */}
+                    {isActive && (
+                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full sm:hidden" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 

@@ -8,7 +8,7 @@ import { FaFilter } from "react-icons/fa";
 import ConfirmationDialogueBox from "../ui/status/Confirmation";
 // ==================================================================
 
-export default function SchoolRolesManagement({ Context, config }) {
+export default function SchoolRolesManagement({ Context, config ,setActiveTab}) {
   const [filters, setFilters] = useState({
     name: "",
     has_admin_access: "",
@@ -51,6 +51,7 @@ export default function SchoolRolesManagement({ Context, config }) {
         setSchoolRoles(res.data.results.school_roles || []);
         setTotal(res.data.results.count || 0);
         setPage(pageNumber);
+        setActiveTab('schoolRoles')
       }
     } catch (err) {
       console.log("Parents fetch error", err);

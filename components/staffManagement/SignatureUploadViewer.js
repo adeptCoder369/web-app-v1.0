@@ -1,60 +1,42 @@
 "use client";
-import React, { useState } from "react";
-import { UploadCloud } from "lucide-react";
-import { patchStudentDetail } from "../../api/student";
+import React, { useState, useEffect } from "react";
+import { UploadCloud, CheckCircle, AlertCircle, X, Download } from "lucide-react";
 import { getCookie } from "cookies-next";
-import EditableField from "./EditableField";
-import { patchStaffDetail, uploadStaffSignature } from "../../api/staff";
+import { uploadStaffSignature } from "../../api/staff";
 import { getSessionCache } from "../../utils/sessionCache";
-// ===============================================================================
+
 export default function SignatureUploadViewer({
   staffDetail,
-  session,
-  profile,
-  cookyGuid,
-  cookyId,
-  school,
-  setIsUpdated,
-  setShow
+  setIsUpdated, // This should be a function from parent to trigger a data re-fetch
+  onClose
 }) {
-
-  // ===============================================================================
-
-  if (!staffDetail) return null;
-  // ===============================================================================
-
-  const [uploadingKey, setUploadingKey] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  // ===============================================================================
+  
+  // Local state to show the saved URL immediately
+  const [currentSignature, setCurrentSignature] = useState(staffDetail?.img_signature);
 
-  const basePayload = {
-    user_account_id: profile,
-    client_id: session,
-    guid: cookyGuid,
-    logged_in_user_account_id: cookyId,
-    id: staffDetail.id,
-    school_id: school,
-    class_id: staffDetail.class?.id,
-  };
+  // Keep local state in sync if staffDetail changes
+  useEffect(() => {
+    setCurrentSignature(staffDetail?.img_signature);
+  }, [staffDetail]);
 
-  // const handleSave = async (key, value) => {
-  //   await patchStaffDetail({ ...basePayload, [key]: value });
-  // };
+  if (!staffDetail) return null;
 
-  // ===============================================================================
   const context = getSessionCache("dashboardContext");
 
-  const uploadAndSave = async (key, file) => {
+  const uploadAndSave = async (file) => {
     if (!file) return;
     setError(null);
-    setUploadingKey(key);
+    setSuccess(null);
+    setUploading(true);
 
     try {
       const resolvedGuid = getCookie("guid");
       const resolvedUserId = getCookie("id");
 
-      console.log('data ---===========', context, resolvedGuid, resolvedUserId, context?.profileId, context?.session);
+      // 1. Upload File to S3/Server
       const data = new FormData();
       data.append("api", "file.upload");
       data.append("guid", resolvedGuid);
@@ -71,176 +53,128 @@ export default function SignatureUploadViewer({
       });
 
       const result = await resp.json();
-      console.log('resp ===========', result);
 
       if (result?.success && result?.results?.files?.[0]) {
         const uploadedUrl = result.results.files[0].full_url;
-        // console.log('uploadedUrl ===========', uploadedUrl);
 
-        // const relativePath = uploadedUrl.split(
-        //   "https://infoeight-s3-new.s3.ap-south-1.amazonaws.com/students/demo-model-school-secondary-bankura/"
-        // )[1];
-
-
-        // Call patch API with the uploaded URL
-        let finalPayloadd = {
-          "api": "user.uploadSignature",
+        // 2. Patch the Staff Record with the new URL
+        const finalPayload = {
+          api: "user.uploadSignature",
           logged_in_user_account_id: resolvedUserId,
-          "guid": resolvedGuid,
-          "user_account_id": context?.profileId,
-          "client_id": context?.session,
-          "id": staffDetail?.id,
-          "platform": "web",
-          "img_signature": uploadedUrl,
+          guid: resolvedGuid,
+          user_account_id: context?.profileId,
+          client_id: context?.session,
+          id: staffDetail?.id,
+          platform: "web",
+          img_signature: uploadedUrl,
+        };
+
+        const response = await uploadStaffSignature(finalPayload);
+        
+        if (response?.success) {
+          setSuccess("Signature saved successfully!");
+          setCurrentSignature(uploadedUrl); // Update local view immediately
+          
+          // Trigger parent refresh if function provided
+          if (setIsUpdated) setIsUpdated(prev => !prev); 
+
+          // Close modal after short delay
+          setTimeout(() => onClose(null), 1000);
+            if (typeof window !== "undefined") {
+            window.location.reload();
+          }
+        } else {
+          setError("Failed to link signature to profile.");
         }
-        const response = await uploadStaffSignature(finalPayloadd);
-        if (result?.success) {
-          setSuccess("File uploaded successfully.");
-        }
-        console.log('response ===========', response);
-        // setIsUpdated((prev) => !prev);
       } else {
-        setError("File upload failed.");
+        setError("File upload to server failed.");
       }
     } catch (err) {
       console.error(err);
-      setError(err);
+      setError("An unexpected error occurred.");
     } finally {
-      // setUploadingKey(null);
-      setTimeout(() =>
-        setShow?.(null), 1000);
-
+      setUploading(false);
     }
   };
-  // ===============================================================================
 
-  const renderDocCard = (label, key, fileUrl) => (
-    <div className="
-    bg-white 
-    rounded-2xl 
-    p-6 
-    border 
-    border-gray-100 
-    shadow-sm 
-    flex 
-    flex-col 
-    items-center 
-    transition-all 
-    hover:shadow-md 
-    hover:border-gray-200
-  ">
+  return (
+    <div className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col items-center transition-all">
+      {/* Close Button */}
       <button
-        onClick={() => setShow?.(null)}  // ← Use either prop
-        className="
-      cursor-pointer
-        absolute 
-        top-3 
-        right-3 
-        h-6 
-        w-6 
-        rounded-full 
-        flex 
-        items-center 
-        justify-center 
-        bg-gray-100 
-        text-gray-600 
-        text-xs 
-        hover:bg-gray-200 
-        transition
-      "
+        onClick={() => onClose(null)}
+        className="absolute top-3 right-3 h-8 w-8 rounded-full flex items-center justify-center bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
       >
-        ✕
+        <X size={16} />
       </button>
-      <p className="text-sm font-semibold text-gray-900 mb-4">{label}</p>
 
-      <div className="flex flex-col items-center mb-4">
-        {fileUrl ? (
-          fileUrl.match(/\.(jpg|jpeg|png|webp)$/i) ? (
+      <h3 className="text-sm font-bold text-gray-900 mb-1">Staff Signature</h3>
+      <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-wider">{staffDetail.full_name}</p>
+
+      {/* Signature Display Area */}
+      <div className="w-full aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden mb-4 relative group">
+        {currentSignature ? (
+          <>
             <img
-              src={fileUrl}
-              alt={label}
-              className="h-28 w-28 object-cover rounded-lg border border-gray-200 shadow-sm"
+              src={currentSignature}
+              alt="Signature"
+              className="h-full w-full object-contain p-4"
             />
-          ) : (
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline text-sm"
-            >
-              View File
-            </a>
-          )
+            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+               <a href={currentSignature} download className="p-2 bg-white rounded-lg shadow-sm text-gray-700 hover:text-blue-600">
+                  <Download size={16} />
+               </a>
+            </div>
+          </>
         ) : (
-          <div className="text-xs text-gray-400">No file uploaded</div>
+          <div className="flex flex-col items-center text-gray-400">
+             <UploadCloud size={32} strokeWidth={1.5} />
+             <span className="text-xs mt-2">No signature saved</span>
+          </div>
+        )}
+
+        {/* Loading Overlay */}
+        {uploading && (
+          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+            <div className="flex flex-col items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+              <p className="text-[10px] font-bold text-blue-600 uppercase">Uploading...</p>
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Download button if signature exists */}
-      {fileUrl && (
-        <a
-          href={fileUrl}
-          download
-          className="
-          mb-4 
-          text-sm 
-          text-green-600 
-          hover:text-green-700 
-          underline
-        "
-        >
-          Download
-        </a>
-      )}
-
-      <label
-        className="
-        cursor-pointer 
-        flex 
-        flex-col 
-        items-center 
-        text-blue-600 
-        text-sm 
-        hover:text-blue-700 
-        transition-colors
-      "
-      >
-        <UploadCloud className="h-6 w-6 mb-1" />
-        {uploadingKey === key ? "Uploading..." : "Upload"}
+      {/* Upload Action */}
+      <label className="w-full">
+        <div className={`
+          flex items-center justify-center gap-2 px-4 py-3 rounded-xl border font-semibold text-sm transition-all cursor-pointer
+          ${uploading ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-600 hover:text-white'}
+        `}>
+          <UploadCloud size={18} />
+          <span>{currentSignature ? "Replace Signature" : "Upload Signature"}</span>
+        </div>
         <input
           type="file"
-          accept="image/*,.pdf"
+          accept="image/*"
           className="hidden"
-          onChange={(e) => uploadAndSave(key, e.target.files[0])}
+          disabled={uploading}
+          onChange={(e) => uploadAndSave(e.target.files[0])}
         />
       </label>
+
+      {/* Feedback Messages */}
+      {error && (
+        <div className="mt-4 flex items-center gap-2 text-red-600 bg-red-50 px-3 py-2 rounded-lg w-full">
+          <AlertCircle size={14} />
+          <span className="text-[11px] font-medium">{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="mt-4 flex items-center gap-2 text-green-700 bg-green-50 px-3 py-2 rounded-lg w-full">
+          <CheckCircle size={14} />
+          <span className="text-[11px] font-medium">{success}</span>
+        </div>
+      )}
     </div>
   );
-
-  // ===============================================================================
-
-  return (
-    <>
-      <div className="flex justify-center">
-        <div className="w-full max-w-sm">
-          {renderDocCard("Signature", "image_url", staffDetail.img_signature)}
-
-          {error && (
-            <p className="text-center text-xs font-medium text-red-500 mt-3">
-              {error}
-            </p>
-          )}
-
-          {success && (
-            <p className="text-center text-xs font-medium text-green-600 mt-3">
-              {success}
-            </p>
-          )}
-        </div>
-      </div>
-
-
-    </>
-  );
 }
-// ===============================================================================

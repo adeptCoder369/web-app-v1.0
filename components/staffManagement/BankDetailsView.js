@@ -17,6 +17,7 @@ export default function BankDetailsViewTab({
 
 }) {
 
+console.log(staffDetail);
 
 
     if (!staffDetail) return null;
@@ -41,7 +42,7 @@ export default function BankDetailsViewTab({
 
             <EditableField
                 label="Bank"
-                value={staffDetail.bank_details}
+                value={staffDetail.bank_details?.bank?.name}
                 icon={CiBank}
                 type="text"
                 onSave={(val) => handleSave("bank_details", val)}
@@ -54,17 +55,17 @@ export default function BankDetailsViewTab({
 
             <EditableField
                 label="Account Holder Name"
-                value={staffDetail.bank_details}
+                value={staffDetail?.bank_details?.account_holder_name}
                 icon={CiBank}
                 type="text"
-                onSave={(val) => handleSave("bank_details", val)}
+                onSave={(val) => handleSave("account_holder_name", val)}
                 setIsUpdated={setIsUpdated}
             />
 
             
             <EditableField
                 label="Account Number"
-                value={staffDetail.bank_details}
+                value={staffDetail.bank_details?.account_number}
                 icon={CiBank}
                 type="text"
                 onSave={(val) => handleSave("bank_details", val)}
@@ -77,7 +78,7 @@ export default function BankDetailsViewTab({
          
             <EditableField
                 label="IFSC Code"
-                value={staffDetail.bank_details}
+                value={staffDetail.bank_details?.ifsc_code}
                 icon={CiBank}
                 type="text"
                 onSave={(val) => handleSave("bank_details", val)}
@@ -88,10 +89,10 @@ export default function BankDetailsViewTab({
             
             <EditableField
                 label="Branch Name"
-                value={staffDetail.bank_details}
+                value={staffDetail.bank_details?.branch_name}
                 icon={CiBank}
                 type="text"
-                onSave={(val) => handleSave("bank_details", val)}
+                onSave={(val) => handleSave("bank_details.branch_name", val)}
                 setIsUpdated={setIsUpdated}
             />
 

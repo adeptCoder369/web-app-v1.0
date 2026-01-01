@@ -12,8 +12,14 @@ const EditableField = ({
   isEditable = true
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [temp, setTemp] = useState(value);
-  const [loading, setLoading] = useState(false);
+  const [temp, setTemp] = useState(() => {
+    if (type === "select" && options && Array.isArray(options) && options.length > 0 && typeof options[0] === "object") {
+      // For object options, find the id where name matches value
+      const found = options.find(opt => opt.name === value);
+      return found ? found.id : "";
+    }
+    return value; // Default for other types or non-object options
+  }); const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSave = async () => {
@@ -30,6 +36,7 @@ const EditableField = ({
     }
   };
 
+
   const renderValueDisplay = () => {
     if (type === "boolean") {
       const active =
@@ -38,8 +45,8 @@ const EditableField = ({
       return (
         <span
           className={`px-3 py-1 text-sm font-medium rounded-full border ${active
-              ? "bg-green-100 text-green-700 border-green-300"
-              : "bg-red-100 text-red-700 border-red-300"
+            ? "bg-green-100 text-green-700 border-green-300"
+            : "bg-red-100 text-red-700 border-red-300"
             }`}
         >
           {active ? "YES" : "NO"}
@@ -70,7 +77,6 @@ const EditableField = ({
         </select>
       );
     }
-
     if (type === "boolean") {
       const normalized =
         temp === true || temp === "1" || temp === 1 || temp === "true";
@@ -96,6 +102,27 @@ const EditableField = ({
     );
   };
 
+const normalizeValueToTemp = () => {
+  if (type !== "select") return value;
+
+  if (!options?.length) return "";
+
+  // object options: { id, name }
+  if (typeof options[0] === "object") {
+    // value could be id or name
+    const byId = options.find(opt => String(opt.id) === String(value));
+    if (byId) return byId.id;
+
+    const byName = options.find(opt => opt.name === value);
+    return byName ? byName.id : "";
+  }
+
+  // primitive options: ["A", "B"]
+  return options.includes(value) ? value : "";
+};
+
+
+
   return (
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
       <div className="flex items-center gap-3">
@@ -118,19 +145,23 @@ const EditableField = ({
                 </button>
                 <button
                   onClick={() => {
-                    setTemp(value);
+                    setTemp(normalizeValueToTemp());
                     setIsEditing(false);
                   }}
-                  disabled={loading}
-                  className="cursor-pointer px-3 py-1 bg-gray-200 text-sm rounded-md"
                 >
+
                   Cancel
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 {renderValueDisplay()}
-                <button onClick={() => setIsEditing(true)}>
+                <button
+                  onClick={() => {
+                    setTemp(normalizeValueToTemp());
+                    setIsEditing(true);
+                  }}
+                >
                   <FaEdit className="cursor-pointer h-4 w-4 text-gray-500 hover:text-gray-700" />
                 </button>
               </div>

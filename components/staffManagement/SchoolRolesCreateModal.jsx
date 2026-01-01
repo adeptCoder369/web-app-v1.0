@@ -56,6 +56,7 @@ export default function SchoolRolesCreateModal({
       } else {
         setError(resp?.data?.results?.message || "Failed to save role");
         setSubmitted(false);
+          
       }
     } catch (err) {
       setError(err.message || "Something went wrong while saving role");

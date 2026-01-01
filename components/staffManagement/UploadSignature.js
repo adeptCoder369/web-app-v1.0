@@ -5,8 +5,8 @@ import SignatureUploadViewer from "./SignatureUploadViewer";
 
 export default function SignatureUploadModal({
   open,
+  onClose,
   selectedStaff,
-  setSignatureUrl
 }) {
   const [show, setShow] = useState(open);
 
@@ -24,8 +24,9 @@ export default function SignatureUploadModal({
 
           <SignatureUploadViewer
             staffDetail={selectedStaff}
-            setShow={setSignatureUrl}  // ← Pass state setter to close modal
-            onClose={() => setSignatureUrl(null)}  // ← OR callback
+            onClose={onClose}
+            // setShow={setSignatureUrl}  // ← Pass state setter to close modal
+            // onClose={() => setSignatureUrl(null)}  // ← OR callback
 
           />
 
