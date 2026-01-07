@@ -8,7 +8,6 @@ export default async function Dashboard() {
   const cookyGuid = cookieStore.get('guid')?.value;
   const cookyId = cookieStore.get('id')?.value;
 
-  // 🔒 if cookies missing → force login
   if (!cookyGuid || !cookyId) {
     redirect('/login');
   }

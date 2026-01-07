@@ -81,11 +81,15 @@ const menuItems = [
         subMenu: [
           {
             name: ".xls",
+
             url: "/class-details",
             onClick: (item) => handleDownload(item, 'classCHangeXls')
 
           },
-          { name: "Student Renew", url: "/class-details" },
+          {
+            name: "Student Renew",
+            url: "/dashboard/standard-management",
+          },
 
         ]
       },
@@ -281,7 +285,7 @@ const downloadRoutes = {
   },
 
 
- classCHangeXls: classId => {
+  classCHangeXls: classId => {
     const portal = getPortalParams();
 
     return `https://portal.infoeight.com`

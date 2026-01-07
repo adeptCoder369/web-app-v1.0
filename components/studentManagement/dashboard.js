@@ -18,7 +18,7 @@ import ParentManagement from './parents';
 import Birthdays from './birthdays';
 import Siblings from './siblings';
 import { getHouseList } from '../../api/houses';
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { IoPeopleSharp } from 'react-icons/io5';
 import { FaBirthdayCake } from 'react-icons/fa';
 import { RiParentFill } from 'react-icons/ri';
@@ -41,9 +41,25 @@ const tabs = [
 // =============================================================================================================================
 
 const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
+    const router = useRouter();
 
   const searchParams = useSearchParams();
   const { selectedStudent, setSelectedStudent } = useStudent()
+
+  const [reloadKey, setReloadKey] = useState(0);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const guid = localStorage.getItem('guid');
+      if (!guid || Context == null) {
+        router.replace('/login');
+      }
+    }
+  }, [router]);
+
+
+
+
+
   const [studentListData, setStudentListData] = useState([]);
   const [houses_, setHouses] = useState([]);
   const [isHouseUpdatedOrCreated, setIsHouseUpdatedOrCreated] = useState(false);

@@ -31,7 +31,7 @@ export default function BasicDetailViewTab({
     setIsUpdated,
     classes
 }) {
-    // console.log('studentDetail+++', studentDetail);
+    // console.log('classes______________+++', classes);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function BasicDetailViewTab({
         logged_in_user_account_id: cookyId,
         id: studentDetail.id,
         school_id: school,
-        class_id: studentDetail.class?.id
+        // class_id: studentDetail.class?.id
 
     };
 
@@ -133,9 +133,9 @@ export default function BasicDetailViewTab({
                     icon={Droplet}
                     type="select"
                     options={classes}
-                    onSave={(val) => handleSave("classes", val)}
+                    onSave={(val) => handleSave("class_id", val)}
                     setIsUpdated={setIsUpdated}
-                    isEditable={false}
+                    isEditable={true}
 
                 />
 

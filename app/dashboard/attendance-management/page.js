@@ -8,7 +8,9 @@ export default async function AttendancePage({ params }) {
   const cookyGuid = cookieStore.get('guid').value
   const cookyId = cookieStore.get('id').value
 
-
+  if (!cookyGuid || !cookyId) {
+    redirect('/login');
+  }
   // ==================================================================================================
   const classesListData = await getClassesList(resolvedParams.profile, resolvedParams.session, cookyGuid, cookyId)
 
