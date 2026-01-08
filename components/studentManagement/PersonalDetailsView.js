@@ -81,14 +81,14 @@ export default function PersonalDetailsViewTab({
                 setIsUpdated={setIsUpdated}
             />
 
-            <EditableField
+            {/* <EditableField
                 label="Address"
                 value={studentDetail.address}
                 icon={MapPin}
                 type="text"
                 onSave={(val) => handleSave("address", val)}
                 setIsUpdated={setIsUpdated}
-            />
+            /> */}
             <EditableField
                 label="House"
                 value={houses?.find((h) => h?.id === studentDetail.house_id)?.name || ""}

@@ -45,6 +45,9 @@ export default function BasicDetailViewTab({
         logged_in_user_account_id: cookyId,
         id: studentDetail.id,
         school_id: school,
+        address: studentDetail.address,                  // "narahi,lucknow"
+        "class_id": studentDetail?.class_id,
+
         // class_id: studentDetail.class?.id
 
     };
@@ -54,13 +57,21 @@ export default function BasicDetailViewTab({
             setLoading(true);
             setError(null);
             setSuccess(null);
+            console.log('basePayload', basePayload);
 
-            await patchStudentDetail({
+            const resp = await patchStudentDetail({
                 ...basePayload,
                 [key]: value
             });
+            console.log(resp);
+            if (resp?.success) {
 
-            setSuccess("Details updated successfully");
+                setSuccess(resp?.results?.message);
+            } else {
+                setError(resp?.results?.message);
+
+            }
+
             // setIsUpdated?.(prev => !prev);
         } catch (err) {
             setError(
@@ -181,6 +192,15 @@ export default function BasicDetailViewTab({
                                 )) || "—"}
                         </div>
                     }
+                />
+
+                <EditableField
+                    label="Address"
+                    value={studentDetail?.address}
+                    icon={MapPin}
+                    type="text"
+                    onSave={(val) => handleSave("address", val)}
+                    setIsUpdated={setIsUpdated}
                 />
 
 

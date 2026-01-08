@@ -41,7 +41,7 @@ const tabs = [
 // =============================================================================================================================
 
 const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
-    const router = useRouter();
+  const router = useRouter();
 
   const searchParams = useSearchParams();
   const { selectedStudent, setSelectedStudent } = useStudent()
@@ -58,7 +58,8 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
 
 
-
+  const [checkAdmissionNo, setCheckAdmissionNo] = useState('');
+  const [admissionCheckResult, setAdmissionCheckResult] = useState(null); // 'exists' | 'available' | null
 
   const [studentListData, setStudentListData] = useState([]);
   const [houses_, setHouses] = useState([]);
@@ -398,7 +399,20 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
 
 
 
+  const handleCheckAdmission = () => {
+    if (!checkAdmissionNo) return;
 
+    // Checking against the already fetched list
+    const existingStudent = studentListData.find(
+      (s) => s.admission_number === checkAdmissionNo || s.admissionNumber === checkAdmissionNo
+    );
+
+    if (existingStudent) {
+      setAdmissionCheckResult({ status: 'exists', name: existingStudent.name });
+    } else {
+      setAdmissionCheckResult({ status: 'available' });
+    }
+  };
 
   // =============================================================================================================================
 
@@ -456,12 +470,49 @@ const StudentMangementDashboard = ({ cookyGuid, cookyId, }) => {
             </nav>
           </div>
 
-          {/* Add Student Form */}
           {activeTab === 'add' && (
             <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Add New Student</h2>
-                <p className="text-gray-600">Fill in the student information in multiple steps</p>
+              {/* Updated Header with Search */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-100">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">Add New Student</h2>
+                  <p className="text-gray-600">Fill in the student information in multiple steps</p>
+                </div>
+
+                <div className="flex flex-col items-end">
+                  <div className="relative flex items-center gap-2">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Check Admission No..."
+                        value={checkAdmissionNo}
+                        onChange={(e) => {
+                          setCheckAdmissionNo(e.target.value);
+                          setAdmissionCheckResult(null); // Reset result when typing
+                        }}
+                        className="pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm w-64"
+                      />
+                      <button
+                        onClick={handleCheckAdmission}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-800 font-semibold text-xs"
+                      >
+                        Check
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Feedback Messages */}
+                  {admissionCheckResult?.status === 'exists' && (
+                    <p className="text-red-500 text-xs mt-1 font-medium">
+                      ⚠️ Already exists: <b>{admissionCheckResult.name}</b>
+                    </p>
+                  )}
+                  {admissionCheckResult?.status === 'available' && (
+                    <p className="text-green-600 text-xs mt-1 font-medium">
+                      ✅ Admission number is available
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Form Steps Navigation */}

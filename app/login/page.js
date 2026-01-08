@@ -6,8 +6,6 @@ import Loader from '../../components/ui/status/Loader';
 import SuccessStatus from '../../components/ui/status/Success';
 import ErrorStatus from '../../components/ui/status/Error';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import toast from 'react-hot-toast';
 
 import { useRouter } from 'next/navigation';
 import IdleTimeContainer from '../../autoLogout';
@@ -16,7 +14,6 @@ import { getSessionCache } from '../../utils/sessionCache';
 //============================================================================
 
 const SuperAdminLogin = () => {
-  const params = useSearchParams();
 
   const router = useRouter();
   const Context = getSessionCache("dashboardContext");
@@ -186,10 +183,7 @@ const SuperAdminLogin = () => {
       {error && (
         <ErrorStatus message={apiResponse} />
       )}
-      {params.get('reason') === 'expired' && (
-        <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-          Your session has expired. Please log in again.
-        </div>)}
+      
       {/* Left Section - Brand Info */}
       <div className="hidden lg:flex flex-col justify-center  w-1/2 p-16 text-gray bg-white relative overflow-hidden">
         {/* Animated circles background */}

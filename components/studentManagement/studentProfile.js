@@ -535,6 +535,9 @@ const StudentProfile = ({
 
         {activeTab === "parents" && (
           <ParentInfoViewTab
+            classes={config?.classes}
+            standards={config?.standards}
+
             studentDetail={studentDetail}
             session={session}
             profile={profile}
