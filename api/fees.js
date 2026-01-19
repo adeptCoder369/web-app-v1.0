@@ -487,7 +487,8 @@ export const markStudentFee = async (
 
 
 export const getFeeTypes = async (
-  profileId, session, page,
+  profileId, session,
+  page,
   limit,
 ) => {
   const resolvedGuid = getCookie("guid");
@@ -1048,11 +1049,38 @@ export const getTransportLocationList = async (
 
   return axios.post(`${API_BASE_URL}/api`, {
 
-    "api": "schoolBus.getList",
+    "api": "location.getList",
     "guid": resolvedGuid,
     "logged_in_user_account_id": resolvedUserId,
     "user_account_id": profileId,
     "client_id": session,
     "platform": "web"
+  });
+};
+
+//========================================================================================================
+
+export const updateTransportLocation = async (
+  profileId,
+  session,
+  payload
+
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "location.edit",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "WEB",
+    "id": payload?.id,
+    "name": payload?.name,
+    "transport_fee": payload?.transport_fee
   });
 };

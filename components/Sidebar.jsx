@@ -1,9 +1,9 @@
 import SchoolBadgeCard from "./ui/card/SchoolBadgeCard";
 import { TbLayoutSidebarRightExpand } from "react-icons/tb";
 import { ChevronDown, ChevronRight, Star, } from 'lucide-react';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getCookie } from "cookies-next";
 import { getSessionCache } from "../utils/sessionCache";
 // ===============================================================
@@ -241,14 +241,19 @@ const menuItems = [
       height={20}
       className="w-8 h-8"
     />, subMenu: [
-      { name: "View Fees", url: "/dashboard/fee-summary", quickLink: true, },
+      { name: "View Fees", url: "/dashboard/view-fee", quickLink: true, },
       { name: "Mark Student Fees", url: "/dashboard/mark-student-fee", quickLink: true },
       { name: "Fee Summary", url: "/dashboard/fee-summary", quickLink: true },
+      { name: "Datewise Fee Collection Summary", url: "/dashboard/datewise-fee-summary", quickLink: true },
+      { name: "Sessionwise Fee Collection Summary", url: "/dashboard/datewise-fee-summary", quickLink: true },
+      { name: "Standardwise Fee Collection Summary", url: "/dashboard/fee-summary", quickLink: true },
+      { name: "Periodwise Fee Collection Summary", url: "/dashboard/fee-summary", quickLink: true },
+      { name: "Payouts", url: "/dashboard/payouts", quickLink: true },
+      { name: "Concession/Optional Fees", url: "/dashboard/fee-concession", quickLink: true },
       { name: "Variable Fees Students", url: "/dashboard/variable-fee", quickLink: true },
       { name: "Late Fees ", url: "/dashboard/late-fee", quickLink: true },
-      { name: "Fee Defaulter", url: "/dashboard/fee-defaulter", quickLink: true },
-      { name: "Payouts", url: "/dashboard/payouts", quickLink: true },
       { name: "Wave Off Late Fees", url: "/dashboard/waive-off-late-fee", quickLink: true },
+      { name: "Fee Defaulter", url: "/dashboard/fee-defaulter", quickLink: true },
       { name: "View School Buses", url: "/dashboard/school-buses", quickLink: true },
       { name: "Transport Location", url: "/dashboard/transport-location", quickLink: true },
       { name: "Fee Types ", url: "/dashboard/fee-types", quickLink: true },
@@ -347,46 +352,37 @@ const handleDownload = (classData, action) => {
   window.open(url, "_blank");
 };
 // ===============================================================
+
 export default function Sidebar(props) {
-  const router = useRouter()
-
-
+  const router = useRouter();
+  const pathname = usePathname(); // Get current URL path
   const [expandedMenus, setExpandedMenus] = useState({});
 
-  // console.log("dashboardData ========================:", props?.config?.sms_balance);
+  // Helper to check if a menu or any of its children are active
+  const isItemActive = (item) => {
+    if (item.url === pathname) return true;
+    if (item.subMenu) {
+      return item.subMenu.some(sub => isItemActive(sub));
+    }
+    return false;
+  };
 
-  const mapMenusToSideNav = (menus) => {
-    if (!menus) return [];
-
-    return menus.map((menu) => {
-      const hasChildren = menu.children && menu.children.length > 0;
-      const menuPath = `/${menu.slug}`; // Assuming top-level paths match slugs
-
-      return {
-        title: menu.name,
-        _url: menu.icon_url, // Directly use the icon_url
-        active:
-          pathname === menuPath ||
-          (hasChildren &&
-            menu.children.some((child) => pathname === `/${child.slug}`)),
-        path: menuPath,
-        children: hasChildren
-          ? menu.children.map((child) => ({
-            title: child.name,
-            path: `/${child.slug}`, // Assuming sub-menu paths match child slugs
-          }))
-          : undefined,
-      };
+  // Automatically expand parent menus if a child is active on initial load
+  useEffect(() => {
+    const newExpanded = { ...expandedMenus };
+    menuItems.forEach(item => {
+      if (item.subMenu && isItemActive(item)) {
+        newExpanded[`${item.name}-0`] = true;
+        // Check second level
+        item.subMenu.forEach(sub => {
+          if (sub.subMenu && isItemActive(sub)) {
+            newExpanded[`${sub.name}-1`] = true;
+          }
+        });
+      }
     });
-  };
-
-  const sideNavItems = mapMenusToSideNav(props?.dashboardData?.menus);
-  const toggleMenu_og = (menuName) => {
-    setExpandedMenus(prev => ({
-      ...prev,
-      [menuName]: !prev[menuName]
-    }));
-  };
+    setExpandedMenus(newExpanded);
+  }, [pathname]); // Runs when route changes
 
   const toggleMenu = (key) => {
     setExpandedMenus(prev => ({
@@ -397,41 +393,60 @@ export default function Sidebar(props) {
 
   const renderMenu = (item, level = 0) => {
     const key = `${item.name}-${level}`;
-
     const isExpanded = expandedMenus[key];
     const hasChildren = item.subMenu && item.subMenu.length > 0;
+
+    // HIGHLIGHT LOGIC:
+    // Direct match for child items, or "contains active child" for parent items
+    const isActive = item.url === pathname;
+    const containsActiveChild = hasChildren && isItemActive(item);
+
     const padding = 12 + level * 12;
 
     return (
       <div key={key} className="mb-1">
         <div
           className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200
-        ${item.active
-              ? "bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 border-r-2 border-blue-600"
-              : "text-gray-700 hover:bg-gray-50"
+                    ${(isActive || (containsActiveChild && !isExpanded))
+              ? "bg-blue-600 text-white shadow-md shadow-blue-200" // Active style
+              : isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-gray-700 hover:bg-gray-100" // Inactive style
             }`}
           style={{ paddingLeft: padding }}
           onClick={() => {
-            if (hasChildren) toggleMenu(key);
-            else if (item.onClick) item.onClick(item);  // Add this: call custom onClick if defined
-
-            else router.push(item.url);
+            if (hasChildren) {
+              toggleMenu(key);
+            } else if (item.onClick) {
+              item.onClick(item);
+            } else {
+              router.push(item.url);
+            }
           }}
         >
           <div className="flex items-center space-x-3">
-            {level === 0 && item.icon}
-            <span className="text-sm">{item.name}</span>
+            {/* Only show original icon for top level, or smaller dot for sub-levels */}
+            {level === 0 ? (
+              <div className={`${(isActive || containsActiveChild) ? "brightness-0 invert" : ""}`}>
+                {item.icon}
+              </div>
+            ) : (
+              <div className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-white" : "bg-gray-400"}`} />
+            )}
+            <span className={`text-sm font-medium ${isActive ? "font-bold" : ""}`}>
+              {item.name}
+            </span>
           </div>
 
           {hasChildren && (
             isExpanded
-              ? <ChevronDown className="w-4 h-4" />
-              : <ChevronRight className="w-4 h-4" />
+              ? <ChevronDown className="w-4 h-4 opacity-70" />
+              : <ChevronRight className="w-4 h-4 opacity-70" />
           )}
         </div>
 
         {hasChildren && isExpanded && (
-          <div className="mt-1">
+          <div className="mt-1 space-y-1">
             {item.subMenu.map((sub, idx) => (
               <div key={idx}>
                 {renderMenu(sub, level + 1)}
@@ -442,24 +457,19 @@ export default function Sidebar(props) {
       </div>
     );
   };
+
   return (
-    <div
+     <div
       className={`text-[#ffff] w-64 sm:w-74 h-full bg-[#f3f9ff] p-4 flex flex-col justify-between
-        transition-transform duration-300 transform
-        fixed top-0 left-0 z-50
-        lg:relative lg:translate-x-0
-        ${props?.sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}
+            transition-transform duration-300 transform fixed top-0 left-0 z-50 lg:relative
+            ${props?.sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <div className="flex flex-col h-full">
         <button
-          className="cursor-pointer p-2 rounded-full bg-[#007aff] text-primary-text-inverse hover:bg-accent/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent/50 w-10 h-10 mb-4"
-          onClick={() => {
-            props?.setSidebarOpen(!props?.sidebarOpen);
-          }}
-          aria-label="Toggle Sidebar"
+          className="cursor-pointer p-2 rounded-full bg-[#007aff] text-white hover:bg-blue-700 transition-all w-10 h-10 mb-4 flex items-center justify-center"
+          onClick={() => props?.setSidebarOpen(!props?.sidebarOpen)}
         >
-          {props?.sidebarOpen ? <TbLayoutSidebarRightExpand className="w-6 h-6" /> : null}
+          {props?.sidebarOpen && <TbLayoutSidebarRightExpand className="w-6 h-6" />}
         </button>
 
         <SchoolBadgeCard
@@ -469,60 +479,24 @@ export default function Sidebar(props) {
           smsBalance={props?.config?.sms_balance?.count}
         />
 
-
-        <nav className="mt-6 px-3 overflow-y-auto h-full pb-20">
-          {/* {menuItems.map((item, index) => (
-            <div key={index} className="mb-1">
-              <div
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${item.active
-                  ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 border-r-2 border-blue-600'
-                  : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                onClick={() => {
-                  if (item.subMenu) {
-                    toggleMenu(item.name)
-                  } else {
-                    router.push(item.url)
-                  }
-                }}
-              >
-                <div className="flex items-center space-x-3">
-                  {item.icon}
-                  <span className=" text-sm">{item.name}</span>
-                </div>
-                {item.subMenu && (
-                  expandedMenus[item.name]
-                    ? <ChevronDown className="w-4 h-4" />
-                    : <ChevronRight className="w-4 h-4" />
-                )}
-              </div>
-
-              {item.subMenu && expandedMenus[item.name] && (
-                <div className="mt-2 ml-6 space-y-1">
-                  {item.subMenu.map((subItem, subIndex) => (
-                    <div
-                      key={subIndex}
-                      className="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200"
-                      onClick={() => {
-                        router.push(subItem.url)
-
-                      }}
-                    >
-                      <span className="text-sm">{subItem.name}</span>
-                      {subItem.quickLink && (
-                        <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))} */}
-          {menuItems.map((item, i) => renderMenu(item))}
-
+        <nav className="mt-6 px-1 overflow-y-auto h-full pb-20 custom-scrollbar">
+          {menuItems.map((item) => renderMenu(item))}
         </nav>
-
-        {/* <UserProfile /> */}
+        <style jsx>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 8px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: #f3f9ff;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #007aff;
+                    border-radius: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #0056b3;
+                }
+            `}</style>
       </div>
     </div>
   );

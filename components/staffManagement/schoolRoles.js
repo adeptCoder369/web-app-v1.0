@@ -453,7 +453,7 @@ export default function SchoolRolesManagement({ Context, config, setActiveTab })
           onCancel={() => setRoleToDelete(null)}
         />
       )}
-apiResponse 
+      apiResponse
 
 
 

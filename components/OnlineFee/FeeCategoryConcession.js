@@ -3,17 +3,16 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { getSessionCache } from '../../utils/sessionCache';
 import Loader from '../ui/status/Loader';
 import ViewFeeFiltersSummary from './ViewFeeFiltersSummary';
-import TransportLocationFilterPanel from './TransportLocationFilterPanel';
 import { ReceiptIndianRupee, } from 'lucide-react';
 import { getTransportLocationList } from '../../api/fees';
 import ConfirmationDialogueBox from '../ui/status/Confirmation';
 import AddLateFee from './AddLateFee';
-import HeaderTransportLocation from './HeaderTransportLocation';
 import TransportLocationTable from './TransportLocationTable';
-import AddTransportLocationDrawer from './AddTransportLocationDrawer';
+import HeaderFeeCategoryConcession from './HeaderFeeCategoryConcession';
+import FeeCategoryConcessionFilterPanel from './FeeCategoryConcessionFilterPanel';
 // ==========================================================================================================
 
-const TransportLocation = ({ }) => {
+const FeeCategoryConcession = ({ }) => {
   const [removeLateFee, setRemoveLateFee] = useState(false);
 
   const [viewMode, setViewMode] = useState('overview');
@@ -294,28 +293,11 @@ const TransportLocation = ({ }) => {
 
 
 
-        <button
-          onClick={() => setDrawerOpen(true)}
-          className="cursor-pointer group relative px-6 py-2.5 bg-gradient-to-r from-accent to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 font-medium"
-        >
-          ⚙️ Add Transport Location
-        </button>
-
-
-        <AddTransportLocationDrawer
-          drawerOpen={drawerOpen}
-          setDrawerOpen={setDrawerOpen}
-          // selectedFee={selectedFee}
-          context={context}
-        />
-        {/* Search and Filters */}
-
         <div className="bg-white rounded-lg shadow p-6">
-          {/* Header Section */}
 
 
-          <HeaderTransportLocation
-            headerTitle={"Location List"}
+          <HeaderFeeCategoryConcession
+            headerTitle={"Fee category Concession"}
             headerIcon={<ReceiptIndianRupee />}
             toggleFilterPanel={toggleFilterPanel}
             getFilterCount={getFilterCount}
@@ -330,10 +312,11 @@ const TransportLocation = ({ }) => {
             clearFilters={clearFilters}
           />
 
-          <TransportLocationFilterPanel
+          <FeeCategoryConcessionFilterPanel
             setFilters={setFilters}
             filters={filters}
             config={config}
+            context={context}
             isFilterPanelOpen={isFilterPanelOpen}
             transportLocations={transportLocation}
           />
@@ -390,5 +373,5 @@ const TransportLocation = ({ }) => {
 };
 // ================================================================
 
-export default TransportLocation;
+export default FeeCategoryConcession;
 // ================================================================

@@ -2,11 +2,11 @@
 import Layout from '../../../layouts/Layout';
 import { Breadcrumbs } from '../../../components/ui/Breadcrumb/breadcrumb';
 import { cookies } from 'next/headers';
-import TransportLocation from '../../../components/OnlineFee/TransportLocation';
+import FeeCategoryConcession from '../../../components/OnlineFee/FeeCategoryConcession';
 // ========================================================================================
 const breadcrumbs = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Transport Location" },
+  { label: "Fee Category Concession" },
 ];
 // ========================================================================================
 
@@ -39,7 +39,7 @@ export default async function SchoolBuseManagement({ params }) {
       >
 
         <Breadcrumbs items={breadcrumbs} />
-        <TransportLocation />
+        <FeeCategoryConcession />
       </div>
     </Layout>
   );
