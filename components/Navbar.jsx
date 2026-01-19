@@ -183,7 +183,7 @@ const Navbar = ({
               </button>
             )}
 
-            <div className="cursor-pointer group" onClick={() => router.push('/dashboard')}>
+            <div className="cursor-pointer group" onClick={() => router.push('/profile-selection')}>
               <h1 className="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-blue-400 to-blue-400 bg-clip-text text-transparent hover:from-blue-300 hover:to-purple-300 transition-all duration-500">
                 info<span className="text-white">EIGHT</span>
               </h1>

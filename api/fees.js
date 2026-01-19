@@ -2,16 +2,12 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config/server';
 import { getCookie } from 'cookies-next';
 
-
 // ========================================================================================================
-
-
-
 export const getStudentFee = async (
   studentId,
   profileId,
   sessionId,
-  
+
 ) => {
 
 
@@ -97,13 +93,145 @@ export const getFee = async (
   return axios.post(`${API_BASE_URL}/api`, requestBody);
 };
 
+//========================================================================================================
 
+export const getLateFee = async (
+  profileId,
+  sessionId,
+  page,
+  limit,
+  payload,
+) => {
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+  // Build request body dynamically
+  const requestBody = {
+    api: "lateFee.getList",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    platform: "web",
+    page,
+    limit,
+  };
+
+  // Only include "type" if feeType has a real value
+  if (payload?.feeType && payload.feeType.trim() !== "") {
+    requestBody.type = payload.feeType;
+  }
+  if (payload?.standards && payload.standards.length > 0) {
+    requestBody.standard_ids = payload.standards;
+  }
+  if (payload?.hostelFee && payload.hostelFee.trim() !== "") {
+    requestBody.is_hostel_fee = payload.hostelFee;
+  }
+  if (payload?.enabled && payload.enabled.trim() !== "") {
+    requestBody.is_disabled = payload.enabled;
+  }
+
+  if (payload?.dueDate && payload.dueDate.trim() !== "") {
+    requestBody.due_date = payload.due_date;
+  }
+
+
+
+
+
+  if (payload?.startDate && payload.startDate.trim() !== "") {
+    requestBody.start_date = payload.startDate;
+  }
+
+  if (payload?.endDate && payload.endDate.trim() !== "") {
+    requestBody.end_date = payload.endDate;
+  }
+
+
+  if (payload?.name && payload.name.trim() !== "") {
+    requestBody.name = payload.name;
+  }
+  if (payload?.serial_number && payload.serial_number.trim() !== "") {
+    requestBody.serial_number = payload.serial_number;
+  }
+
+
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+};
+
+
+//========================================================================================================
+
+export const addLateFee = async (
+  profileId,
+  sessionId,
+
+  payload,
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+  // Build request body dynamically
+  const requestBody = {
+    api: "lateFee.add",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    "platform": "web",
+
+    ...payload
+
+  };
+
+
+
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+};
+
+
+//========================================================================================================
+
+export const deleteLateFee = async (
+  profileId,
+  sessionId,
+
+  id,
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+  // Build request body dynamically
+  const requestBody = {
+    api: "lateFee.delete",
+    guid: resolvedGuid,
+    logged_in_user_account_id: resolvedUserId,
+    user_account_id: profileId,
+    client_id: sessionId,
+    "platform": "web",
+
+    id
+
+  };
+
+
+
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+};
 // ========================================================================================================
 
 export const getFeeTypeDetail = async (
-  profileId,
-  sessionId,
-  feeTypeId
+  { profileId,
+    sessionId,
+    feeTypeId }
 ) => {
 
   let resolvedGuid = getCookie("guid");
@@ -338,6 +466,7 @@ export const markStudentFee = async (
 ) => {
   const resolvedGuid = getCookie("guid");
   const resolvedUserId = getCookie("id");
+  console.log('payload', payload);
 
   return axios.post(`${API_BASE_URL}/api`, {
     "api": "user.markStudentFee",
@@ -389,8 +518,7 @@ export const getFeeTypes = async (
 export const getFeeTypeStudents = async (
   profileId,
   session,
-  page,
-  limit,
+
 ) => {
 
   const resolvedGuid = getCookie("guid");
@@ -406,10 +534,10 @@ export const getFeeTypeStudents = async (
     "platform": "WEB",
     "client_id": session,
     "id": session,
-    "fee_type_id": "2247",
-    "standard_id": "34115",
-    "fee_id": "17303",
-    "class_id": "100009",
+    // "fee_type_id": "2247",
+    // "standard_id": "34115",
+    // "fee_id": "17303",
+    // "class_id": "100009",
     "is_variable": 1
 
 
@@ -481,5 +609,450 @@ export const removeStudentFromFeeApi = async (
 
 
 
+  });
+};
+
+
+//========================================================================================================
+
+export const addFeeType = async (
+  profileId,
+  session,
+  payload
+) => {
+  console.log('payload_________ 📦📦', payload);
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+
+    "api": "feeType.add",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    "serial_number": payload?.sn,
+    "fee_types": payload?.parent_id,
+    "name": payload?.name,
+    "code": payload?.code,
+    "is_miscellaneous": payload?.is_miscellaneous ? "1" : "0",
+    "is_applicable_for_new_students": payload?.is_miscellaneous ? "1" : "0",
+    "is_applicable_for_promoted_students": payload?.is_applicable_for_promoted_students ? "1" : "0",
+    "is_optional": payload?.is_optional ? "1" : "0",
+    "is_applicable_for_concession": payload?.is_applicable_for_concession ? "1" : "0",
+    "is_variable": payload?.is_variable ? "1" : "0",
+    "is_editable": payload?.is_editable ? "1" : "0",
+
+
+  });
+};
+
+
+//========================================================================================================
+
+export const getFeeTypeStudentsApi = async (
+  profileId,
+  session,
+  selectedFeeType
+) => {
+  // console.log(profileId,payload, 'removeStudentFromFeeApi ===========')
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+
+
+
+    "api": "feeType.getStudents",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    "id": selectedFeeType
+
+
+
+  });
+};
+
+//========================================================================================================
+
+export const deleteFeeTypeStudentsApi = async (
+  profileId,
+  session,
+  selectedFeeTypeStudent,
+  selectedInstallment,
+  selectedFeeType_
+) => {
+  console.log(
+    // selectedFeeTypeStudent,
+
+    selectedFeeType_, 'payload ===========')
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+
+
+
+
+    "api": "feeType.removeStudentFromFee",
+    // "api": "feeType.removeStudent",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "platform": "web",
+    "client_id": session,
+    "id": selectedFeeType_?.id,
+    "student_id": selectedFeeTypeStudent?.id,
+    "fee_id": selectedInstallment?.id
+
+
+
+  });
+
+};
+
+
+
+
+
+//========================================================================================================
+
+export const waiveOffLateFeeList = async (
+  profileId,
+  session,
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+
+
+
+    "api": "waiveOffLateFee.getList",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web"
+
+
+  });
+};
+
+
+
+
+//========================================================================================================
+
+export const deleteWaiveOffLateFee = async (
+  profileId,
+  session,
+  waiveOffLateFeeId
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "waiveOffLateFee.delete",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    "id": waiveOffLateFeeId
+  });
+};
+
+
+//========================================================================================================
+
+export const getShcoolBusesList = async (
+  profileId,
+  session,
+
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "schoolBus.getList",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web"
+  });
+};
+
+
+
+//========================================================================================================
+
+export const getSchoolBusStudentList = async (
+  profileId,
+  session,
+  busId
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "schoolBus.getStudents",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    "id": busId
+  });
+};
+
+//========================================================================================================
+
+export const addSchoolBusStudent = async (
+  profileId,
+  session,
+  payload
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "schoolBus.addStudent",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    "pickup_location": payload?.pickup_location,
+    "class_id": payload?.class_id,
+    "student_id": payload?.student_ids,
+    "id": payload?.busId
+  });
+};
+
+//========================================================================================================
+
+export const deleteSchoolBusStudent = async (
+  profileId,
+  session,
+  selectedStudent,
+  busId
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "schoolBus.removeStudent",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+
+    "student_id": selectedStudent?.id,
+    "id": busId
+  });
+};
+
+
+
+
+//========================================================================================================
+
+export const getFeeDefaultersList = async (
+  profileId,
+  session,
+
+  payload
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+  // Build request body dynamically
+  const requestBody = {
+    "api": "classRoom.getFeeDefaulters",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    id: payload.classes[0]
+
+  };
+
+
+  if (payload?.classes) {
+    requestBody.class_id = payload.classes;
+  }
+  if (payload?.as_on_date) {
+    requestBody.defaulter_as_on = payload.as_on_date;
+  }
+
+
+  return axios.post(`${API_BASE_URL}/api`, requestBody);
+
+
+};
+
+
+//========================================================================================================
+
+export const getPayoutList = async (
+  profileId,
+  session
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "payout.getList",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web"
+  });
+};
+
+
+
+
+
+//========================================================================================================
+
+export const getStudentFeeDetails = async (
+  profileId,
+  session,
+  selectedStudentId
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "student.getFeeDetails",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    id: selectedStudentId
+  });
+};
+
+
+
+//========================================================================================================
+
+export const getFeePaymentDetails = async (
+  profileId,
+  session,
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "client.getFeePaymentDetails",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    id: session
+  });
+};
+
+
+
+
+
+//========================================================================================================
+
+export const getCalculatedLateFeeApi = async (
+  profileId,
+  session,
+  payload
+) => {
+  console.log('payload', payload);
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "student.calculateLateFee",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web",
+    id: payload?.studentId,
+    "fee_id": payload?.fee_id,
+    "date": payload?.date
+  });
+};
+
+
+//========================================================================================================
+
+export const getTransportLocationList = async (
+  profileId,
+  session,
+
+) => {
+
+  const resolvedGuid = getCookie("guid");
+  const resolvedUserId = getCookie("id");
+
+
+  return axios.post(`${API_BASE_URL}/api`, {
+
+    "api": "schoolBus.getList",
+    "guid": resolvedGuid,
+    "logged_in_user_account_id": resolvedUserId,
+    "user_account_id": profileId,
+    "client_id": session,
+    "platform": "web"
   });
 };

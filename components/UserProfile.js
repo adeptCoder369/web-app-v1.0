@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, MoreHorizontal, ChevronDown, User, Lock, LogOut } from "lucide-react"; // Import necessary Lucide icons
-import { Router, useParams, useRouter } from 'next/navigation';
+import { ChevronDown, User, Lock, LogOut } from "lucide-react";
+import { useParams, useRouter } from 'next/navigation';
 
 const UserProfile = ({ profile }) => {
 
@@ -9,13 +9,11 @@ const UserProfile = ({ profile }) => {
     const buttonRef = useRef(null);
     const router = useRouter()
     const params = useParams()
-    
-    // Function to toggle the dropdown's open state
+
     const toggleDropdown = () => {
         setIsDropdownOpen(prev => !prev);
     };
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -34,28 +32,24 @@ const UserProfile = ({ profile }) => {
         };
     }, []);
 
-    // Placeholder functions for menu actions
     const handleMyAccount = () => {
         console.log("Navigating to My Account");
         setIsDropdownOpen(false);
         router.push(`/dashboard/${params.profile}/${params.session}/${params.school}/profile`);
-        // Add navigation logic here
     };
 
     const handleChangePassword = () => {
         console.log("Navigating to Change Password");
         setIsDropdownOpen(false);
-        // Add navigation logic here
     };
 
     const handleLogout = () => {
         console.log("Logging out");
         setIsDropdownOpen(false);
-        // Add logout logic here
     };
 
     return (
-        <div className="p-4 mt-auto relative"> {/* Added relative positioning for dropdown */}
+        <div className="p-4 mt-auto relative"> 
             <button
                 ref={buttonRef}
                 onClick={toggleDropdown}
@@ -72,13 +66,11 @@ const UserProfile = ({ profile }) => {
                         <p className="text-xs text-gray-500">{profile?.type}</p>
                     </div>
                 </div>
-                {/* Dropdown arrow icon, rotates when open */}
                 <ChevronDown
                     className={`h-5 w-5 text-gray-400  transition-transform ml-4 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
                 />
             </button>
 
-            {/* Dropdown Menu Content */}
             {isDropdownOpen && (
                 <div
                     ref={dropdownRef}

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { getSessionCache, setSessionCache, } from '../../utils/sessionCache';
 import { BiMobile } from 'react-icons/bi';
 import Layout from '../../layouts/Layout';
-import Image from "next/image";
 import Loader from '../../components/ui/status/Loader';
 import FeeCollectionChart from './FeeCollectionChart';
 import UpcomingEvent from './events';

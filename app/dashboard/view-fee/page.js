@@ -1,35 +1,30 @@
 
 import Layout from '../../../layouts/Layout';
 import { Breadcrumbs } from '../../../components/ui/Breadcrumb/breadcrumb';
+import ViewFee from '../../../components/OnlineFee/viewFee';
 import { cookies } from 'next/headers';
-import FeeManagementDashboard from '../../../components/FeeSummary/dashboard';
-import ViewFee from '../../../components/FeeSummary/viewFee';
+import { redirect } from 'next/navigation';
+
 // ========================================================================================
 const breadcrumbs = [
-  { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "View Fee" },
 ];
 // ========================================================================================
 
-export default async function FeeManagement({ params }) {
+export default async function ViewFeeManagement() {
+  const cookieStore = cookies();
 
+  const cookyGuid = cookieStore.get('guid')?.value;
+  const cookyId = cookieStore.get('id')?.value;
+
+  if (!cookyGuid || !cookyId) {
+    redirect('/login');
+  }
 
   // =============================================================
-  const resolvedParams = await params;
-  const cookieStore = await cookies();
-  const cookyGuid = cookieStore.get('guid').value
-  const cookyId = cookieStore.get('id').value
-  // -----------------------------------------------------------
-
-
-
-
-
   return (
     <Layout>
-
-
       <div
         className="min-h-[calc(100vh-100px)] p-6 space-y-6"
         style={{
@@ -39,7 +34,6 @@ export default async function FeeManagement({ params }) {
           backgroundRepeat: "no-repeat",
         }}
       >
-
         <Breadcrumbs items={breadcrumbs} />
         <ViewFee />
       </div>
@@ -47,3 +41,4 @@ export default async function FeeManagement({ params }) {
   );
 };
 
+// ========================================================================================

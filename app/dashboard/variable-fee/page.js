@@ -2,18 +2,17 @@
 import Layout from '../../../layouts/Layout';
 import { Breadcrumbs } from '../../../components/ui/Breadcrumb/breadcrumb';
 import { cookies } from 'next/headers';
-import FeeManagementDashboard from '../../../components/FeeSummary/dashboard';
-import ViewFee from '../../../components/FeeSummary/viewFee';
-import VariableFee from '../../../components/FeeSummary/variableFee';
+import FeeManagementDashboard from '../../../components/OnlineFee/dashboard';
+import ViewFee from '../../../components/OnlineFee/viewFee';
+import VariableFee from '../../../components/OnlineFee/variableFee';
 // ========================================================================================
 const breadcrumbs = [
-  { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Variable Fee" },
 ];
 // ========================================================================================
 
-export default async function FeeManagement({ params }) {
+export default async function VariableFeeManagement({ params }) {
 
 
   // =============================================================

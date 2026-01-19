@@ -2,15 +2,14 @@
 import Layout from '../../../layouts/Layout';
 import { Breadcrumbs } from '../../../components/ui/Breadcrumb/breadcrumb';
 import { cookies } from 'next/headers';
-import FeeManagementDashboard from '../../../components/FeeSummary/dashboard';
+import FeeManagementDashboard from '../../../components/OnlineFee/dashboard';
 // ========================================================================================
 const breadcrumbs = [
-  { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Fee Summary" },
 ];
 // ========================================================================================
-export default async function FeeManagement({ params }) {
+export default async function FeeSummaryManagement({ params }) {
   // ========================================================================================
   const resolvedParams = await params;
   const cookieStore = await cookies();

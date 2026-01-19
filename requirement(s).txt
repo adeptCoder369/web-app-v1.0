@@ -1,4 +1,11 @@
-correct key for adding the siblings in:
-    "api": "student.add",
+infoeight --: navigate to profile selection 
 
-
+fee-summary
+mark studfent fee 
+concession optional fee
+variable fee
+payout
+defaulter list
+Defaulter letter
+Fee type
+fee category concession

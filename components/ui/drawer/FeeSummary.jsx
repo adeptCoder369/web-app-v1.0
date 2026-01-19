@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { FaXmark } from "react-icons/fa6";
 import TooltipInfo from '../tooltip/TooltipInfo';
-import FeeSection from '../../FeeSummary/FeeSection';
+import FeeSection from '../../OnlineFee/FeeSection';
 import { useStudentFees } from '../../../controllers/fees';
 import { ReceiptIndianRupee } from 'lucide-react';
 import Loader from '../status/Loader';

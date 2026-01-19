@@ -241,14 +241,33 @@ const menuItems = [
       height={20}
       className="w-8 h-8"
     />, subMenu: [
-      {
-        name: "View Fees",
-        url: "/dashboard/fee-summary",
-        quickLink: true,
-
-      },
+      { name: "View Fees", url: "/dashboard/fee-summary", quickLink: true, },
+      { name: "Mark Student Fees", url: "/dashboard/mark-student-fee", quickLink: true },
       { name: "Fee Summary", url: "/dashboard/fee-summary", quickLink: true },
       { name: "Variable Fees Students", url: "/dashboard/variable-fee", quickLink: true },
+      { name: "Late Fees ", url: "/dashboard/late-fee", quickLink: true },
+      { name: "Fee Defaulter", url: "/dashboard/fee-defaulter", quickLink: true },
+      { name: "Payouts", url: "/dashboard/payouts", quickLink: true },
+      { name: "Wave Off Late Fees", url: "/dashboard/waive-off-late-fee", quickLink: true },
+      { name: "View School Buses", url: "/dashboard/school-buses", quickLink: true },
+      { name: "Transport Location", url: "/dashboard/transport-location", quickLink: true },
+      { name: "Fee Types ", url: "/dashboard/fee-types", quickLink: true },
+      { name: "Fee Type Students ", url: "/dashboard/fee-type-students", quickLink: true },
+      { name: "Fee Category Concession", url: "/dashboard/fee-category-concession", quickLink: true },
+
+      {
+        name: "Student Ledger",
+        subMenu: [
+          {
+            name: "Soft Copy (.xls)",
+
+            url: "/class-details",
+            onClick: (item) => handleDownload(item, 'classCHangeXls')
+
+          }
+
+        ]
+      },
     ]
   },
 

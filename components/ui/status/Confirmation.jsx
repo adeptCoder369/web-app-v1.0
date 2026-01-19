@@ -4,7 +4,7 @@ import { FaExclamationTriangle } from 'react-icons/fa';
 const ConfirmationDialogueBox = ({ onConfirm, onCancel, title, description }) => {
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center  bg-[rgba(0,0,0,0.6)] backdrop-blur-sm z-50">
+        <div className="fixed inset-0 flex items-center justify-center  bg-[rgba(0,0,0,0.6)] backdrop-blur-sm z-99">
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

@@ -2,17 +2,16 @@
 import Layout from '../../../layouts/Layout';
 import { Breadcrumbs } from '../../../components/ui/Breadcrumb/breadcrumb';
 import { cookies } from 'next/headers';
-import FeeManagementDashboard from '../../../components/FeeSummary/dashboard';
-import FeeTpes from '../../../components/FeeSummary/feeTypes';
+import FeeManagementDashboard from '../../../components/OnlineFee/dashboard';
+import FeeTpes from '../../../components/OnlineFee/feeTypes';
 // ========================================================================================
 const breadcrumbs = [
-  { label: "Home", href: "/" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Fee Types " },
 ];
 // ========================================================================================
 
-export default async function FeeManagement({ params }) {
+export default async function FeeTypesManagement({ params }) {
 
 
   // =============================================================
