@@ -249,7 +249,7 @@ const menuItems = [
       { name: "Standardwise Fee Collection Summary", url: "/dashboard/fee-summary", quickLink: true },
       { name: "Periodwise Fee Collection Summary", url: "/dashboard/fee-summary", quickLink: true },
       { name: "Payouts", url: "/dashboard/payouts", quickLink: true },
-      { name: "Concession/Optional Fees", url: "/dashboard/fee-concession", quickLink: true },
+      { name: "Concession/Optional Fees", url: "/dashboard/concession-optional-fee", quickLink: true },
       { name: "Variable Fees Students", url: "/dashboard/variable-fee", quickLink: true },
       { name: "Late Fees ", url: "/dashboard/late-fee", quickLink: true },
       { name: "Wave Off Late Fees", url: "/dashboard/waive-off-late-fee", quickLink: true },
