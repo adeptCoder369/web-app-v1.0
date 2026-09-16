@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python local runtime (erp-mcp itself lives in the ai-agent submodule;
+# this is belt-and-suspenders for any root-level python work)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# keep env examples committable (`.env*` above would ignore them)
+!.env.*.example

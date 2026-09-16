@@ -10,3 +10,6 @@ Sales:
 8. Onboarding estimator — upload prospect Excel → go-live checklist + effort days in 2 min → quote faster.
 
 opencode -s ses_f70df034cffe836NsJHISsgPoN
+
+
+Core (optional): cd ai-agent → python hermes_server.py --port 8765

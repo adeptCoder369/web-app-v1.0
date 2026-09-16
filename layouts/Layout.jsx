@@ -8,6 +8,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { getSessionCache, setSessionCache } from '../utils/sessionCache';
 import { getUserDashboardData } from '../api/dashboard';
 import Loader from '../components/ui/status/Loader';
+import Copilot from '../components/ai/Copilot';
 
 export default function Layout({ children, dashboardData, stateChanged }) {
   const initialConfig = getSessionCache("dashboardConfig");
@@ -140,6 +141,7 @@ export default function Layout({ children, dashboardData, stateChanged }) {
             )}
           </div>
         </main>
+        <Copilot />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 # Phase 2 — Central AI Agentic Infra Core + ERP Integration
 
-> Status: planned. `ai-agent/` (Hermes clone) runs as standalone central AI core for all clients.
+> Status: IMPLEMENTED (P0+P1 done, P2 pilot-ready, P3 guardrails documented).
+> Live-API safety: read-only paged tools, 4 zero-API tools, user-triggered runs.
 > School ERP talks to it API-only. No direct DB calls — existing backend API (`https://api.infoeight.com/api`) stays the security boundary.
 
 ## Topology
