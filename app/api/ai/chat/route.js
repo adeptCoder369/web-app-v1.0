@@ -97,7 +97,10 @@ export async function POST(req) {
         message: scopedMessage,
         session_id: sid,
         max_turns: 12,
-        toolsets: ["erp"],
+        // NOTE: "erp" is an MCP server, not a core toolset — assigning it
+        // here exposes the 7 erp_* tools. Our 3 erp skills ride along.
+        assignedMcpServers: ["erp"],
+        assignedSkills: ["erp-ticket-solver", "erp-excel-audit", "erp-morning-digest"],
       }),
     });
     const data = await r.json().catch(() => ({}));
@@ -110,7 +113,10 @@ export async function POST(req) {
     });
   } catch (e) {
     const msg = e?.name === "AbortError" ? "core_timeout" : String(e?.message || e).slice(0, 200);
-    return Response.json({ error: msg }, { status: 502 });
+    // Surface core-side misconfiguration so the UI can flip to Disabled
+    // without an extra status poll.
+    const providerConfigured = !/no llm provider configured|no api key/i.test(msg);
+    return Response.json({ error: msg, providerConfigured }, { status: 502 });
   } finally {
     clearTimeout(t);
   }
