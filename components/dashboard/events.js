@@ -7,7 +7,7 @@ import ChartLoadingSkeleton from '../ui/status/ChartLoadingSkeleton';
 import { useRouter } from 'next/navigation';
 
 // =============================
-// Utility: Format date
+// Utility: Format date + helpers
 // =============================
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -17,6 +17,28 @@ const formatDate = (dateStr) => {
     month: 'short',
     year: 'numeric',
   });
+};
+
+const getDayParts = (dateStr) => {
+  if (!dateStr) return { day: '--', mon: '---' };
+  const d = new Date(dateStr);
+  if (isNaN(d)) return { day: '--', mon: '---' };
+  return {
+    day: d.toLocaleDateString('en-GB', { day: '2-digit' }),
+    mon: d.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase(),
+    weekday: d.toLocaleDateString('en-GB', { weekday: 'short' }),
+  };
+};
+
+const getDaysLeft = (dateStr) => {
+  if (!dateStr) return null;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const d = new Date(dateStr); d.setHours(0, 0, 0, 0);
+  const diff = Math.round((d - today) / 86400000);
+  if (diff < 0) return null;
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  return `in ${diff} days`;
 };
 
 // =============================
@@ -104,80 +126,131 @@ const UpcomingEvent = ({ context }) => {
   // Render
   // =============================
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-      <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-        <CalendarDays className="w-5 h-5 text-blue-500" />
-        Upcoming Events
-      </h2>
+    <div className="relative overflow-hidden bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100">
+      {/* Accent top bar */}
+      <div className="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-500" />
+      {/* Soft glow */}
+      <div className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-indigo-100/60 blur-3xl" />
 
-      {isLoading ? (
-        <ChartLoadingSkeleton count={4} />
-      ) : (
-        <div className="space-y-3">
-          {displayEvents.map((event, index) => (
-            <motion.div
-              key={event.id || index}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-gray-100 rounded-lg hover:bg-blue-50/30 transition-all duration-200"
-              whileHover={{ scale: 1.01 }}
-            >
-              {/* Left Section */}
-              <div className="flex items-start gap-3 flex-1">
-                <div
-                  className="w-2 h-2 mt-2 rounded-full flex-shrink-0"
-                  style={{
-                    backgroundColor: event.event_type?.color || '#3B82F6',
-                  }}
-                ></div>
-
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {event.title}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {event.event_type?.name}
-                  </p>
-
-                  {/* Description */}
-                  {event.description && (
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2 flex items-start gap-1">
-                      <FileText className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                      {event.description}
-                    </p>
-                  )}
-
-                  {/* Venue */}
-                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-1">
-                    <MapPin className="w-3 h-3" />
-                    {event.venue || 'Main School Campus'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Section */}
-              <div className="text-right mt-3 sm:mt-0 sm:ml-4">
-                <p className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
-                  {`${formatDate(event.start_date)}${event.end_date && event.start_date !== event.end_date
-                    ? ` - ${formatDate(event.end_date)}`
-                    : ''
-                    }`}
-                </p>
-                {event.display_time && (
-                  <p className="text-[11px] text-gray-500 mt-1 flex items-center justify-end gap-1">
-                    <Clock className="w-3 h-3" /> {event.display_time}
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          ))}
+      <div className="p-5 sm:p-6 relative">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="flex items-center gap-2.5">
+            <span className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20">
+              <CalendarDays className="w-[18px] h-[18px]" />
+            </span>
+            <span>
+              <span className="block text-[15px] font-bold text-slate-900 leading-tight tracking-tight">
+                Upcoming Events
+              </span>
+              <span className="block text-[11px] font-medium text-slate-400">
+                {isLoading ? 'Fetching schedule…' : `${displayEvents.length} scheduled`}
+              </span>
+            </span>
+          </h2>
+          <span className="hidden sm:inline-flex items-center text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse mr-1.5" />
+            Live
+          </span>
         </div>
-      )}
 
-      <button
-        onClick={() => router.push(`/dashboard/calendar`
+        {isLoading ? (
+          <ChartLoadingSkeleton count={4} />
+        ) : displayEvents.length === 0 ? (
+          <div className="text-center py-10 px-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/60">
+            <span className="mx-auto mb-3 grid place-items-center w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100">
+              <CalendarDays className="w-6 h-6 text-slate-300" />
+            </span>
+            <p className="text-sm font-semibold text-slate-700">No upcoming events</p>
+            <p className="text-xs text-slate-400 mt-1">New events will appear here once scheduled.</p>
+          </div>
+        ) : (
+          <div className="relative">
+            {/* vertical timeline line */}
+            <div className="absolute left-[26px] top-2 bottom-2 w-px bg-gradient-to-b from-blue-100 via-indigo-100 to-transparent" />
+            <div className="space-y-3">
+              {displayEvents.map((event, index) => {
+                const dp = getDayParts(event.start_date);
+                const daysLeft = getDaysLeft(event.start_date);
+                const accent = event.event_type?.color || '#3B82F6';
+                return (
+                  <motion.div
+                    key={event.id || index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.06, duration: 0.3 }}
+                    whileHover={{ x: 3 }}
+                    className="group relative flex gap-3 p-3 rounded-xl border border-slate-100 bg-white hover:border-indigo-100 hover:shadow-[0_8px_24px_rgb(79,70,229,0.10)] transition-all duration-200 cursor-default"
+                  >
+                    {/* Date badge */}
+                    <div className="relative z-10 flex flex-col items-center justify-center w-[52px] h-[60px] flex-shrink-0 rounded-xl text-white shadow-md overflow-hidden"
+                      style={{ background: `linear-gradient(135deg, ${accent}, ${accent}CC)` }}>
+                      <span className="text-[10px] font-bold tracking-widest opacity-90 leading-none mt-1.5">{dp.mon}</span>
+                      <span className="text-xl font-extrabold leading-none my-0.5">{dp.day}</span>
+                      <span className="text-[10px] font-medium opacity-80 leading-none mb-1.5">{dp.weekday || ''}</span>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-[13px] font-bold text-slate-900 leading-snug truncate group-hover:text-indigo-700 transition-colors">
+                          {event.title}
+                        </p>
+                        {daysLeft && (
+                          <span className={`flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${daysLeft === 'Today' ? 'text-emerald-700 bg-emerald-50 border border-emerald-100' : 'text-indigo-600 bg-indigo-50 border border-indigo-100'}`}>
+                            {daysLeft}
+                          </span>
+                        )}
+                      </div>
+
+                      <span
+                        className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md"
+                        style={{ color: accent, backgroundColor: `${accent}14` }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />
+                        {event.event_type?.name}
+                      </span>
+
+                      {event.description && (
+                        <p className="text-[11px] text-slate-500 mt-1 line-clamp-1 flex items-center gap-1">
+                          <FileText className="w-3 h-3 flex-shrink-0 text-slate-300" />
+                          <span className="truncate">{event.description}</span>
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500">
+                          <Clock className="w-3 h-3 text-indigo-400" />
+                          {event.display_time}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 max-w-full">
+                          <MapPin className="w-3 h-3 text-rose-400 flex-shrink-0" />
+                          <span className="truncate">{event.venue || 'Main School Campus'}</span>
+                        </span>
+                      </div>
+
+                      {(event.end_date && event.start_date !== event.end_date) && (
+                        <p className="text-[10px] text-slate-400 mt-1 font-medium">
+                          {formatDate(event.start_date)} → {formatDate(event.end_date)}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
         )}
-        className="cursor-pointer w-full mt-5 text-sm text-blue-600 hover:text-blue-800 font-medium">
-        View Calendar →
-      </button>
+
+        <button
+          onClick={() => router.push(`/dashboard/calendar`)}
+          className="group cursor-pointer w-full mt-5 inline-flex items-center justify-center gap-1.5 text-[13px] font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl py-2.5 shadow-md shadow-blue-600/20 hover:shadow-lg transition-all active:scale-[0.99]"
+        >
+          <CalendarDays className="w-4 h-4 opacity-80 group-hover:rotate-6 transition-transform" />
+          View Full Calendar
+          <span aria-hidden className="group-hover:translate-x-0.5 transition-transform">→</span>
+        </button>
+      </div>
     </div>
   );
 };
